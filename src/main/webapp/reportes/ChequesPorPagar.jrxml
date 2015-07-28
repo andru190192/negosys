@@ -1,0 +1,183 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Created with Jaspersoft Studio version last-->
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="ChequesPorPagar" pageWidth="595" pageHeight="842" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="162f49b4-7ed4-4226-8bf6-365c56ea66f3">
+	<property name="ireport.zoom" value="1.6105100000000008"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
+	<style name="Title" forecolor="#FFFFFF" fontName="Arial" fontSize="26" isBold="true" pdfFontName="Helvetica-Bold"/>
+	<style name="SubTitle" forecolor="#666666" fontName="Arial" fontSize="18"/>
+	<style name="Column header" forecolor="#666666" fontName="Arial" fontSize="12" isBold="true"/>
+	<style name="Detail" fontName="Arial" fontSize="12"/>
+	<parameter name="logo" class="java.awt.image.BufferedImage"/>
+	<parameter name="SUBREPORT_DIR" class="java.lang.String" isForPrompting="false"/>
+	<parameter name="paginaWeb" class="java.lang.String"/>
+	<queryString language="SQL">
+		<![CDATA[]]>
+	</queryString>
+	<field name="banco" class="java.lang.String">
+		<fieldDescription><![CDATA[banco]]></fieldDescription>
+	</field>
+	<field name="numeroCheque" class="java.lang.String">
+		<fieldDescription><![CDATA[numeroCheque]]></fieldDescription>
+	</field>
+	<field name="numeroCuenta" class="java.lang.String">
+		<fieldDescription><![CDATA[numeroCuenta]]></fieldDescription>
+	</field>
+	<field name="fechaGiro" class="java.util.Date">
+		<fieldDescription><![CDATA[fechaGiro]]></fieldDescription>
+	</field>
+	<field name="cuota" class="java.math.BigDecimal">
+		<fieldDescription><![CDATA[cuota]]></fieldDescription>
+	</field>
+	<background>
+		<band splitType="Stretch"/>
+	</background>
+	<title>
+		<band height="70" splitType="Stretch">
+			<subreport>
+				<reportElement x="-20" y="0" width="595" height="70" uuid="33325114-8909-47a3-a375-bc538ffc890c">
+					<property name="local_mesure_unitheight" value="pixel"/>
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+				</reportElement>
+				<subreportParameter name="logo">
+					<subreportParameterExpression><![CDATA[$P{logo}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="nombreReporte">
+					<subreportParameterExpression><![CDATA["REPORTE DE CHEQUES POR PAGAR"]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="paginaWeb">
+					<subreportParameterExpression><![CDATA[$P{paginaWeb}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportExpression><![CDATA[$P{SUBREPORT_DIR} + "Encabezado.jasper"]]></subreportExpression>
+			</subreport>
+		</band>
+	</title>
+	<pageHeader>
+		<band splitType="Stretch">
+			<property name="local_mesure_unitheight" value="pixel"/>
+			<property name="com.jaspersoft.studio.unit.height" value="px"/>
+		</band>
+	</pageHeader>
+	<columnHeader>
+		<band splitType="Stretch"/>
+	</columnHeader>
+	<detail>
+		<band height="15" splitType="Stretch">
+			<staticText>
+				<reportElement x="0" y="0" width="193" height="15" forecolor="#666666" uuid="826a347d-99ff-4a17-b792-530b39c86da5"/>
+				<textElement verticalAlignment="Middle">
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[BANCO]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="193" y="0" width="101" height="15" forecolor="#666666" uuid="ebf28263-e471-4937-8846-179caf0a1877"/>
+				<textElement verticalAlignment="Middle">
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[NUM DE CHEQUE]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="294" y="0" width="100" height="15" forecolor="#666666" uuid="da3938fc-21dd-4766-b75c-9fa8efb296e8"/>
+				<textElement verticalAlignment="Middle">
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[NUM DE CUENTA]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="394" y="0" width="73" height="15" forecolor="#666666" uuid="9a415548-98a2-452f-91dc-6f06874f84e9"/>
+				<textElement verticalAlignment="Middle">
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[FECHA GIRO]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="467" y="0" width="88" height="15" forecolor="#666666" uuid="37f0fb90-b4dd-4a64-844c-f51ad2a7de89"/>
+				<textElement verticalAlignment="Middle">
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[MONTO]]></text>
+			</staticText>
+		</band>
+		<band height="16">
+			<line>
+				<reportElement positionType="FixRelativeToBottom" x="1" y="15" width="555" height="1" uuid="559bdbaf-4118-4cc0-a307-61d3660c01b1"/>
+				<graphicElement>
+					<pen lineWidth="0.5" lineColor="#999999"/>
+				</graphicElement>
+			</line>
+			<textField>
+				<reportElement x="0" y="0" width="193" height="15" uuid="c2f386a6-1aa7-40dc-b663-d59737ec1782"/>
+				<textElement verticalAlignment="Middle">
+					<font size="9"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{banco}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="193" y="0" width="101" height="15" uuid="277ecde0-8d84-4a0b-a651-3eb38431ae8f"/>
+				<textElement verticalAlignment="Middle">
+					<font size="9"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{numeroCheque}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="294" y="0" width="100" height="15" uuid="2fad9dd2-5d70-4cf4-b713-71402a25b183"/>
+				<textElement verticalAlignment="Middle">
+					<font size="9"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{numeroCuenta}]]></textFieldExpression>
+			</textField>
+			<textField pattern="dd/MM/yyyy">
+				<reportElement x="394" y="0" width="73" height="15" uuid="cb18ee73-870e-44b8-9717-c2fe8b7b99a7"/>
+				<textElement verticalAlignment="Middle">
+					<font size="9"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{fechaGiro}]]></textFieldExpression>
+			</textField>
+			<textField pattern="###0.00">
+				<reportElement x="467" y="0" width="88" height="15" uuid="05153df6-d09a-46ab-b963-8f13744dbd45"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font size="9"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{cuota}]]></textFieldExpression>
+			</textField>
+		</band>
+	</detail>
+	<columnFooter>
+		<band splitType="Stretch"/>
+	</columnFooter>
+	<pageFooter>
+		<band height="16" splitType="Stretch">
+			<textField pattern="EEEEE dd MMMMM yyyy HH:mm a">
+				<reportElement style="Column header" x="1" y="1" width="197" height="15" uuid="b88b50ad-62e8-4b47-9324-38a387cda866"/>
+				<textElement>
+					<font size="9" isBold="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[new java.util.Date()]]></textFieldExpression>
+			</textField>
+			<line>
+				<reportElement positionType="FixRelativeToBottom" x="0" y="0" width="555" height="1" uuid="99ad343b-afe0-43da-850d-ce8d45c5974f"/>
+				<graphicElement>
+					<pen lineWidth="0.5" lineColor="#999999"/>
+				</graphicElement>
+			</line>
+			<textField>
+				<reportElement style="Column header" x="435" y="1" width="80" height="15" uuid="b13417f0-7638-4b15-a970-3ab5d1a3f09b"/>
+				<textElement textAlignment="Right">
+					<font size="9" isBold="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA["Página "+$V{PAGE_NUMBER}+" de"]]></textFieldExpression>
+			</textField>
+			<textField evaluationTime="Report">
+				<reportElement style="Column header" x="515" y="1" width="40" height="15" uuid="bdbdf46d-1343-47c9-b475-f8155d81b986"/>
+				<textElement>
+					<font size="9" isBold="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[" " + $V{PAGE_NUMBER}]]></textFieldExpression>
+			</textField>
+		</band>
+	</pageFooter>
+	<summary>
+		<band splitType="Stretch"/>
+	</summary>
+</jasperReport>

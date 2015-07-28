@@ -1,0 +1,655 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:p="http://primefaces.org/ui">
+
+<ui:composition template="/templates/layout/masterLayout.xhtml">
+	<ui:define name="title">
+			CLIENTE
+		</ui:define>
+	<ui:define name="content">
+
+		<p:growl id="mensaje" showDetail="true" life="7000" />
+
+		<!-- <h:outputText value="RESPONSIVE WEB DESIGN" class="asterisco" /> -->
+
+		<p:panel id="panel" header="LISTADO DE CLIENTES"
+			style="margin-bottom:10px;">
+			<h:form id="busquedaTabla">
+				<h:panelGrid columns="3">
+					<h:outputText value="CIUDAD:" />
+					<p:selectOneMenu id="comboCiudad" filter="true"
+						value="#{clienteFabBean.criterioBusquedaCiudad}">
+						<f:selectItem itemLabel="ESCOJA UNA CIUDAD" />
+						<f:selectItems value="#{clienteFabBean.listaCiudadesBusqueda}"
+							var="ciudad" itemValue="#{ciudad.ciudadid}"
+							itemLabel="#{ciudad.nombre}" />
+					</p:selectOneMenu>
+					<h:outputText />
+
+					<h:outputText
+						value="CÉDULA / RUC / APELLIDO / NOMBRE / NOMBRE COMERCIAL " />
+					<p:inputText value="#{clienteFabBean.criterioBusquedaCliente}"
+						onblur="this.value=this.value.toUpperCase();" />
+					<p:commandButton update="busquedaTabla, :formDataTable, :mensaje"
+						icon="#{msg['iconoBuscar']}"
+						actionListener="#{clienteFabBean.obtenerClientes}" />
+				</h:panelGrid>
+			</h:form>
+
+			<h:form id="formDataTable">
+				<p:dataTable id="tablaPersonas" var="persona" scrollable="true"
+					styleClass="ui-datatable-scrollable-body"
+					value="#{clienteFabBean.listaPersonasClientes}" paginator="true"
+					rows="10"
+					paginatorTemplate="{RowsPerPageDropdown} {FirstPageLink} {PreviousPageLink} {CurrentPageReport} {NextPageLink} {LastPageLink}"
+					rowsPerPageTemplate="5,10,15" paginatorPosition="bottom"
+					rowStyleClass="#{persona.cliente.activo eq true ? null:'desactivo'}"
+					emptyMessage="#{msg['lbl.mensajeTabla']}">
+
+					<f:facet name="header">
+						<p:tooltip for="btnNuevo" value="#{msg['lbl.insertar']}" />
+						<p:commandButton update=":formNuevo"
+							action="#{clienteFabBean.cargarInsertar}"
+							oncomplete="PF('personaDialogoNuevo').show()" id="btnNuevo"
+							icon="ui-icon-plus" />
+					</f:facet>
+
+					<p:column headerText="#{msg['lbl.gestionar']}"
+						style="text-align:center;width: 50px;">
+						<p:tooltip for="btnMostrar" value="#{msg['lbl.mostrar']}" />
+						<p:commandButton id="btnMostrar" update=":formMostrar"
+							oncomplete="PF('personaDialogoMostrar').show()"
+							icon="#{msg['iconoMostrar']}">
+							<f:setPropertyActionListener value="#{persona}"
+								target="#{clienteFabBean.persona}" />
+						</p:commandButton>
+
+						<p:tooltip for="btnEditar" value="#{msg['lbl.editar']}" />
+						<p:commandButton id="btnEditar" update=":formEditar"
+							oncomplete="PF('personaDialogoEditar').show()"
+							action="#{clienteFabBean.cargarEditar}" icon="ui-icon-pencil">
+							<f:setPropertyActionListener value="#{persona}"
+								target="#{clienteFabBean.persona}" />
+						</p:commandButton>
+
+						<p:tooltip for="btnEliminar"
+							value="#{persona.cliente.activo eq true ? msg['lbl.desactivar']:msg['lbl.activar']}" />
+						<p:commandButton id="btnEliminar" update=":formEliminar"
+							oncomplete="PF('personaDialogoEliminar').show()"
+							icon="#{persona.cliente.activo eq true ? 'ui-icon-close':'ui-icon-check'}">
+							<f:setPropertyActionListener value="#{persona}"
+								target="#{clienteFabBean.persona}" />
+						</p:commandButton>
+					</p:column>
+
+					<p:column headerText="CÉDULA/RUC" filterBy="#{persona.cedula}"
+						filterMatchMode="contains" style="text-align:center;width: 70px;">  
+            			#{persona.cedula}  
+        			</p:column>
+
+					<p:column headerText="APELLIDOS" filterBy="#{persona.apellido}"
+						filterMatchMode="contains" style="text-align:center;width: 50px;">  
+            			#{persona.apellido}  
+        			</p:column>
+
+					<p:column headerText="NOMBRES" filterBy="#{persona.nombre}"
+						filterMatchMode="contains" style="text-align:center;width: 50px;">  
+            			#{persona.nombre}  
+        			</p:column>
+
+					<p:column headerText="NOMBRE COMERCIAL"
+						filterBy="#{persona.cliente.nombrecomercial}"
+						filterMatchMode="contains" style="text-align:center;width: 50px;">  
+            			#{persona.cliente.nombrecomercial}  
+        			</p:column>
+
+				</p:dataTable>
+			</h:form>
+		</p:panel>
+
+		<p:dialog header="INSERTAR CLIENTE" widgetVar="personaDialogoNuevo"
+			resizable="false" modal="false" showEffect="clip" hideEffect="fold"
+			id="dialogoNuevo" styleClass="dialogoInsertarCliente">
+			<h:form id="formNuevo">
+				<h:outputText value="LOS CAMPOS MARCADOS CON" />
+				<h:outputText value=" * " class="asterisco" />
+				<h:outputText value="SON REQUERIDOS" />
+
+				<h:panelGrid columns="1" cellpadding="1">
+
+					<h:panelGrid id="panelNuevo" columns="3" cellpadding="1"
+						style="width: 100%;" columnClasses="a,a">
+
+						<h:outputText value="" />
+						<h:outputText value="DATOS/PERSONALES" style="font-weight:bold" />
+						<h:outputText value="" />
+
+						<h:outputText value="*" class="asterisco" />
+						<h:outputText value="CÉDULA/RUC:" />
+						<p:inputText value="#{clienteFabBean.persona.cedula}"
+							style="width: 100% !important;">
+							<p:ajax event="blur" listener="#{clienteFabBean.comprobarPersona}"
+								update="formNuevo,:mensaje" />
+						</p:inputText>
+
+						<h:outputText value="*" class="asterisco" />
+						<h:outputText value="APELLIDOS:" />
+						<p:inputText id="apellidos" style="width: 100% !important;"
+							value="#{clienteFabBean.persona.apellido}"
+							onblur="this.value=this.value.toUpperCase(), concatenarNuevo()" />
+
+						<h:outputText value="*" class="asterisco" />
+						<h:outputText value="NOMBRES:" />
+						<p:inputText id="nombres" value="#{clienteFabBean.persona.nombre}"
+							style="width: 100% !important;"
+							onblur="this.value=this.value.toUpperCase(), concatenarNuevo()" />
+
+						<h:outputText value="*" class="asterisco" />
+						<h:outputText value="NOMBRE COMERCIAL:" />
+						<p:inputText id="nombreComercial" style="width: 100% !important;"
+							value="#{clienteFabBean.persona.cliente.nombrecomercial}"
+							onblur="this.value=this.value.toUpperCase();" />
+
+						<h:outputText value="*" class="asterisco" />
+						<h:outputText value="FECHA/NACIMIENTO:" />
+						<p:calendar value="#{clienteFabBean.persona.fechanacimiento}"
+							styleClass="calendarioInsertarCliente" />
+
+						<h:outputText value="" />
+						<h:outputText value="DATOS/RESIDENCIA" style="font-weight:bold" />
+						<h:outputText value="" />
+
+						<h:outputText value="*" class="asterisco" />
+						<h:outputText value="PROVINCIA:" />
+						<p:selectOneMenu id="comboProvincia" filter="true"
+							styleClass="comboNacimientoCliente"
+							style="width: 100% !important;"
+							value="#{clienteFabBean.persona.ciudad.provincia.provinciaid}">
+							<f:selectItem itemLabel="ESCOJA UNA PROVINCIA" />
+							<f:selectItems value="#{clienteFabBean.listaProvincias}"
+								var="provincia" itemValue="#{provincia.provinciaid}"
+								itemLabel="#{provincia.nombre}" />
+							<p:ajax event="change" listener="#{clienteFabBean.cargarCiudades}"
+								update="comboCiudad" />
+						</p:selectOneMenu>
+
+						<h:outputText value="*" class="asterisco" />
+						<h:outputText value="CIUDAD:" />
+						<p:selectOneMenu id="comboCiudad" style="width: 100% !important;"
+							styleClass="comboNacimientoCliente" filter="true"
+							value="#{clienteFabBean.persona.ciudad.ciudadid}">
+							<f:selectItem itemLabel="ESCOJA UNA CIUDAD" />
+							<f:selectItems value="#{clienteFabBean.listaCiudades}" var="ciudad"
+								itemValue="#{ciudad.ciudadid}" itemLabel="#{ciudad.nombre}" />
+						</p:selectOneMenu>
+
+						<h:outputText value="*" class="asterisco" />
+						<h:outputText value="DIRECCION:" />
+						<p:inputTextarea value="#{clienteFabBean.persona.direccion}"
+							style="width: 100% !important;"
+							onblur="this.value=this.value.toUpperCase();" />
+
+						<h:outputText value="" />
+						<h:outputText value="REFERENCIA:" />
+						<p:inputTextarea value="#{clienteFabBean.persona.referencia}"
+							style="width: 100% !important;"
+							onblur="this.value=this.value.toUpperCase();" />
+
+						<h:outputText value="" />
+						<h:outputText value="REGISTRO FÍSICO" style="font-weight:bold" />
+						<h:outputText value="" />
+
+						<h:outputText value="" class="asterisco" />
+						<h:outputText value="# CARPETA:" />
+						<p:inputText value="#{clienteFabBean.persona.cliente.folio}"
+							style="width: 100% !important;"
+							onblur="this.value=this.value.toUpperCase();" />
+					</h:panelGrid>
+
+					<h:panelGrid id="panelNuevoTelefono" columns="1" cellpadding="1">
+
+						<p:commandLink value="TELEFONOS" update="tablaTelefono ,:mensaje"
+							actionListener="#{clienteFabBean.insertarFilaTelefono}"
+							style="font-weight:bold" />
+						<p:dataTable id="tablaTelefono" var="telefono" rows="3"
+							paginator="true" paginatorPosition="bottom"
+							value="#{clienteFabBean.persona.telefonopersonas}" editable="true"
+							editMode="cell">
+
+							<p:column headerText="#{msg['lbl.gestionar']}"
+								style="text-align:center;" width="30%">
+								<p:commandButton id="btnEliminar" icon="ui-icon-close"
+									update="tablaTelefono, :mensaje"
+									action="#{clienteFabBean.eliminarTelefono(telefono)}"
+									process="@this" />
+							</p:column>
+
+							<p:column headerText="TELEFONOS">
+								<p:cellEditor>
+									<f:facet name="output">
+										<h:outputText value="#{telefono.telefono}" />
+									</f:facet>
+									<f:facet name="input">
+										<p:inputText value="#{telefono.telefono}" style="width:96%"
+											label="TELEFONO">
+											<p:ajax listener="#{clienteFabBean.comprobarTelefono(telefono)}"
+												event="change" update="tablaTelefono, :mensaje" />
+										</p:inputText>
+									</f:facet>
+								</p:cellEditor>
+							</p:column>
+
+							<p:column headerText="REFERENCIA">
+								<p:cellEditor>
+									<f:facet name="output">
+										<h:outputText value="#{telefono.referencia}" />
+									</f:facet>
+									<f:facet name="input">
+										<p:inputText value="#{telefono.referencia}" style="width:96%"
+											label="REFERENCIA">
+											<p:ajax listener="#{clienteFabBean.comprobarTelefono(telefono)}"
+												event="change" update="tablaTelefono, :mensaje" />
+										</p:inputText>
+									</f:facet>
+								</p:cellEditor>
+							</p:column>
+						</p:dataTable>
+
+						<p:commandLink value="E-MAILS" update="tablaEmail ,:mensaje"
+							actionListener="#{clienteFabBean.insertarFilaEmail}"
+							style="font-weight:bold" />
+						<p:dataTable id="tablaEmail" var="email" rows="3" paginator="true"
+							paginatorPosition="bottom"
+							value="#{clienteFabBean.persona.emailpersonas}" editable="true"
+							editMode="cell">
+
+							<p:column headerText="#{msg['lbl.gestionar']}"
+								style="text-align:center;" width="30%">
+								<p:commandButton id="btnEliminar" icon="ui-icon-close"
+									update="tablaEmail, :mensaje"
+									action="#{clienteFabBean.eliminarEmail(email)}" process="@this" />
+							</p:column>
+
+							<p:column headerText="E-MAIL">
+								<p:cellEditor>
+									<f:facet name="output">
+										<h:outputText value="#{email.email}" />
+									</f:facet>
+									<f:facet name="input">
+										<p:inputText value="#{email.email}" style="width:96%"
+											label="EMAIL">
+											<p:ajax listener="#{clienteFabBean.comprobarEmail(email)}"
+												event="change" update="tablaEmail, :mensaje" />
+										</p:inputText>
+									</f:facet>
+								</p:cellEditor>
+							</p:column>
+						</p:dataTable>
+					</h:panelGrid>
+
+					<f:facet name="footer">
+						<p:separator />
+						<p:commandButton value="#{msg['btn.guardar']}"
+							update=":formDataTable ,:mensaje, formNuevo"
+							oncomplete="comprobar(xhr, status, args)" id="btnNuevoAceptar"
+							icon="#{msg['iconoGuardar']}"
+							actionListener="#{clienteFabBean.insertar}" />
+
+						<p:commandButton value="#{msg['btn.cancelar']}"
+							oncomplete="PF('personaDialogoNuevo').hide()"
+							id="btnNuevolimpiar" icon="#{msg['iconoCancelar']}"
+							process="@this" />
+					</f:facet>
+				</h:panelGrid>
+			</h:form>
+		</p:dialog>
+
+		<p:dialog header="EDITAR CLIENTE" widgetVar="personaDialogoEditar"
+			resizable="false" modal="false" showEffect="clip" hideEffect="fold"
+			id="dialogoEditar" styleClass="dialogoInsertarCliente">
+			<h:form id="formEditar">
+				<p:focus context="formEditar" />
+				<h:outputText value="LOS CAMPOS MARCADOS CON" />
+				<h:outputText value=" * " class="asterisco" />
+				<h:outputText value="SON REQUERIDOS" />
+
+				<h:panelGrid columns="1" cellpadding="1">
+
+					<h:panelGrid id="panelEditar" columns="3" cellpadding="1"
+						style="width: 100%;" columnClasses="a,a">
+
+						<h:outputText value="" />
+						<h:outputText value="DATOS/PERSONALES" style="font-weight:bold" />
+						<h:outputText value="" />
+
+						<h:outputText value="*" class="asterisco" />
+						<h:outputText value="CÉDULA/RUC:" />
+						<p:inputText value="#{clienteFabBean.persona.cedula}"
+							styleClass="txtDinamicos"
+							onblur="this.value=this.value.toUpperCase();" />
+
+						<h:outputText value="*" class="asterisco" />
+						<h:outputText value="APELLIDOS:" />
+						<p:inputText id="apellidos"
+							value="#{clienteFabBean.persona.apellido}" styleClass="txtDinamicos"
+							onblur="this.value=this.value.toUpperCase(), concatenarEditar()" />
+
+						<h:outputText value="*" class="asterisco" />
+						<h:outputText value="NOMBRES:" />
+						<p:inputText id="nombres" value="#{clienteFabBean.persona.nombre}"
+							styleClass="txtDinamicos"
+							onblur="this.value=this.value.toUpperCase(), concatenarEditar()" />
+
+						<h:outputText value="*" class="asterisco" />
+						<h:outputText value="NOMBRE COMERCIAL:" />
+						<p:inputText id="nombreComercial"
+							value="#{clienteFabBean.persona.cliente.nombrecomercial}"
+							styleClass="txtDinamicos"
+							onblur="this.value=this.value.toUpperCase();" />
+
+						<h:outputText value="*" class="asterisco" />
+						<h:outputText value="FECHA/NACIMIENTO:" />
+						<p:calendar value="#{clienteFabBean.persona.fechanacimiento}"
+							styleClass="calendarioInsertarCliente" />
+
+						<h:outputText value="" />
+						<h:outputText value="DATOS/RESIDENCIA" style="font-weight:bold" />
+						<h:outputText value="" />
+
+						<h:outputText value="*" class="asterisco" />
+						<h:outputText value="PROVINCIA:" />
+						<p:selectOneMenu id="comboProvincia"
+							style="width: 100% !important;" filter="true"
+							styleClass="comboNacimientoCliente"
+							value="#{clienteFabBean.persona.ciudad.provincia.provinciaid}">
+							<f:selectItem itemLabel="ESCOJA UNA PROVINCIA" />
+							<f:selectItems value="#{clienteFabBean.listaProvincias}"
+								var="provincia" itemValue="#{provincia.provinciaid}"
+								itemLabel="#{provincia.nombre}" />
+							<p:ajax event="change" listener="#{clienteFabBean.cargarCiudades}"
+								update="comboCiudad" />
+						</p:selectOneMenu>
+
+						<h:outputText value="*" class="asterisco" />
+						<h:outputText value="CIUDAD:" />
+						<p:selectOneMenu id="comboCiudad" style="width: 100% !important;"
+							styleClass="comboNacimientoCliente" filter="true"
+							value="#{clienteFabBean.persona.ciudad.ciudadid}">
+							<f:selectItem itemLabel="ESCOJA UNA CIUDAD" />
+							<f:selectItems value="#{clienteFabBean.listaCiudades}" var="ciudad"
+								itemValue="#{ciudad.ciudadid}" itemLabel="#{ciudad.nombre}" />
+						</p:selectOneMenu>
+
+						<h:outputText value="*" class="asterisco" />
+						<h:outputText value="DIRECCION:" />
+						<p:inputTextarea value="#{clienteFabBean.persona.direccion}"
+							styleClass="txtDinamicos"
+							onblur="this.value=this.value.toUpperCase();" />
+
+						<h:outputText value="" />
+						<h:outputText value="REFERENCIA:" />
+						<p:inputTextarea value="#{clienteFabBean.persona.referencia}"
+							styleClass="txtDinamicos"
+							onblur="this.value=this.value.toUpperCase();" />
+
+						<h:outputText value="" />
+						<h:outputText value="REGISTRO FÍSICO" style="font-weight:bold" />
+						<h:outputText value="" />
+
+						<h:outputText value="" />
+						<h:outputText value="# CARPETA:" />
+						<p:inputText value="#{clienteFabBean.persona.cliente.folio}"
+							styleClass="txtDinamicos"
+							onblur="this.value=this.value.toUpperCase();" />
+					</h:panelGrid>
+
+					<h:panelGrid id="panelEditarTelefono" columns="1" cellpadding="1">
+
+						<p:commandLink value="TELEFONOS" update="tablaTelefono ,:mensaje"
+							actionListener="#{clienteFabBean.insertarFilaTelefono}"
+							style="font-weight:bold" />
+						<p:dataTable id="tablaTelefono" var="telefono" rows="3"
+							paginator="true" paginatorPosition="bottom"
+							emptyMessage="#{msg['lbl.mensajeTabla']}"
+							value="#{clienteFabBean.persona.telefonopersonas}" editable="true"
+							editMode="cell">
+
+							<p:column headerText="#{msg['lbl.gestionar']}"
+								style="text-align:center;" width="30%">
+								<p:commandButton id="btnEliminar" icon="ui-icon-close"
+									update="tablaTelefono, :mensaje"
+									action="#{clienteFabBean.eliminarTelefono(telefono)}"
+									process="@this" />
+							</p:column>
+
+							<p:column headerText="TELEFONOS">
+								<p:cellEditor>
+									<f:facet name="output">
+										<h:outputText value="#{telefono.telefono}" />
+									</f:facet>
+									<f:facet name="input">
+										<p:inputText value="#{telefono.telefono}" style="width:96%"
+											label="TELEFONO">
+											<p:ajax listener="#{clienteFabBean.comprobarTelefono(telefono)}"
+												event="change" update="tablaTelefono, :mensaje" />
+										</p:inputText>
+									</f:facet>
+								</p:cellEditor>
+							</p:column>
+
+							<p:column headerText="REFERENCIA">
+								<p:cellEditor>
+									<f:facet name="output">
+										<h:outputText value="#{telefono.referencia}" />
+									</f:facet>
+									<f:facet name="input">
+										<p:inputText value="#{telefono.referencia}" style="width:96%"
+											label="REFERENCIA">
+											<p:ajax listener="#{clienteFabBean.comprobarTelefono(telefono)}"
+												event="change" update="tablaTelefono, :mensaje" />
+										</p:inputText>
+									</f:facet>
+								</p:cellEditor>
+							</p:column>
+						</p:dataTable>
+
+						<p:commandLink value="E-MAILS" update="tablaEmail ,:mensaje"
+							actionListener="#{clienteFabBean.insertarFilaEmail}"
+							style="font-weight:bold" />
+						<p:dataTable id="tablaEmail" var="email" rows="3" paginator="true"
+							paginatorPosition="bottom"
+							emptyMessage="#{msg['lbl.mensajeTabla']}"
+							value="#{clienteFabBean.persona.emailpersonas}" editable="true"
+							editMode="cell">
+
+							<p:column headerText="#{msg['lbl.gestionar']}"
+								style="text-align:center;" width="30%">
+								<p:commandButton id="btnEliminar" icon="ui-icon-close"
+									update="tablaEmail, :mensaje"
+									action="#{clienteFabBean.eliminarEmail(email)}" process="@this" />
+							</p:column>
+
+							<p:column headerText="E-MAIL">
+								<p:cellEditor>
+									<f:facet name="output">
+										<h:outputText value="#{email.email}" />
+									</f:facet>
+									<f:facet name="input">
+										<p:inputText value="#{email.email}" style="width:96%"
+											label="EMAIL">
+											<p:ajax listener="#{clienteFabBean.comprobarEmail(email)}"
+												event="change" update="tablaEmail, :mensaje" />
+										</p:inputText>
+									</f:facet>
+								</p:cellEditor>
+							</p:column>
+						</p:dataTable>
+					</h:panelGrid>
+
+					<f:facet name="footer">
+						<p:separator />
+						<p:commandButton value="#{msg['btn.guardar']}"
+							update=":formDataTable:tablaPersonas ,:mensaje, formEditar"
+							oncomplete="comprobar(xhr, status, args)" id="btnEditarAceptar"
+							icon="#{msg['iconoGuardar']}"
+							actionListener="#{clienteFabBean.actualizar}" />
+
+						<p:commandButton value="#{msg['btn.cancelar']}"
+							oncomplete="PF('personaDialogoEditar').hide()"
+							id="btnEditarlimpiar" icon="#{msg['iconoCancelar']}"
+							process="@this" />
+					</f:facet>
+				</h:panelGrid>
+			</h:form>
+		</p:dialog>
+
+		<p:dialog widgetVar="personaDialogoEliminar" severity="alert"
+			header="ACTIVAR / DESACTIVAR CLIENTE" showEffect="explode"
+			hideEffect="explode" modal="false" resizable="false" width="258px"
+			style="text-align: center;">
+			<h:form id="formEliminar">
+				<h:inputHidden value="#{clienteFabBean.persona.personaid}" />
+				<br />
+				<ui:param name="desactivar"
+					value="¿ DESEA DESACTIVAR EL CLIENTE: #{clienteFabBean.persona.apellido} #{clienteFabBean.persona.nombre} ?" />
+				<ui:param name="activar"
+					value="¿ DESEA ACTIVAR EL CLIENTE: #{clienteFabBean.persona.apellido} #{clienteFabBean.persona.nombre} ?" />
+				<h:outputText
+					value="#{clienteFabBean.persona.cliente.activo eq true ? desactivar : activar}" />
+				<br />
+				<br />
+				<p:commandButton value="#{msg['btn.aceptar']}"
+					update=":formDataTable,:mensaje" icon="#{msg['iconoAceptar']}"
+					oncomplete="PF('personaDialogoEliminar').hide()"
+					actionListener="#{clienteFabBean.eliminar}" />
+				<p:commandButton value="#{msg['btn.cancelar']}" type="button"
+					onclick="PF('personaDialogoEliminar').hide()"
+					icon="#{msg['iconoCancelar']}" />
+			</h:form>
+		</p:dialog>
+
+		<p:dialog header="MOSTRAR CLIENTE" widgetVar="personaDialogoMostrar"
+			resizable="false" modal="false" showEffect="clip" hideEffect="fold"
+			id="dialogoMostrar" styleClass="dialogoMostrarCliente">
+
+			<h:form id="formMostrar">
+
+				<h:panelGrid id="panelMostrar" columns="1" cellpadding="2">
+					<h:panelGrid columns="2" cellpadding="0" width="100%">
+						<h:panelGrid columns="2" cellpadding="0">
+							<h:outputText value="CÓDIGO INTERNO:" style="font-weight:bold" />
+							<h:outputText value="#{clienteFabBean.persona.cliente.clienteid}" />
+
+							<h:outputText value="# CARPETA:" style="font-weight:bold" />
+							<h:outputText value="#{clienteFabBean.persona.cliente.folio}" />
+
+							<h:outputText value="CÉDULA/RUC:" style="font-weight:bold" />
+							<h:outputText value="#{clienteFabBean.persona.cedula}" />
+
+							<h:outputText value="APELLIDOS:" style="font-weight:bold" />
+							<h:outputText value="#{clienteFabBean.persona.apellido}" />
+
+							<h:outputText value="NOMBRES:" style="font-weight:bold" />
+							<h:outputText value="#{clienteFabBean.persona.nombre}" />
+
+							<h:outputText value="NOMBRE COMERCIAL:" style="font-weight:bold" />
+							<h:outputText
+								value="#{clienteFabBean.persona.cliente.nombrecomercial}" />
+
+							<h:outputText value="ACTIVO:" style="font-weight:bold" />
+							<p:selectBooleanCheckbox disabled="true"
+								value="#{clienteFabBean.persona.activo}" />
+
+						</h:panelGrid>
+						<h:panelGrid columns="2" cellpadding="0">
+							<h:outputText value="FEC. NAC.:" style="font-weight:bold" />
+							<h:outputText value="#{clienteFabBean.persona.fechanacimiento}" />
+
+							<h:outputText value="FEC. REGISTRO:" style="font-weight:bold" />
+							<h:outputText value="#{clienteFabBean.persona.fecharegistro}" />
+
+							<h:outputText value="PROVINCIA:" style="font-weight:bold" />
+							<h:outputText
+								value="#{clienteFabBean.persona.ciudad.provincia.nombre}" />
+
+							<h:outputText value="CIUDAD:" style="font-weight:bold" />
+							<h:outputText value="#{clienteFabBean.persona.ciudad.nombre}" />
+
+							<h:outputText value="DIRECCION:" style="font-weight:bold" />
+							<h:outputText value="#{clienteFabBean.persona.direccion}" />
+
+							<h:outputText value="REFERENCIA:" style="font-weight:bold" />
+							<h:outputText value="#{clienteFabBean.persona.referencia}" />
+
+							<h:outputText />
+							<h:outputText />
+						</h:panelGrid>
+					</h:panelGrid>
+
+					<h:panelGrid columns="1" cellpadding="0">
+
+						<h:outputText value="TELEFONOS:" style="font-weight:bold" />
+						<p:dataTable var="telefono" paginator="true" rows="3"
+							paginatorPosition="bottom"
+							emptyMessage="#{msg['lbl.mensajeTabla']}"
+							value="#{clienteFabBean.persona.telefonopersonas}">
+
+							<p:column headerText="TELEFONOS">
+							#{telefono.telefono}		
+						</p:column>
+							<p:column headerText="REFERENCIA">
+							#{telefono.referencia}		
+						</p:column>
+
+						</p:dataTable>
+
+						<h:outputText value="E-MAILS:" style="font-weight:bold" />
+						<p:dataTable var="email" emptyMessage="#{msg['lbl.mensajeTabla']}"
+							paginator="true" rows="3" paginatorPosition="bottom"
+							value="#{clienteFabBean.persona.emailpersonas}">
+
+							<p:column headerText="E-MAILS">
+									#{email.email}		
+								</p:column>
+
+						</p:dataTable>
+					</h:panelGrid>
+
+				</h:panelGrid>
+			</h:form>
+		</p:dialog>
+
+		<script type="text/javascript">
+			//<![CDATA[
+			function comprobar(xhr, status, args) {
+				if (!args.validationFailed && args.cerrar) {
+					PF('personaDialogoNuevo').hide();
+					PF('personaDialogoEditar').hide();
+				}
+			}
+			function concatenarNuevo() {
+				var apellidos = jQuery('#formNuevo\\:apellidos').val();
+				var nombres = jQuery('#formNuevo\\:nombres').val();
+				jQuery('#formNuevo\\:nombreComercial').val(
+						apellidos + " " + nombres);
+			}
+			function concatenarEditar() {
+				var apellidos = jQuery('#formEditar\\:apellidos').val();
+				var nombres = jQuery('#formEditar\\:nombres').val();
+				jQuery('#formEditar\\:nombreComercial').val(
+						apellidos + " " + nombres);
+
+			}
+
+			//]]>
+		</script>
+
+	</ui:define>
+</ui:composition>
+</html>

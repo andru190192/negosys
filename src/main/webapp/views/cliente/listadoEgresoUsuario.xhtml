@@ -1,0 +1,507 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:p="http://primefaces.org/ui">
+
+<ui:composition template="/templates/layout/masterLayout.xhtml">
+
+	<ui:define name="title">
+			LISTADO DE EGRESOS
+		</ui:define>
+	<ui:define name="content">
+
+		<p:growl id="mensaje" showDetail="true" life="7000" />
+
+		<p:panel id="panel" header="LISTADO DE EGRESOS"
+			style="margin-bottom:10px;">
+
+			<h:form id="busquedaTabla">
+				<h:panelGrid columns="3">
+					<h:outputText value="TIPO DOCUMENTO:" />
+					<p:selectOneMenu
+						value="#{listadoEgresoClienteBean.tipoDocumentoId}" filter="true"
+						filterMatchMode="contains">
+						<f:selectItem itemLabel="ESCOJA UN TIPO DE DOCUMENTO" />
+						<f:selectItem itemValue="1" itemLabel="FACTURA" />
+						<f:selectItem itemValue="2" itemLabel="COTIZACION" />
+						<f:selectItem itemValue="7" itemLabel="PEDIDO" />
+						<f:selectItem itemValue="8" itemLabel="NOTA DE ENTREGA" />
+					</p:selectOneMenu>
+					<h:outputText />
+
+					<h:outputText value="CÓDIGO " />
+					<p:inputText
+						value="#{listadoEgresoClienteBean.criterioBusquedaCodigo}"
+						onblur="this.value=this.value.toUpperCase();" />
+					<p:commandButton update=":formDataTable, :mensaje"
+						icon="#{msg['iconoBuscar']}"
+						actionListener="#{listadoEgresoClienteBean.obtenerEgresosClienteLazyData}" />
+				</h:panelGrid>
+			</h:form>
+
+			<h:form id="formDataTable">
+				<p:dataTable id="tablaListadoEgresos" var="egreso"
+					value="#{listadoEgresoClienteBean.listaEgresos}" paginator="true"
+					rows="10" rowsPerPageTemplate="5,10,15"
+					paginatorTemplate="{RowsPerPageDropdown} {FirstPageLink} {PreviousPageLink} {CurrentPageReport} {NextPageLink} {LastPageLink}"
+					paginatorPosition="bottom"
+					emptyMessage="#{msg['lbl.mensajeTabla']}"
+					rowStyleClass="#{egreso.pagado eq true ? '':'desactivo'}">
+
+					<p:column headerText="GESTIONAR MIS COMPROBANTES"
+						style="text-align:center;width: 50px;">
+
+						<p:tooltip for="btnMostrar" value="MOSTRAR" />
+						<p:commandButton id="btnMostrar" update=":formMostrar"
+							oncomplete="PF('egresoDialogoMostrar').show()"
+							icon="ui-icon-extlink"
+							action="#{listadoEgresoClienteBean.generarListaDetalle}">
+							<f:setPropertyActionListener value="#{egreso}"
+								target="#{listadoEgresoClienteBean.egreso}" />
+						</p:commandButton>
+
+						<p:tooltip for="btnPagar" value="VER CUOTAS" />
+						<p:commandButton id="btnPagar" update=":formPago"
+							action="#{listadoEgresoClienteBean.calcularNumeroCuotasEntradasCreditos}"
+							oncomplete="PF('dialogoClientePago').show()"
+							icon="ui-icon-bookmark">
+							<f:setPropertyActionListener value="#{egreso}"
+								target="#{listadoEgresoClienteBean.egreso}" />
+						</p:commandButton>
+
+					</p:column>
+
+					<p:column headerText="TIPO DE DOCUMENTO"
+						filterBy="#{egreso.tipodocumento.nombre}"
+						style="text-align:center;width: 50px;">  
+            			#{egreso.tipodocumento.nombre}  
+        			</p:column>
+
+					<p:column headerText="CODIGO DE DOCUMENTO"
+						filterBy="#{egreso.codigodocumento}" filterMatchMode="contains"
+						style="text-align:center;width: 50px;">  
+            			#{egreso.codigodocumento}  
+        			</p:column>
+
+					<p:column headerText="FECHA" filterBy="#{egreso.fechainicio}"
+						style="text-align:center;width: 50px;">
+						<p:outputLabel value="#{egreso.fechainicio}">
+							<f:convertDateTime pattern="dd/MM/yyyy"
+								timeZone="America/Guayaquil" />
+						</p:outputLabel>
+					</p:column>
+
+				</p:dataTable>
+			</h:form>
+		</p:panel>
+
+		<p:dialog header="MOSTRAR EGRESO" widgetVar="egresoDialogoMostrar"
+			resizable="false" modal="false" showEffect="clip" hideEffect="fold"
+			id="dialogoMostrarEgreso">
+
+			<h:form id="formMostrar">
+
+				<h:panelGrid id="panelMostrar" columns="2" cellpadding="8">
+
+					<h:outputText value="TIPO DE DOCUMENTO" />
+					<h:outputText
+						value="#{listadoEgresoClienteBean.egreso.tipodocumento.nombre}"
+						style=" font-weight:bold" />
+
+					<h:outputText value="CODIGO DE DOCUMENTO" />
+					<h:outputText
+						value="#{listadoEgresoClienteBean.egreso.codigodocumento}"
+						style="font-weight:bold" />
+
+					<h:outputText value="FECHA" />
+					<h:outputText
+						value="#{listadoEgresoClienteBean.egreso.fechainicio}"
+						style="font-weight:bold" />
+
+				</h:panelGrid>
+
+				<p:dataTable id="tablaDetalleEgresos" var="detalleEgreso"
+					value="#{listadoEgresoClienteBean.listaEgresosDetalle}"
+					paginator="true" rows="15"
+					emptyMessage="No hay informacion disponible."
+					paginatorPosition="bottom">
+
+					<p:column headerText="IVA" style="text-align:center;width: 50px;">  
+            				#{detalleEgreso.iva}
+        				</p:column>
+
+					<p:column headerText="CODIGO" filterBy="#{detalleEgreso.codigo}"
+						style="text-align:center;width: 50px;">
+							 	#{detalleEgreso.codigo}
+						</p:column>
+
+					<p:column headerText="DESCRIPCION"
+						filterBy="#{detalleEgreso.descripcion}"
+						style="text-align:center;width: 50px;">
+							 	#{detalleEgreso.descripcion}
+						</p:column>
+
+					<p:column headerText="CANTIDAD"
+						style="text-align:center;width: 50px;">  
+            				#{detalleEgreso.cantidad}  
+        				</p:column>
+
+					<p:column headerText="P. UNIT."
+						style="text-align:center;width: 50px;">  
+            				#{detalleEgreso.precioUnitVenta}
+        				</p:column>
+
+					<p:column headerText="DESC" style="text-align:center;width: 50px;">  
+            				#{detalleEgreso.precioUnitDescuento}  
+        				</p:column>
+
+					<p:column headerText="IMPORTE"
+						style="text-align:center;width: 50px;">  
+            				#{detalleEgreso.importe}  
+        				</p:column>
+
+				</p:dataTable>
+			</h:form>
+		</p:dialog>
+
+		<p:dialog header="DETALLES DE PAGOS" widgetVar="dialogoClientePago"
+			resizable="false" modal="false" showEffect="clip" hideEffect="fold">
+
+			<h:form id="formPago">
+
+				<p:accordionPanel id="acorPanel" multiple="true">
+
+					<p:tab id="tabEntrada"
+						title="ENTRADAS - TOTAL(#{listadoEgresoClienteBean.numeroCuotas.cuotasTotalEntrada}) - PAGADAS(#{listadoEgresoClienteBean.numeroCuotas.cuotasPagadasEntrada}) - POR PAGAR(#{listadoEgresoClienteBean.numeroCuotas.cuotasPorPagarEntrada}) - VENCIDAS(#{listadoEgresoClienteBean.numeroCuotas.cuotasVencidasEntrada}) - NORMALES(#{listadoEgresoClienteBean.numeroCuotas.cuotasNormalesEntrada})">
+
+						<p:dataTable id="tablaEntrada" var="entrada"
+							value="#{listadoEgresoClienteBean.egreso.entradas}"
+							paginator="true" rows="6"
+							emptyMessage="No hay informacion disponible."
+							paginatorPosition="bottom"
+							rowStyleClass="#{entrada.pagado eq true ? 'activo' : 
+											(entrada.fechalimite lt listadoEgresoClienteBean.fechaActual ? 'desactivo' : 'normal')}">
+
+							<p:column headerText="GESTIONAR"
+								style="text-align:center;width: 50px;">
+								<p:commandButton id="btnPagoEntrada" update=":formPagoEntrada"
+									oncomplete="dialogoPagoEntrada.show()" icon="ui-icon-bookmark"
+									action="#{listadoEgresoClienteBean.calcularEntrada}">
+									<f:setPropertyActionListener value="#{entrada}"
+										target="#{listadoEgresoClienteBean.entrada}" />
+								</p:commandButton>
+							</p:column>
+
+							<p:column headerText="FECHA LIMITE">
+								<p:outputLabel value="#{entrada.fechalimite}">
+									<f:convertDateTime pattern="dd/MM/yyyy"
+										timeZone="America/Guayaquil" />
+								</p:outputLabel>
+							</p:column>
+
+							<p:column headerText="FECHA DE PAGO">
+								<p:outputLabel value="#{entrada.fechapago}">
+									<f:convertDateTime pattern="dd/MM/yyyy"
+										timeZone="America/Guayaquil" />
+								</p:outputLabel>
+							</p:column>
+
+							<p:column headerText="PAGADO"
+								style="text-align:center;width: 50px;">
+								<p:selectBooleanCheckbox disabled="true"
+									value="#{entrada.pagado}" />
+							</p:column>
+
+							<p:column headerText="MONTO">
+								#{entrada.cuota}
+							</p:column>
+
+						</p:dataTable>
+
+					</p:tab>
+
+					<p:tab
+						title="CUOTAS - TOTAL(#{listadoEgresoClienteBean.numeroCuotas.cuotasTotalCredito}) - PAGADAS(#{listadoEgresoClienteBean.numeroCuotas.cuotasPagadasCredito}) - POR PAGAR(#{listadoEgresoClienteBean.numeroCuotas.cuotasPorPagarCredito}) - VENCIDAS(#{listadoEgresoClienteBean.numeroCuotas.cuotasVencidasCredito}) - NORMALES(#{listadoEgresoClienteBean.numeroCuotas.cuotasNormalesCredito})">
+
+						<p:dataTable id="tablaCuotas" var="detalleCredito"
+							value="#{listadoEgresoClienteBean.egreso.credito.detallecreditos}"
+							paginator="true" rows="6"
+							emptyMessage="No hay informacion disponible."
+							paginatorPosition="bottom"
+							rowStyleClass="#{detalleCredito.pagado eq true ? 'activo' : 
+											(detalleCredito.fechalimite lt listadoEgresoClienteBean.fechaActual ? 'desactivo' : 'normal')}">
+
+							<p:column headerText="GESTIONAR"
+								style="text-align:center;width: 50px;">
+								<p:commandButton id="btnPagoCredito" update=":formPagoCuota"
+									oncomplete="dialogoPagoCredito.show()" icon="ui-icon-bookmark"
+									action="#{listadoEgresoClienteBean.calcularCuota}">
+									<f:setPropertyActionListener value="#{detalleCredito}"
+										target="#{listadoEgresoClienteBean.detallesCredito}" />
+								</p:commandButton>
+							</p:column>
+
+							<p:column headerText="ORDEN">
+								#{detalleCredito.orden}
+							</p:column>
+
+							<p:column headerText="FECHA LIMITE">
+								<p:outputLabel value="#{detalleCredito.fechalimite}">
+									<f:convertDateTime pattern="dd/MM/yyyy"
+										timeZone="America/Guayaquil" />
+								</p:outputLabel>
+							</p:column>
+
+							<p:column headerText="FECHA DE PAGO">
+								<p:outputLabel value="#{detalleCredito.fechapago}">
+									<f:convertDateTime pattern="dd/MM/yyyy"
+										timeZone="America/Guayaquil" />
+								</p:outputLabel>
+							</p:column>
+
+							<p:column headerText="PAGADO"
+								style="text-align:center;width: 50px;">
+								<p:selectBooleanCheckbox disabled="true"
+									value="#{detalleCredito.pagado}" />
+							</p:column>
+
+							<p:column headerText="CUOTA">
+								#{detalleCredito.cuota}
+							</p:column>
+
+						</p:dataTable>
+
+					</p:tab>
+
+					<p:tab title="GARANTE">
+
+						<p:dataTable id="tablaGarantes" var="garantes"
+							value="#{listadoEgresoClienteBean.garantes}" rows="10"
+							emptyMessage="#{msg['lbl.mensajeTabla']}">
+
+							<p:column headerText="GESTIONAR"
+								style="text-align:center;width: 100px;">
+								<p:commandButton id="btnMostrar" update=":formMostrarGarante"
+									oncomplete="dialogoGaranteMostrar.show()"
+									icon="#{msg['iconoMostrar']}">
+									<f:setPropertyActionListener value="#{garantes}"
+										target="#{listadoEgresoClienteBean.garante}" />
+								</p:commandButton>
+
+							</p:column>
+
+							<p:column headerText="CEDULA" style="text-align:center"
+								width="10">
+						#{garantes.cedula}
+					</p:column>
+
+							<p:column headerText="NOMBRE/APELLIDOS"
+								style="text-align:center;width: 50px;">
+						#{garantes.nombre} #{garantes.apellido}
+					</p:column>
+
+							<p:column headerText="DIRECCION" style="text-align:center"
+								width="100">
+						#{garantes.direccion}
+					</p:column>
+
+							<p:column headerText="REFERENCIA" style="text-align:center;"
+								width="100">
+						#{garantes.referencia}
+					</p:column>
+
+						</p:dataTable>
+
+					</p:tab>
+
+				</p:accordionPanel>
+			</h:form>
+
+		</p:dialog>
+
+		<p:dialog header="ENTRADA" widgetVar="dialogoPagoEntrada"
+			resizable="false" modal="false" showEffect="clip" hideEffect="fold"
+			id="dialogoPagoEntrada">
+
+			<h:form id="formPagoEntrada">
+
+				<h:panelGrid columns="2" cellpadding="2">
+
+					<p:outputLabel value="CUOTA" />
+					<p:outputLabel value="#{listadoEgresoClienteBean.entrada.cuota}" />
+
+					<p:outputLabel value="SALDO" />
+					<p:outputLabel
+						value="#{listadoEgresoClienteBean.cantidadesEntradaReporte.saldoEntrada}" />
+
+					<p:outputLabel value="MORA" />
+					<p:outputLabel
+						value="#{listadoEgresoClienteBean.cantidadesEntradaReporte.moraEntrada}" />
+
+					<p:outputLabel value="TOTAL" />
+					<p:outputLabel
+						value="#{listadoEgresoClienteBean.cantidadesEntradaReporte.totalEntrada}" />
+
+					<p:outputLabel value="FECHA LIMITE" />
+					<p:outputLabel
+						value="#{listadoEgresoClienteBean.entrada.fechalimite}" />
+
+				</h:panelGrid>
+
+				<p:dataTable id="tablaPagosEntrada" var="pagoEntrada"
+					value="#{listadoEgresoClienteBean.entrada.pagoentradas}">
+
+					<p:column headerText="TIPO DE PAGO">
+							#{pagoEntrada.tipopago.nombre}		
+						</p:column>
+
+					<p:column headerText="FECHA">
+						<p:outputLabel value="#{pagoEntrada.fechapago}">
+							<f:convertDateTime pattern="dd/MM/yyyy"
+								timeZone="America/Guayaquil" />
+						</p:outputLabel>
+					</p:column>
+
+					<p:column headerText="CUOTA">
+							#{pagoEntrada.cuota}		
+						</p:column>
+
+				</p:dataTable>
+
+			</h:form>
+		</p:dialog>
+
+		<p:dialog header="CREDITO" widgetVar="dialogoPagoCredito"
+			resizable="false" modal="false" showEffect="clip" hideEffect="fold"
+			id="dialogoPagoCredito">
+
+			<h:form id="formPagoCuota">
+
+				<h:panelGrid columns="2" cellpadding="2">
+
+					<p:outputLabel value="ORDEN" />
+					<p:outputLabel
+						value="#{listadoEgresoClienteBean.detallesCredito.orden}" />
+
+					<p:outputLabel value="CUOTA" />
+					<p:outputLabel
+						value="#{listadoEgresoClienteBean.detallesCredito.cuota}" />
+
+					<p:outputLabel value="SALDO" />
+					<p:outputLabel
+						value="#{listadoEgresoClienteBean.cantidadesCreditoReporte.saldoCredito}" />
+
+					<p:outputLabel value="MORA" />
+					<p:outputLabel
+						value="#{listadoEgresoClienteBean.cantidadesCreditoReporte.moraCredito}" />
+
+					<p:outputLabel value="TOTAL" />
+					<p:outputLabel
+						value="#{listadoEgresoClienteBean.cantidadesCreditoReporte.totalCredito}" />
+
+					<p:outputLabel value="FECHA LIMITE" />
+					<p:outputLabel
+						value="#{listadoEgresoClienteBean.detallesCredito.fechalimite}" />
+
+				</h:panelGrid>
+
+				<p:dataTable id="tablaPagosCredito" var="pagoCredito"
+					value="#{listadoEgresoClienteBean.detallesCredito.pagocreditos}">
+
+					<p:column headerText="TIPO DE PAGO">
+							#{pagoCredito.tipopago.nombre}		
+						</p:column>
+
+					<p:column headerText="FECHA">
+						<p:outputLabel value="#{pagoCredito.fechapago}">
+							<f:convertDateTime pattern="dd/MM/yyyy"
+								timeZone="America/Guayaquil" />
+						</p:outputLabel>
+					</p:column>
+
+					<p:column headerText="CUOTA">
+							#{pagoCredito.cuota}		
+						</p:column>
+
+				</p:dataTable>
+
+			</h:form>
+		</p:dialog>
+
+
+		<p:dialog header="MOSTRAR GARANTE" widgetVar="dialogoGaranteMostrar"
+			resizable="false" modal="false" showEffect="clip" hideEffect="fold"
+			id="dialogoMostrarGarante" width="600px">
+
+			<h:form id="formMostrarGarante">
+
+				<h:panelGrid id="panelMostrar" columns="2" cellpadding="2">
+					<h:panelGrid columns="2" cellpadding="2" width="350">
+
+						<h:outputText value="CEDULA" style="font-weight:bold" />
+						<h:outputText value="#{listadoEgresoClienteBean.garante.cedula}" />
+
+						<h:outputText value="APELLIDOS:" style="font-weight:bold" />
+						<h:outputText value="#{listadoEgresoClienteBean.garante.apellido}" />
+
+						<h:outputText value="NOMBRES:" style="font-weight:bold" />
+						<h:outputText value="#{listadoEgresoClienteBean.garante.nombre}" />
+
+						<h:outputText value="FECHA NACIMIENTO:" style="font-weight:bold" />
+						<h:outputText
+							value="#{listadoEgresoClienteBean.garante.fechanacimiento}" />
+
+						<h:outputText value="PROVINCIA:" style="font-weight:bold" />
+						<h:outputText
+							value="#{listadoEgresoClienteBean.garante.ciudad.provincia.nombre}" />
+
+						<h:outputText value="CIUDAD:" style="font-weight:bold" />
+						<h:outputText
+							value="#{listadoEgresoClienteBean.garante.ciudad.nombre}" />
+
+						<h:outputText value="DIRECCION:" style="font-weight:bold" />
+						<h:outputText
+							value="#{listadoEgresoClienteBean.garante.direccion}" />
+
+						<h:outputText value="REFERENCIA:" style="font-weight:bold" />
+						<h:outputText
+							value="#{listadoEgresoClienteBean.garante.referencia}" />
+
+					</h:panelGrid>
+					<h:panelGrid columns="1" cellpadding="2">
+
+						<h:outputText value="TELEFONOS:" style="font-weight:bold" />
+						<p:dataTable var="telefono"
+							emptyMessage="#{msg['lbl.mensajeTabla']}"
+							value="#{listadoEgresoClienteBean.garante.telefonopersonas}">
+
+							<p:column headerText="TELEFONOS">
+							#{telefono.telefono}		
+						</p:column>
+							<p:column headerText="REFERENCIA">
+							#{telefono.referencia}		
+						</p:column>
+
+						</p:dataTable>
+
+						<h:outputText value="E-MAILS:" style="font-weight:bold" />
+						<p:dataTable var="email" emptyMessage="#{msg['lbl.mensajeTabla']}"
+							value="#{listadoEgresoClienteBean.garante.emailpersonas}">
+
+							<p:column headerText="E-MAILS">
+									#{email.email}		
+								</p:column>
+
+						</p:dataTable>
+					</h:panelGrid>
+
+				</h:panelGrid>
+			</h:form>
+		</p:dialog>
+	</ui:define>
+</ui:composition>
+</html>

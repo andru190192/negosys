@@ -1,0 +1,313 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:p="http://primefaces.org/ui">
+<ui:composition template="/templates/layout/masterLayout.xhtml">
+	<ui:define name="title">
+			LISTADO DE FACTURAS
+		</ui:define>
+	<ui:define name="content">
+		<p:growl id="mensaje" showDetail="true" life="7000" />
+		<p:panel id="panel" header="LISTADO DE FACTURAS">
+			<h:form id="busquedaTabla">
+				<h:panelGrid columns="3">
+					<p:outputLabel value="ESTADO FACTURA:" />
+					<p:selectOneMenu styleClass="w180"
+						value="#{listadoFacturaBean.criterioBusquedaEstado}" filter="true"
+						filterMatchMode="contains">
+						<f:selectItem itemValue="0" itemLabel="ESCOJA UN ESTADO" />
+						<f:selectItem itemValue="1" itemLabel="PAGADAS" />
+						<f:selectItem itemValue="2" itemLabel="NO PAGADAS" />
+						<f:selectItem itemValue="3" itemLabel="ANULADAS" />
+					</p:selectOneMenu>
+					<h:outputText />
+					<p:outputLabel value="FECHA EMISIÓN" />
+					<p:calendar styleClass="w100"
+						value="#{listadoFacturaBean.criterioBusquedaFechaDocumento}"
+						navigator="true" />
+					<h:outputText />
+					<h:outputText value="CÉDULA / APELLIDOS / NOMBRES " />
+					<p:inputText value="#{listadoFacturaBean.criterioBusquedaCliente}"
+						onblur="this.value=this.value.toUpperCase();" styleClass="w100" />
+					<h:outputText />
+					<h:outputText value="# FACTURA" />
+					<p:inputText styleClass="w100"
+						value="#{listadoFacturaBean.criterioBusquedaNumeroFactura}"
+						onblur="this.value=this.value.toUpperCase();" />
+					<p:commandButton
+						update="busquedaTabla, :formDataTable:tablaListadoFacturas, :mensaje"
+						icon="#{msg['iconoBuscar']}"
+						actionListener="#{listadoFacturaBean.obtener}" />
+				</h:panelGrid>
+			</h:form>
+			<h:form id="formDataTable">
+				<p:dataTable id="tablaListadoFacturas" var="factura"
+					styleClass="estiloFilasPares"
+					value="#{listadoFacturaBean.listaFacturas}" paginator="true"
+					rows="10" rowsPerPageTemplate="5,10,15"
+					paginatorTemplate="{RowsPerPageDropdown} {FirstPageLink} {PreviousPageLink} {CurrentPageReport} {NextPageLink} {LastPageLink}"
+					paginatorPosition="bottom"
+					emptyMessage="#{msg['lbl.mensajeTabla']}">
+					<f:facet name="header">
+						<p:tooltip for="btnNuevo" value="#{msg['lbl.insertar']}" />
+						<p:commandButton id="btnNuevo"
+							action="#{listadoFacturaBean.redirecionar}" icon="ui-icon-plus" />
+					</f:facet>
+					<p:column headerText="GESTIONAR" styleClass="centrar">
+						<p:tooltip value="MOSTRAR" for="btnMostrar" />
+						<p:commandButton id="btnMostrar" update=":formMostrar"
+							oncomplete="PF('facturaDialogoMostrar').show()"
+							icon="ui-icon-newwin"
+							action="#{listadoFacturaBean.generarListaDetalle}">
+							<f:setPropertyActionListener value="#{factura}"
+								target="#{listadoFacturaBean.factura}" />
+						</p:commandButton>
+						<p:tooltip value="IMPRIMIR" for="btnImprimir" />
+						<p:commandButton id="btnImprimir" icon="ui-icon-print"
+							action="#{listadoFacturaBean.imprimirFactura}" ajax="false"
+							disabled="#{factura.activo eq true ? false:true}">
+							<f:setPropertyActionListener value="#{factura}"
+								target="#{listadoFacturaBean.factura}" />
+						</p:commandButton>
+						<p:tooltip value="NOTA CRÉDITO" for="btnDevolucion" />
+						<p:commandButton id="btnDevolucion" icon="ui-icon-refresh"
+							oncomplete="PF('facturaDevolucion').show()"
+							disabled="#{factura.activo eq false || factura.notaCredito ne null ? true:false}">
+							<f:setPropertyActionListener value="#{factura}"
+								target="#{listadoFacturaBean.factura}" />
+						</p:commandButton>
+						<p:tooltip value="CUADRE FACTURA" for="btnCuadreFactura" />
+						<p:commandButton id="btnCuadreFactura" icon="ui-icon-pencil"
+							action="#{listadoFacturaBean.cuadreFactura(factura)}"
+							disabled="#{factura.activo eq false || factura.fechaCierre ne null || factura.credito ne null ? true:false}" />
+						<p:tooltip for="btnXML" value="GENERAR XML" />
+						<p:commandButton id="btnXML"
+							action="#{listadoFacturaBean.generarXML}"
+							icon="ui-icon-carat-2-e-w">
+							<f:setPropertyActionListener value="#{factura}"
+								target="#{listadoFacturaBean.factura}" />
+						</p:commandButton>
+						<p:tooltip value="ANULAR" for="btnAnular" />
+						<p:commandButton id="btnAnular"
+							oncomplete="PF('anularEgreso').show()" icon="ui-icon-close"
+							update=":fromAnular"
+							disabled="#{factura.activo eq false || factura.credito ne null || factura.notaCredito ne null ? true:false}">
+							<f:setPropertyActionListener value="#{factura}"
+								target="#{listadoFacturaBean.factura}" />
+						</p:commandButton>
+					</p:column>
+					<p:column headerText="# FACTURA" width="10%">  
+            			#{factura.establecimiento}-#{factura.puntoEmision}-#{factura.secuencia}
+        			</p:column>
+					<p:column headerText="FACTURA NOMBRE" width="20%">  
+            			#{factura.clienteFactura.persona.cedula} - #{factura.clienteFactura.persona.apellido} #{factura.clienteFactura.persona.nombre}
+        			</p:column>
+					<p:column headerText="CAJERO">  
+            			#{factura.cajero.empleado.persona.apellido} #{factura.cajero.empleado.persona.nombre}
+        			</p:column>
+					<p:column headerText="VENDEDOR">  
+            			#{factura.vendedor.empleado.persona.apellido} #{factura.vendedor.empleado.persona.nombre}
+        			</p:column>
+					<p:column headerText="FEC. EMISIÓN" width="10%"
+						styleClass="centrar">
+						<p:outputLabel value="#{factura.fechaInicio}">
+							<f:convertDateTime pattern="dd/MM/yyyy"
+								timeZone="America/Guayaquil" />
+						</p:outputLabel>
+					</p:column>
+					<p:column headerText="FEC. PAGO" width="10%" styleClass="centrar">
+						<p:outputLabel value="#{factura.fechaCierre}">
+							<f:convertDateTime pattern="dd/MM/yyyy"
+								timeZone="America/Guayaquil" />
+						</p:outputLabel>
+					</p:column>
+					<p:column headerText="ANULADA" width="5%" styleClass="centrar">
+						<p:selectBooleanCheckbox disabled="true"
+							value="#{!factura.activo}" />
+					</p:column>
+				</p:dataTable>
+			</h:form>
+		</p:panel>
+		<p:dialog header="DEVOLUCION" widgetVar="facturaDevolucion"
+			resizable="false" modal="false" showEffect="clip" hideEffect="fold"
+			id="dialogoGenerarDevolucion">
+			<h:form id="formAnular">
+				<h:panelGrid columns="1" cellpadding="1">
+					<h:panelGrid columns="2" cellpadding="1">
+						<h:outputLabel value="USUARIO: " />
+						<p:inputText value="#{listadoFacturaBean.login}" required="true"
+							requiredMessage="INGRESE EL USUARIO" />
+						<h:outputLabel value="CLAVE: " />
+						<p:password value="#{listadoFacturaBean.pass}" required="true"
+							requiredMessage="INGRESE LA CLAVE" />
+					</h:panelGrid>
+					<f:facet name="footer">
+						<p:commandButton value="SI"
+							actionListener="#{listadoFacturaBean.convertirDevolucion}"
+							update="formAnular, :formDataTable, :mensaje"
+							oncomplete="PF('facturaDevolucion').hide()" icon="ui-icon-check" />
+						<p:commandButton value="NO"
+							oncomplete="PF('facturaDevolucion').hide()" icon="ui-icon-close" />
+					</f:facet>
+				</h:panelGrid>
+			</h:form>
+		</p:dialog>
+		<p:dialog header="MOSTRAR FACTURA" widgetVar="facturaDialogoMostrar"
+			resizable="false" modal="false" showEffect="clip" hideEffect="fold"
+			id="dialogoMostrar" width="55%">
+			<h:form id="formMostrar">
+				<h:panelGrid id="panelMostrar" columns="3" width="100%"
+					columnClasses="x,b">
+					<h:panelGrid columns="2" cellspacing="5">
+						<h:outputText value="# FACTURA"
+							styleClass="negrita colorLetraAzul" />
+						<h:outputText
+							value="#{listadoFacturaBean.factura.establecimiento}-#{listadoFacturaBean.factura.puntoEmision}-#{listadoFacturaBean.factura.secuencia}" />
+						<h:outputText value="FECHA EMISIÓN"
+							styleClass="negrita colorLetraAzul" />
+						<h:outputText value="#{listadoFacturaBean.factura.fechaInicio}">
+							<f:convertDateTime pattern="dd/MM/yyyy"
+								timeZone="America/Guayaquil" />
+						</h:outputText>
+						<h:outputText value="FECHA PAGO"
+							styleClass="negrita colorLetraAzul" />
+						<h:outputText value="#{listadoFacturaBean.factura.fechaCierre}">
+							<f:convertDateTime pattern="dd/MM/yyyy"
+								timeZone="America/Guayaquil" />
+						</h:outputText>
+						<h:outputText value="CAJERO" styleClass="negrita colorLetraAzul" />
+						<h:outputText
+							value="#{listadoFacturaBean.factura.cajero.empleado.persona.cedula} - #{listadoFacturaBean.factura.cajero.empleado.persona.apellido} #{listadoFacturaBean.factura.cajero.empleado.persona.nombre}" />
+						<h:outputText value="VENDEDOR" styleClass="negrita colorLetraAzul" />
+						<h:outputText
+							value="#{listadoFacturaBean.factura.vendedor.empleado.persona.cedula} - #{listadoFacturaBean.factura.vendedor.empleado.persona.apellido} #{listadoFacturaBean.factura.vendedor.empleado.persona.nombre}" />
+						<h:outputText value="CLIENTE COMPRA"
+							styleClass="negrita colorLetraAzul" />
+						<h:outputText
+							value="#{listadoFacturaBean.factura.cliente.persona.cedula} - #{listadoFacturaBean.factura.cliente.persona.apellido} #{listadoFacturaBean.factura.cliente.persona.nombre}" />
+						<h:outputText value="FACTURA NOMBRE"
+							styleClass="negrita colorLetraAzul" />
+						<h:outputText
+							value="#{listadoFacturaBean.factura.clienteFactura.persona.cedula} - #{listadoFacturaBean.factura.clienteFactura.persona.apellido} #{listadoFacturaBean.factura.clienteFactura.persona.nombre}" />
+						<h:outputText value="A" styleClass="ocultar" />
+						<h:outputText value="A" styleClass="ocultar" />
+					</h:panelGrid>
+					<h:panelGrid columns="2" cellpadding="0" cellspacing="0"
+						styleClass="centrarDerecha">
+						<h:panelGrid columns="2" cellpadding="0" styleClass="m-r10px">
+							<h:outputText styleClass="negrita letrasAzules"
+								value="SUBTOTAL SIN IMPUESTO (1=2+3+4+5):" />
+							<p:outputLabel
+								value="#{listadoFacturaBean.cantidadFactura.stSinImpuesto}" />
+							<h:outputText styleClass="negrita letrasAzules"
+								value="SUBTOTAL 12% (2):" />
+							<p:outputLabel value="#{listadoFacturaBean.cantidadFactura.st12}" />
+							<h:outputText styleClass="negrita letrasAzules"
+								value="SUBTOTAL 0% (3):" />
+							<p:outputLabel value="#{listadoFacturaBean.cantidadFactura.st0}" />
+							<h:outputText styleClass="negrita letrasAzules"
+								value="SUBTOTAL NO OBJETO DE IVA (4):" />
+							<p:outputLabel
+								value="#{listadoFacturaBean.cantidadFactura.stNoObjetoIva}" />
+							<h:outputText styleClass="negrita letrasAzules"
+								value="SUBTOTAL EXENTO DE IVA (5):" />
+							<p:outputLabel
+								value="#{listadoFacturaBean.cantidadFactura.stExentoIva}" />
+						</h:panelGrid>
+						<h:panelGrid columns="2" cellpadding="0">
+							<h:outputText styleClass="negrita letrasAzules"
+								value="TOTAL DESCUENTO (6):" />
+							<p:outputLabel
+								value="#{listadoFacturaBean.cantidadFactura.tDescuentoProducto}" />
+							<h:outputText styleClass="negrita letrasAzules"
+								value="VALOR ICE (7):" />
+							<p:outputLabel
+								value="#{listadoFacturaBean.cantidadFactura.valorIce}" />
+							<h:outputText styleClass="negrita letrasAzules"
+								value="VALOR IRBPNR(8):" />
+							<p:outputLabel
+								value="#{listadoFacturaBean.cantidadFactura.valorIRBPNR}" />
+							<h:outputText styleClass="negrita letrasAzules"
+								value="IVA 12% (9=(2+7)*12%):" />
+							<p:outputLabel
+								value="#{listadoFacturaBean.cantidadFactura.iva12}" />
+							<h:outputText styleClass="negrita letrasAzules"
+								value="PROPINA (10):" />
+							<p:outputLabel
+								value="#{listadoFacturaBean.cantidadFactura.propina}" />
+						</h:panelGrid>
+					</h:panelGrid>
+				</h:panelGrid>
+				<p:dataTable id="tablaDetalleFacturas" var="detalleEgreso"
+					value="#{listadoFacturaBean.listaFacturasDetalle}"
+					emptyMessage="No hay informacion
+					disponible."
+					scrollable="true" scrollHeight="120">
+					<p:column headerText="IMP" styleClass="centrar" width="5%">
+						<h:outputLabel id="impuesto" value="#{detalleEgreso.impuesto}"
+							styleClass="w100" />
+					</p:column>
+					<p:column headerText="COD" styleClass="centrar" width="5%">
+							 	#{detalleEgreso.codigo}
+						</p:column>
+					<p:column headerText="DESCRIPCION">
+						#{detalleEgreso.descripcion}
+					</p:column>
+					<p:column headerText="CAN" width="5%" styleClass="centrar">  
+            				#{detalleEgreso.cantidad}  
+        				</p:column>
+					<p:column headerText="UNI" width="10%" styleClass="centrar">  
+						#{detalleEgreso.nombreCantidad}
+					</p:column>
+					<p:column headerText="P. UNIT." styleClass="centrarDerecha"
+						width="10%">  
+            				#{detalleEgreso.precioUnitVenta}
+        				</p:column>
+					<p:column headerText="DESC" styleClass="centrarDerecha" width="10%">  
+            				#{detalleEgreso.descuentoDolares}  
+        				</p:column>
+					<p:column headerText="IMPORTE" styleClass="centrarDerecha"
+						width="10%">  
+            				#{detalleEgreso.importe}  
+        				</p:column>
+					<p:columnGroup type="footer">
+						<p:row>
+							<p:column colspan="7" styleClass="centrarDereha f-z15px negrita"
+								footerText="TOTAL" />
+							<p:column
+								footerText="#{listadoFacturaBean.cantidadFactura.valorTotal}"
+								styleClass="centrarDerecha f-z15px negrita" />
+						</p:row>
+					</p:columnGroup>
+				</p:dataTable>
+			</h:form>
+		</p:dialog>
+		<p:dialog header="ANULAR" widgetVar="anularEgreso" resizable="false"
+			modal="false" showEffect="clip" hideEffect="fold" id="dialogoAnular">
+			<h:form id="fromAnular">
+				<h:panelGrid columns="1" cellpadding="1">
+					<h:panelGrid columns="2" cellpadding="1">
+						<h:outputLabel value="USUARIO: " />
+						<p:inputText value="#{listadoFacturaBean.login}" required="true"
+							requiredMessage="INGRESE EL USUARIO" />
+						<h:outputLabel value="CLAVE: " />
+						<p:password value="#{listadoFacturaBean.pass}" required="true"
+							requiredMessage="INGRESE LA CLAVE" />
+					</h:panelGrid>
+					<f:facet name="footer">
+						<p:commandButton value="SI"
+							actionListener="#{listadoFacturaBean.eliminar}"
+							update="fromAnular, :formDataTable, :mensaje"
+							oncomplete="PF('anularEgreso').hide()" icon="ui-icon-check" />
+						<p:commandButton value="NO" oncomplete="PF('anularEgreso').hide()"
+							icon="ui-icon-close" />
+					</f:facet>
+				</h:panelGrid>
+			</h:form>
+		</p:dialog>
+	</ui:define>
+</ui:composition>
+</html>

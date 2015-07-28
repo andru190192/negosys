@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:p="http://primefaces.org/ui">
+<ui:composition template="/templates/layout/masterLayout.xhtml">
+	<ui:define name="title">
+           FIRMAR COMPROBANTES
+        </ui:define>
+	<ui:define name="content">
+		<p:growl id="mensaje" showDetail="true" life="7000" />
+		<p:panel id="panel" header="LISTADO DE DOCUMENTOS GENERADOS">
+			<h:form id="formDataTable">
+				<p:dataTable id="tablaDocumentosGenerados" var="docGenerados"
+					scrollable="true" styleClass="ui-datatable-scrollable-body"
+					value="#{firmarComprobantesBean.listaDocumentosGenerados}"
+					paginator="true" rows="10"
+					paginatorTemplate="{RowsPerPageDropdown} {FirstPageLink} {PreviousPageLink} {CurrentPageReport} {NextPageLink} {LastPageLink}"
+					rowsPerPageTemplate="5,10,15" paginatorPosition="bottom"
+					emptyMessage="#{msg['lbl.mensajeTabla']}">
+					<f:facet name="header">
+						<h:panelGrid columns="3">
+							<p:commandButton value="OBTENER"
+								update=":formDataTable, :mensaje" icon="ui-icon-refresh"
+								actionListener="#{firmarComprobantesBean.obtener}" />
+							<p:commandButton value="FIRMAR TODOS"
+								update=":formDataTable, :mensaje" icon="ui-icon-pencil"
+								actionListener="#{firmarComprobantesBean.firmarTodos}" />
+						</h:panelGrid>
+					</f:facet>
+					<p:column headerText="#{msg['lbl.gestionar']}" styleClass="centrar">
+						<p:tooltip for="btnFirmar" value="FIRMAR" />
+						<p:commandButton id="btnFirmar" update=":mensaje, :formDataTable"
+							action="#{firmarComprobantesBean.firmar(docGenerados)}"
+							icon="ui-icon-pencil" />
+						<p:tooltip for="btnMostrar" value="MOSTRAR" />
+						<p:commandButton id="btnMostrar"
+							update=":mensaje, :formDocumentoXML"
+							icon="#{msg['iconoMostrar']}"
+							oncomplete="PF('documentoXML').show()">
+							<f:setPropertyActionListener value="#{docGenerados}"
+								target="#{firmarComprobantesBean.documentoElectronico}" />
+						</p:commandButton>
+					</p:column>
+					<p:column headerText="NOMBRE DOCUMENTO"
+						filterBy="#{docGenerados.nombreDocumento}"
+						filterMatchMode="contains" styleClass="centrar">  
+                            #{docGenerados.nombreDocumento}  
+                        </p:column>
+					<p:column headerText="TIPO DOCUMENTO"
+						filterBy="#{docGenerados.nombreDocumento}"
+						filterMatchMode="contains" styleClass="centrar">  
+                            #{docGenerados.tipoDocumento}  
+                        </p:column>
+				</p:dataTable>
+			</h:form>
+		</p:panel>
+		<p:dialog header="XML" widgetVar="documentoXML"
+			id="dialogoDocumentoXML" resizable="false" width="50%">
+			<h:form id="formDocumentoXML">
+				<p:inputTextarea
+					value="#{firmarComprobantesBean.documentoElectronico.documento}"
+					styleClass="w100 height450px scroll-y" readonly="true" />
+			</h:form>
+		</p:dialog>
+	</ui:define>
+</ui:composition>
+</html>

@@ -1,0 +1,123 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:p="http://primefaces.org/ui">
+<ui:composition template="/templates/layout/masterLayout.xhtml">
+	<ui:define name="title">
+    	REPORTES
+   	</ui:define>
+	<ui:define name="content">
+		<p:growl showDetail="true" life="7000" showSummary="false" />
+		<p:panel header="REPORTES">
+			<div class="row reporteProducto mb">
+				<div class="col-xs-12 col-sm-3 col-md-3 col-lg-3">
+					<h:form>
+						<h:panelGrid columns="1" styleClass="centrar">
+							<p:graphicImage value="../../resources/imagenes/r4.svg" />
+							<p:commandButton
+								actionListener="#{inventarioReportes.reporteConsolidadoInversionBodegas}"
+								value="CONSOLIDADO INVERSION DE LOCALES" ajax="false" />
+						</h:panelGrid>
+					</h:form>
+				</div>
+				<div class="col-xs-12 col-sm-3 col-md-3 col-lg-3">
+					<h:form>
+						<h:panelGrid columns="1" styleClass="centrar">
+							<p:graphicImage value="../../resources/imagenes/r4.svg" />
+							<p:selectOneMenu value="#{inventarioReportes.localId}"
+								required="true" requiredMessage="SELECCIONE UN LOCAL">
+								<f:selectItem itemLabel="ESCOJA LOCAL" />
+								<f:selectItems value="#{inventarioReportes.listaLocales}"
+									var="local" itemValue="#{local.id}" itemLabel="#{local.nombre}" />
+							</p:selectOneMenu>
+							<p:commandButton value="PRODUCTOS A PEDIR" ajax="false"
+								actionListener="#{inventarioReportes.reportePedidoStockProducto}" />
+						</h:panelGrid>
+					</h:form>
+				</div>
+				<div class="col-xs-12 col-sm-3 col-md-3 col-lg-3">
+					<h:form>
+						<h:panelGrid columns="1" styleClass="centrar">
+							<p:graphicImage value="../../resources/imagenes/r4.svg" />
+							<p:commandButton ajax="false" value="LISTA / PRECIOS"
+								actionListener="#{inventarioReportes.reporteListaPrecioProducto}" />
+						</h:panelGrid>
+					</h:form>
+				</div>
+				<div class="col-xs-12 col-sm-3 col-md-3 col-lg-3">
+					<h:form>
+						<h:panelGrid columns="1" styleClass="centrar">
+							<p:graphicImage value="../../resources/imagenes/r4.svg" />
+							<p:selectOneMenu value="#{inventarioReportes.localId}"
+								required="true" requiredMessage="SELECCIONE UN LOCAL">
+								<f:selectItem itemLabel="ESCOJA LOCAL" />
+								<f:selectItems value="#{inventarioReportes.listaLocales}"
+									var="local" itemValue="#{local.id}" itemLabel="#{local.nombre}" />
+							</p:selectOneMenu>
+							<p:commandButton value="INVERSION DE LOCAL X PRODUCTOS"
+								ajax="false"
+								actionListener="#{inventarioReportes.reporteInversionBodegaPorProducto}" />
+						</h:panelGrid>
+					</h:form>
+				</div>
+			</div>
+			<div class="row reporteProducto mb">
+				<div class="col-xs-12 col-sm-3 col-md-3 col-lg-3">
+					<h:form>
+						<h:panelGrid columns="1" styleClass="centrar">
+							<p:graphicImage value="../../resources/imagenes/r4.svg" />
+							<p:selectOneMenu value="#{inventarioReportes.localId}"
+								required="true" requiredMessage="SELECCIONE UN LOCAL">
+								<f:selectItem itemLabel="ESCOJA LOCAL" />
+								<f:selectItems value="#{inventarioReportes.listaLocales}"
+									var="local" itemValue="#{local.id}" itemLabel="#{local.nombre}" />
+							</p:selectOneMenu>
+							<p:commandButton value="CONTROL DE INVENTARIO" ajax="false"
+								actionListener="#{inventarioReportes.reporteStockProductosPorBodega}" />
+						</h:panelGrid>
+					</h:form>
+				</div>
+				<div class="col-xs-12 col-sm-3 col-md-3 col-lg-3">
+					<h:form>
+						<h:panelGrid columns="1" styleClass="centrar">
+							<p:graphicImage value="../../resources/imagenes/r4.svg" />
+							<p:commandButton
+								actionListener="#{inventarioReportes.reporteProductoGrupo}"
+								value="PRODUCTOS X GRUPO" ajax="false" />
+						</h:panelGrid>
+					</h:form>
+				</div>
+				<div class="col-xs-12 col-sm-3 col-md-3 col-lg-3">
+					<h:form>
+						<h:panelGrid columns="1" styleClass="centrar">
+							<p:graphicImage value="../../resources/imagenes/r4.svg" />
+							<h:panelGrid columns="2" styleClass="centrar">
+								<h:outputText value="FECHA INICIO:" />
+								<p:calendar value="#{inventarioReportes.fechaInicioRetenciones}"
+									required="true" requiredMessage="INGRESE UNA FECHA DE INICIO" />
+								<h:outputText value="FECHA FIN:" />
+								<p:calendar value="#{inventarioReportes.fechaFinRetenciones}"
+									required="true" requiredMessage="INGRESE UNA FECHA DE CORTE" />
+								<h:outputText value="PROVEEDORES:" />
+								<p:selectOneMenu value="#{inventarioReportes.proveedorId}"
+									styleClass="w100" filter="true" filterMatchMode="contains">
+									<f:selectItem itemLabel="TODOS" itemValue="0" />
+									<f:selectItems value="#{inventarioReportes.listaProveedores}"
+										var="persona" itemValue="#{persona.proveedor.id}"
+										itemLabel="#{persona.proveedor.nombreComercial}" />
+								</p:selectOneMenu>
+							</h:panelGrid>
+							<p:commandButton
+								actionListener="#{inventarioReportes.reporteRetenciones}"
+								value="RETENCIONES" ajax="false" />
+						</h:panelGrid>
+					</h:form>
+				</div>
+			</div>
+		</p:panel>
+	</ui:define>
+</ui:composition>
+</html>

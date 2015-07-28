@@ -1,0 +1,1590 @@
+body {
+	font-family: Arial, "Trebuchet MS", Verdana, sans-serif;
+	font-size: 12px;
+	padding: 0 !important;
+	margin: 0;
+}
+
+.mayuscula {
+	text-transform: uppercase !important;
+}
+
+.mostrarLeyendaBotonBoolean {
+	width: 60px !important;
+	color: black !important;
+	background: none !important;
+	border: none !important;
+	opacity: 1 !important;
+}
+
+.contenidoPago h2 {
+	font-size: 25px !important;
+}
+
+.margin5px {
+	margin: 5px !important;
+}
+
+.m-r10px {
+	margin-right: 10px !important;
+}
+
+.m-r5px {
+	margin-right: 5px !important;
+}
+
+.w300 {
+	width: 300px !important;
+}
+
+.w350 {
+	width: 350px !important;
+}
+
+.w200 {
+	width: 200px !important;
+}
+
+.w80px {
+	width: 80px !important;
+}
+
+.w845px {
+	width: 845px !important;
+}
+
+.w94 {
+	width: 94% !important;
+}
+
+.w94px {
+	width: 94px !important;
+}
+
+.w90px {
+	width: 90px !important;
+}
+
+.w95px {
+	width: 95px !important;
+}
+
+.w60 {
+	width: 60px !important;
+}
+
+.w445px input {
+	width: 445px;
+}
+
+.w348 {
+	width: 348% !important
+}
+
+.w700px {
+	width: 700px !important
+}
+
+.left5px {
+	left: 5px !important;
+}
+
+.w600 {
+	width: 600px !important;
+}
+
+.w190px {
+	width: 190px !important;
+}
+
+.w3P {
+	width: 3% !important;
+}
+
+.w150px {
+	width: 150px !important;
+}
+
+.w120px {
+	width: 120px !important;
+}
+
+.m-b10px {
+	margin-bottom: 10px !important;
+}
+
+.m-b5px {
+	margin-bottom: 5px !important;
+}
+
+.w30P {
+	width: 30% !important;
+}
+
+.m-l10px {
+	margin-left: 10px !important;
+}
+
+.w100px {
+	width: 100px !important;
+}
+
+.precioNuevo {
+	color: red !important;
+	font-weight: bold !important;
+	font-size: 12px !important;
+	width: 100% !important;
+}
+
+.tituloTotal {
+	text-align: right !important;
+	font-size: 15px !important;
+	font-weight: bold !important;
+}
+
+.valorTotal {
+	font-size: 15px !important;
+	font-weight: bold !important;;
+}
+
+.columnaGestionar {
+	text-align: center !important;
+}
+
+.estiloFilasPares tbody tr:nth-child(2n) {
+	background: #eeeeee;
+}
+
+.w180 {
+	width: 180px !important;
+}
+
+.colorLetraAzul {
+	color: #026890;
+}
+
+.slideMenu li {
+	width: 170px !important;
+}
+
+.f2 {
+	width: 25% !important;
+}
+
+.ocultar {
+	visibility: hidden !important;
+}
+
+.cuerpoFacturaCajero {
+	padding-top: 250px;
+}
+
+#txtCalendar_input {
+	margin-bottom: 10px;
+}
+
+.mb {
+	margin-bottom: 20px;
+}
+
+.columna3 {
+	width: 100% !important;
+}
+
+.botonBuscarProducto {
+	position: static;
+}
+
+.sinEstiloFila {
+	background: none !important;
+	border-color: inherit !important;
+}
+
+.letrasAzules {;
+	color: #026890 !important;
+}
+
+.cabezeraFacturaCajero {
+	position: fixed;
+	width: 98.4%;
+	top: 48px;
+	overflow: hidden;
+	background-color: #FCFDFD;
+	height: 250px;
+}
+
+.w100 label {
+	width: 100% !important;
+}
+
+/* .ui-datatable-scrollable .ui-datatable-scrollable-header, */
+/* 	.ui-datatable-scrollable .ui-datatable-scrollable-footer { */
+/* 	position: static; */
+/* } */
+.clienteFactura {
+	height: 540px !important;
+	width: 400px !important;
+}
+
+/* .ui-slidemenu-content ul { */
+/* 	height: 100%; */
+/* } */
+.imagenReporte {
+	width: 128px !important;
+}
+
+.ocultarBotones {
+	display: none !important;
+}
+
+.fila {
+	text-align: center !important;
+}
+
+.calendarioCobro input {
+	margin-bottom: 10px !important;
+}
+
+.w100 {
+	width: 100% !important;
+}
+
+.w50px {
+	width: 50px !important;
+}
+
+.w54 {
+	width: 54% !important;
+}
+
+.m-t-35px {
+	margin-top: -35px;
+}
+
+.m-t-10px {
+	margin-top: -10px;
+}
+
+.m-t15px {
+	margin-top: 15px;
+}
+
+.p-l0px {
+	padding-left: 0px !important;
+}
+
+.p-l8px {
+	padding-left: 8px !important;
+}
+
+.p-t20px {
+	padding-top: 20px !important;
+}
+
+.p-t0px {
+	padding-top: 0px !important;
+}
+
+span.w100 input {
+	width: 100% !important;
+}
+
+.w415px {
+	width: 415px !important;
+}
+
+.w445px {
+	width: 445px !important;
+}
+
+.f-z45px {
+	font-size: 45px !important;
+}
+
+.autoCodigo input {
+	width: 100% !important;
+}
+
+.espacios {
+	margin: 10px 0px 10px 0px !important;
+}
+
+select {
+	color: black !important;
+}
+
+hr {
+	margin: 10px 0px 10px 0px !important;
+}
+
+.menu ul.ui-widget-content {
+	width: 195px !important;
+}
+
+span.fa-barcode {
+	text-indent: 0px !important;
+	overflow: visible !important;
+	margin-top: -5px !important;
+	background-image: none !important;
+}
+
+span.fa-bars {
+	text-indent: 0px !important;
+	overflow: visible !important;
+	margin-top: -10px !important;
+	background-image: none !important;
+	font-size: 19px;
+}
+
+.comboFecha input {
+	width: 410px !important;
+}
+
+.fechaFinCobro input {
+	width: 445px;
+}
+
+.calendarioCompra input {
+	width: 300px !important;
+}
+
+.leyendaPagado {
+	width: 60px !important;
+	color: black !important;
+	background: none !important;
+	border: none !important;
+	opacity: 1 !important;
+}
+
+.comboBodega label {
+	width: 100% !important;
+}
+
+.centrarDerecha {
+	text-align: right !important;
+}
+
+.f-z15px {
+	font-size: 15px !important;
+}
+
+.btnInsertarProducto {
+	margin: 5px !important;
+	height: 25px !important;
+}
+
+.comboPrecio label {
+	width: 100% !important;
+}
+
+.menuLateral {
+	margin-top: 45px !important;
+	height: auto !important;
+}
+
+.ui-menu-child {
+	width: 110% !important;
+}
+
+.ui-menu.ui-menu-dynamic {
+	width: 145px !important;
+}
+
+.ui-menuitem-text {
+	font-size: 12px !important;
+}
+
+.calendarBitacora input {
+	width: 445px;
+}
+
+.ui-selectonemenu .ui-selectonemenu-trigger {
+	width: 25px !important;
+}
+
+.b {
+	float: right;
+}
+
+.r {
+	width: 90px;
+}
+
+.ui-menubar .ui-menu-child .ui-menuitem-link {
+	width: 100% !important;
+}
+
+label {
+	display: block !important;
+	margin-bottom: 0px !important;
+	font-weight: 100 !important;
+}
+
+#formCabecera:j_idt43_label {
+	width: 500px !important;
+}
+
+h3, input, select, textarea, button, .ui-widget, .ui-widget input,
+	.ui-widget select, .ui-widget textarea, .ui-widget button,
+	.ui-widget-header, .ui-widget-content, .ui-widget-header .ui-widget-header,
+	.ui-widget-content .ui-widget-content {
+	font-family: Arial, "Trebuchet MS", Verdana, sans-serif;
+	font-size: 11px !important;
+}
+
+#bookTree {
+	width: auto;
+}
+
+.ui-treenode {
+	padding: 2px 0 0;
+}
+
+.ui-chkbox {
+	vertical-align: middle;
+}
+
+/*
+.ui-selectonemenu {
+    display: block;
+}*/
+.ui-selectoneradio label, .ui-selectmanycheckbox label {
+	margin-top: 2px;
+}
+
+.logo {
+	margin: 10px 0 18px 0;
+}
+
+.chaptersMenuColumn {
+	vertical-align: top;
+	padding-left: 10px;
+}
+
+.chaptersContentColumn {
+	vertical-align: top;
+	padding: 120px 10px 0 40px;
+}
+
+.slogan {
+	position: absolute;
+	color: #A2A1A1;
+	font-weight: bold;
+	bottom: 30px;
+	right: 40px;
+}
+
+table .formLabel, table .formEdit {
+	vertical-align: middle;
+	padding: 2px 20px 2px 0;
+}
+
+table .formLabel {
+	padding: 2px 7px 2px 0;
+	text-align: right;
+	white-space: nowrap;
+	width: 1%;
+}
+
+table .formEdit input, table .formEdit textarea {
+	width: 160px;
+}
+
+.normal {
+	background: #FFD700;
+}
+
+.activo {
+	background: #7CFC00;
+}
+
+.desactivo {
+	background: #FA8072 !important;
+}
+
+.txtFormNuevo {
+	width: 180px;
+}
+
+.ventanaTelefono {
+	text-align: center !important;
+}
+
+.ui-selectonemenu-filter {
+	width: 160px !important;
+}
+
+.ui-layout-unit .cabezera {
+	height: auto !important;
+	top: 50px !important;
+	width: auto !important;
+	visibility: hidden !important;
+}
+
+.ui-layout-unit .cuerpo {
+	height: auto !important;
+	top: 170px !important;
+	visibility: hidden !important;
+}
+
+.tablaCabezera {
+	display: table !important;
+}
+
+.FormBotonNuevo {
+	text-align: center !important;
+}
+
+.ui-layout-unit .cabezeraFactura {
+	height: auto !important;
+	width: auto !important;
+	visibility: hidden !important;
+}
+
+.ui-layout-unit .cuerpoFactura {
+	visibility: hidden !important;
+}
+
+.btnsFactura {
+	text-align: center;
+	width: 1000px;
+	position: absolute;
+	bottom: 0;
+}
+
+.btnEncabezado {
+	top: -3px;
+}
+
+.txtCliente {
+	width: auto !important;
+}
+
+.linkClave {
+	color: #222222;
+	text-decoration: none;
+}
+
+.linkClave:HOVER {
+	color: #6eac2c !important;
+}
+
+.linkClave:ACTIVE {
+	font-weight: bold;
+}
+
+.txtUsuario {
+	background: red;
+}
+
+.formLogin {
+	background: yellow;
+	position: absolute;
+	top: 50%;
+	left: 50%;
+	margin-top: -100px;
+	margin-left: -100px;
+}
+
+.titulo {
+	text-align: center;
+}
+
+.lblUsuario {
+	text-align: center;
+}
+
+.opcionesCuenta {
+	position: absolute;
+	right: 0px;
+}
+
+.fechaInicio {
+	position: relative;
+	left: 52px;
+}
+
+.fechaFin {
+	position: relative;
+	left: 70px;
+}
+
+.lblFechaFin {
+	position: relative;
+	left: 60px;
+}
+
+.fechaInicio input {
+	width: 50px;
+}
+
+.fechaFin input {
+	width: 50px;
+}
+
+.negrita {
+	font-weight: bold !important;
+}
+
+.letrasGrandes {
+	color: royalblue;
+	font-size: 15px;
+	font-weight: bold;
+}
+
+.abc {
+	padding-right: 20px;
+}
+
+.oclutarFiltro {
+	visibility: hidden !important;
+}
+
+.txtFactura {
+	width: 80px;
+	height: 20px;
+}
+
+.colorLetras {
+	color: red !important;
+	text-align: right !important;
+	margin-top: -6px !important;
+}
+
+/* .asterisco { */
+/* 	font-weight: bold; */
+/* 	color: red */
+/* } */
+.leyendaDesactivo {
+	background-color: #FA8072;
+	color: #FA8072;
+	float: left;
+	border-radius: 500px;
+}
+
+.leyendaActivo {
+	background-color: #FFF;
+	color: #FFF;
+	float: left;
+	border-radius: 500px;
+}
+
+.ui-datatable-scrollable-body {
+	margin-right: 0px !important;
+}
+
+.centrar5 {
+	text-align: left !important;
+}
+
+.centrar {
+	text-align: center !important;
+}
+
+.row {
+	margin-right: 15px !important;
+}
+
+.mostrar {
+	color: black !important;
+	border: none !important;
+	box-shadow: none !important;
+	background: none !important;
+	width: auto;
+	height: 50px;
+}
+
+.imagenFondo {
+	background-image: url(../resources/images/error2.jpg);
+	height: 100%;
+	text-align: center;
+}
+
+.textoError {
+	color: white;
+}
+
+.calendarioInsertarCliente
+ 
+input {
+	width: 100% !important;
+}
+
+.comboNacimientoCliente
+ 
+label {
+	width: 100% !important;
+}
+
+.w140 {
+	width: 140px !important;
+}
+
+.comboProvinciaProveedor
+ 
+label {
+	width: 100% !important;
+}
+
+.a {
+	width: 1px;
+}
+
+.anchoMinimo {
+	width: 1px;
+}
+
+.anchoMinimo100px {
+	width: 100px;
+}
+
+.unaColumna {
+	display: block !important;
+}
+
+tfoot {
+	text-align: center;
+}
+
+.btnMenu {
+	display: none !important;
+	margin: -5px -35px 0px 0px !important;
+}
+
+/* PARA MENU */
+@media all and (max-width: 1026px) {
+	.btnMenu {
+		display: inline !important;
+		float: right;
+		margin-top: -4px !important;
+		width: 35px;
+		height: 35px;
+	}
+	.menu, .nombreUsuario {
+		display: none !important;
+	}
+}
+
+/* PARA PC TV 2000px */
+@media all and (max-width: 2220px) and (min-width: 1025px) {
+	.reporteProducto {
+		margin-left: 60px !important;
+	}
+	.reporteProductoFila2 {
+		margin-left: 10px !important;
+	}
+	.asterisco {
+		font-weight: bold;
+		color: maroon;
+	}
+	.dialogoInsertarCliente {
+		overflow-y: scroll;
+		height: 470px !important;
+		width: 450px !important;
+	}
+	.dialogoInsertarPersona {
+		overflow-y: scroll;
+		height: 65% !important;
+		width: 35% !important;
+	}
+	.gestionarCliente {
+		text-align: center;
+		width: 14% !important;
+	}
+	.dialogoMostrarCliente {
+		width: 600px !important;
+		overflow-y: scroll;
+		height: 370px !important;
+	}
+	.dialogoInsertarProducto {
+		overflow-y: scroll;
+		height: 425px !important;
+		width: 600px !important;
+	}
+	.dialogoMostrarProducto {
+		overflow-y: scroll;
+		height: 425px !important;
+		width: 600px !important;
+	}
+	.txtResponsive {
+		width: 300px !important;
+	}
+	.dialogoBuscarProducto {
+		width: 50% !important;
+	}
+	.btnDialogoBuscarProducto {
+		left: 10px;
+	}
+	.txtDialogoBuscarProducto {
+		width: 60%;
+	}
+	.dialogoMostrarBodega {
+		width: 30% !important;
+		overflow-y: scroll;
+		height: auto !important;
+	}
+	.dialogoResponsableBodega {
+		width: 60% !important;
+		height: auto !important;
+	}
+	.dialogoInsertarEmpleado {
+		width: 30% !important;
+		overflow-y: scroll;
+		height: 27% !important;
+	}
+	.dialogoMostrarCiudades {
+		width: 20% !important;
+	}
+	.botonInsertarCiudad {
+		left: 25px;
+	}
+}
+
+/* PARA PORTATIL 1024px */
+@media all and (max-width: 1024px) and (min-width: 769px) {
+	.ui-datatable-scrollable-body {
+		margin-right: 0px !important;
+	}
+	.dialogoMostrarProducto {
+		overflow-y: scroll;
+		height: 425px !important;
+		width: 600px !important;
+	}
+	.asterisco {
+		font-weight: bold;
+		color: yellow;
+	}
+	.dialogoInsertarCliente {
+		height: 470px !important;
+		width: 450px !important;
+		overflow-y: scroll;
+	}
+	.dialogoInsertarPersona {
+		overflow-y: scroll;
+		height: 65% !important;
+		width: 50% !important;
+	}
+	.gestionarCliente {
+		text-align: center;
+		width: 3% !important;
+	}
+	.dialogoMostrarCliente {
+		width: 600px !important;
+		overflow-y: scroll;
+		height: 370px !important;
+	}
+	.dialogoInsertarProducto {
+		overflow-y: scroll;
+		height: 425px !important;
+		width: 600px !important;
+	}
+	.txtResponsive {
+		width: 300px !important;
+	}
+	.dialogoBuscarProducto {
+		width: 50% !important;
+	}
+	.btnDialogoBuscarProducto {
+		left: 10px;
+	}
+	.txtDialogoBuscarProducto {
+		width: 85%;
+	}
+	.dialogoMostrarBodega {
+		width: 50% !important;
+		overflow-y: scroll;
+		height: auto !important;
+	}
+	.dialogoResponsableBodega {
+		width: 60% !important;
+		height: auto !important;
+	}
+	.dialogoInsertarEmpleado {
+		width: 50% !important;
+		overflow-y: scroll;
+		height: 27% !important;
+	}
+	.dialogoMostrarCiudades {
+		width: 20% !important;
+	}
+	.botonInsertarCiudad {
+		left: 25px;
+	}
+}
+
+/* PARA TABLET 768px */
+@media all and (max-width: 768px) and (min-width: 501px) {
+	.ui-datatable-scrollable-body {
+		margin-right: 0px !important;
+	}
+	.dialogoMostrarProducto {
+		width: 80% !important;
+		overflow-y: scroll;
+		height: 60% !important;
+	}
+	.totales {
+		float: left !important;
+	}
+	.asterisco {
+		font-weight: bold;
+		color: black;
+	}
+	.dialogoInsertarCliente {
+		width: 350px !important;
+		overflow-y: scroll;
+		height: 470px !important;
+	}
+	.dialogoInsertarPersona {
+		overflow-y: scroll;
+		height: 65% !important;
+		width: 75% !important;
+	}
+	.gestionarCliente {
+		text-align: center;
+		width: 3% !important;
+	}
+	.dialogoMostrarCliente {
+		overflow-y: scroll;
+		height: 40% !important;
+		width: 80% !important;
+	}
+	.dialogoInsertarProducto {
+		overflow-y: scroll;
+		height: 60% !important;
+		width: 85% !important;
+	}
+	.dialogoBuscarProducto {
+		width: 80% !important;
+	}
+	.btnDialogoBuscarProducto {
+		left: 10px;
+	}
+	.txtDialogoBuscarProducto {
+		width: 80%;
+	}
+	.dialogoMostrarBodega {
+		width: 50% !important;
+		overflow-y: scroll;
+		height: auto !important;
+	}
+	.dialogoResponsableBodega {
+		width: 70% !important;
+		height: auto !important;
+	}
+	.dialogoInsertarEmpleado {
+		width: 80% !important;
+		overflow-y: scroll;
+		height: 35% !important;
+	}
+	.dialogoMostrarCiudades {
+		width: 50% !important;
+	}
+	.botonInsertarCiudad {
+		left: 20px;
+	}
+	.menuLateral {
+		margin-top: 135px !important;
+		height: auto !important;
+	}
+}
+
+/* PARA MOVIL 480px */
+@media all and (max-width: 500px) and (min-width: 5px) and
+	(orientation:portrait) {
+	.ui-datatable-scrollable-body {
+		margin-right: 0px !important;
+	}
+	.dialogoMostrarProducto {
+		width: 80% !important;
+		overflow-y: scroll;
+		height: 60% !important;
+	}
+	.mostrar {
+		color: black !important;
+		width: 100% !important;
+		border: none !important;
+		box-shadow: none !important;
+		background: none !important;
+		padding-bottom: 0px !important;
+		height: 30px;
+	}
+	.totales {
+		float: left !important;
+	}
+	.asterisco {
+		font-weight: bold;
+		color: blue;
+	}
+	.dialogoInsertarCliente {
+		width: 300px !important;
+		overflow-y: scroll;
+		height: 470px !important;
+	}
+	.dialogoInsertarPersona {
+		overflow-y: scroll;
+		height: 65% !important;
+		width: 80% !important;
+	}
+	.gestionarCliente {
+		text-align: center;
+		width: 3% !important;
+	}
+	.dialogoMostrarCliente {
+		overflow-y: scroll;
+		width: 80% !important;
+		height: 50% !important;
+	}
+	.dialogoInsertarProducto {
+		overflow-y: scroll;
+		height: 60% !important;
+		width: 85% !important;
+	}
+	.dialogoBuscarProducto {
+		width: 85% !important;
+	}
+	.btnDialogoBuscarProducto {
+		left: 10px;
+	}
+	.txtDialogoBuscarProducto {
+		width: 75%;
+	}
+	.dialogoMostrarBodega {
+		width: 80% !important;
+		height: auto !important;
+	}
+	.dialogoResponsableBodega {
+		width: 80% !important;
+		height: auto !important;
+	}
+	.dialogoInsertarEmpleado {
+		width: 80% !important;
+		overflow-y: scroll;
+		height: 27% !important;
+	}
+	.dialogoMostrarCiudades {
+		width: 70% !important;
+	}
+	.botonInsertarCiudad {
+		left: 10px;
+	}
+	.menuLateral {
+		margin-top: 135px !important;
+		height: auto !important;
+	}
+}
+
+@media all and (orientation:portrait) {
+	body {
+		/*background-color: red;*/
+		
+	}
+}
+
+@media all and (orientation:landscape) {
+	body {
+		/*background-color: blue;*/
+		
+	}
+}
+
+.abc {
+	padding-right: 20px;
+}
+
+.oclutarFiltro {
+	visibility: hidden !important;
+}
+
+0
+
+/* .asterisco { */
+/* 	font-weight: bold; */
+/* 	color: red */
+/* } */
+.leyendaDesactivo {
+	background-color: #FA8072;
+	color: #FA8072;
+	float: left;
+	border-radius: 500px;
+}
+
+.f-z25px {
+	font-size: 25px !important;
+}
+
+.f-z30px {
+	font-size: 30px !important;
+}
+
+.f-z25px {
+	font-size: 25px !important;
+}
+
+.f-z20px {
+	font-size: 20px !important;
+}
+
+.colorVerde {
+	color: #1D9C45 !important;
+}
+
+.colorRojo {
+	color: red !important;
+}
+
+.colorRoyalBlue {
+	color: #4169E1 !important;
+}
+
+.height0px {
+	height: 0px !important;
+}
+
+.height25px {
+	height: 25px !important;
+}
+
+.height35px {
+	height: 35px !important;
+}
+
+.height42px {
+	height: 42px !important;
+}
+
+.height450px {
+	height: 450px !important;
+}
+
+.height580px {
+	height: 580px !important;
+}
+
+.p-l5px {
+	padding-left: 5px !important;
+}
+
+.moverDerecha {
+	float: right !important;
+}
+
+.moverIzquierda {
+	float: left !important;
+}
+
+.scroll-y {
+	overflow-y: scroll !important;
+}
+
+.p-l4px {
+	padding-left: 4px !important;
+}
+
+.p-r20px {
+	padding-right: 20px !important;
+}
+
+.leyendaActivo {
+	background-color: #FFF;
+	color: #FFF;
+	float: left;
+	border-radius: 500px;
+}
+
+.ui-datatable-scrollable-body {
+	margin-right: 0px !important;
+}
+
+.centrar5 {
+	text-align: left !important;
+}
+
+.centrar {
+	text-align: center !important;
+}
+
+.row {
+	margin-right: 15px !important;
+}
+
+.mostrar {
+	color: black !important;
+	border: none !important;
+	box-shadow: none !important;
+	background: none !important;
+	width: auto;
+	height: 50px;
+}
+
+.imagenFondo {
+	background-image: url(../resources/images/error2.jpg);
+	height: 100%;
+	text-align: center;
+}
+
+.textoError {
+	color: white;
+}
+
+.calendarioInsertarCliente input {
+	width: 100% !important;
+}
+
+.comboNacimientoCliente label {
+	width: 100% !important;
+}
+
+.comboProvinciaProveedor label {
+	width: 100% !important;
+}
+
+.a {
+	width: 1px;
+}
+
+.unaColumna {
+	display: block !important;
+}
+
+tfoot {
+	text-align: center;
+}
+
+.btnMenu {
+	display: none !important;
+	margin: -5px -35px 0px 0px !important;
+}
+
+/* PARA MENU */
+@media all and (max-width: 1026px) {
+	.btnMenu {
+		display: inline !important;
+		float: right;
+		margin-top: -4px !important;
+		width: 35px;
+		height: 35px;
+	}
+	.menu, .nombreUsuario {
+		display: none !important;
+	}
+}
+
+/* PARA PC TV 2000px */
+@media all and (max-width: 2220px) and (min-width: 1025px) {
+	.reporteProducto {
+		margin-left: 60px !important;
+	}
+	.reporteProductoFila2 {
+		margin-left: 10px !important;
+	}
+	.asterisco {
+		font-weight: bold;
+		color: maroon;
+	}
+	.dialogoInsertarCliente {
+		overflow-y: scroll;
+		height: 470px !important;
+		width: 450px !important;
+	}
+	.dialogoInsertarPersona {
+		overflow-y: scroll;
+		height: 65% !important;
+		width: 35% !important;
+	}
+	.gestionarCliente {
+		text-align: center;
+		width: 14% !important;
+	}
+	.dialogoMostrarCliente {
+		width: 600px !important;
+		overflow-y: scroll;
+		height: 370px !important;
+	}
+	.dialogoInsertarProducto {
+		overflow-y: scroll;
+		height: 425px !important;
+		width: 600px !important;
+	}
+	.dialogoMostrarProducto {
+		overflow-y: scroll;
+		height: 425px !important;
+		width: 600px !important;
+	}
+	.txtResponsive {
+		width: 300px !important;
+	}
+	.dialogoBuscarProducto {
+		width: 50% !important;
+	}
+	.btnDialogoBuscarProducto {
+		left: 10px;
+	}
+	.txtDialogoBuscarProducto {
+		width: 60%;
+	}
+	.dialogoMostrarBodega {
+		width: 30% !important;
+		overflow-y: scroll;
+		height: auto !important;
+	}
+	.dialogoResponsableBodega {
+		width: 60% !important;
+		height: auto !important;
+	}
+	.dialogoInsertarEmpleado {
+		width: 30% !important;
+		overflow-y: scroll;
+		height: 27% !important;
+	}
+	.dialogoMostrarCiudades {
+		width: 20% !important;
+	}
+	.botonInsertarCiudad {
+		left: 25px;
+	}
+}
+
+/* PARA PORTATIL 1024px */
+@media all and (max-width: 1024px) and (min-width: 769px) {
+	.ui-datatable-scrollable-body {
+		margin-right: 0px !important;
+	}
+	.dialogoMostrarProducto {
+		overflow-y: scroll;
+		height: 425px !important;
+		width: 600px !important;
+	}
+	.asterisco {
+		font-weight: bold;
+		color: yellow;
+	}
+	.dialogoInsertarCliente {
+		height: 470px !important;
+		width: 450px !important;
+		overflow-y: scroll;
+	}
+	.dialogoInsertarPersona {
+		overflow-y: scroll;
+		height: 65% !important;
+		width: 50% !important;
+	}
+	.gestionarCliente {
+		text-align: center;
+		width: 3% !important;
+	}
+	.dialogoMostrarCliente {
+		width: 600px !important;
+		overflow-y: scroll;
+		height: 370px !important;
+	}
+	.dialogoInsertarProducto {
+		overflow-y: scroll;
+		height: 425px !important;
+		width: 600px !important;
+	}
+	.txtResponsive {
+		width: 300px !important;
+	}
+	.dialogoBuscarProducto {
+		width: 50% !important;
+	}
+	.btnDialogoBuscarProducto {
+		left: 10px;
+	}
+	.txtDialogoBuscarProducto {
+		width: 85%;
+	}
+	.dialogoMostrarBodega {
+		width: 50% !important;
+		overflow-y: scroll;
+		height: auto !important;
+	}
+	.dialogoResponsableBodega {
+		width: 60% !important;
+		height: auto !important;
+	}
+	.dialogoInsertarEmpleado {
+		width: 50% !important;
+		overflow-y: scroll;
+		height: 27% !important;
+	}
+	.dialogoMostrarCiudades {
+		width: 20% !important;
+	}
+	.botonInsertarCiudad {
+		left: 25px;
+	}
+}
+
+/* PARA TABLET 768px */
+@media all and (max-width: 768px) and (min-width: 501px) {
+	.ui-datatable-scrollable-body {
+		margin-right: 0px !important;
+	}
+	.dialogoMostrarProducto {
+		width: 80% !important;
+		overflow-y: scroll;
+		height: 60% !important;
+	}
+	.totales {
+		float: left !important;
+	}
+	.asterisco {
+		font-weight: bold;
+		color: black;
+	}
+	.dialogoInsertarCliente {
+		width: 350px !important;
+		overflow-y: scroll;
+		height: 470px !important;
+	}
+	.dialogoInsertarPersona {
+		overflow-y: scroll;
+		height: 65% !important;
+		width: 75% !important;
+	}
+	.gestionarCliente {
+		text-align: center;
+		width: 3% !important;
+	}
+	.dialogoMostrarCliente {
+		overflow-y: scroll;
+		height: 40% !important;
+		width: 80% !important;
+	}
+	.dialogoInsertarProducto {
+		overflow-y: scroll;
+		height: 60% !important;
+		width: 85% !important;
+	}
+	.dialogoBuscarProducto {
+		width: 80% !important;
+	}
+	.btnDialogoBuscarProducto {
+		left: 10px;
+	}
+	.txtDialogoBuscarProducto {
+		width: 80%;
+	}
+	.dialogoMostrarBodega {
+		width: 50% !important;
+		overflow-y: scroll;
+		height: auto !important;
+	}
+	.dialogoResponsableBodega {
+		width: 70% !important;
+		height: auto !important;
+	}
+	.dialogoInsertarEmpleado {
+		width: 80% !important;
+		overflow-y: scroll;
+		height: 35% !important;
+	}
+	.dialogoMostrarCiudades {
+		width: 50% !important;
+	}
+	.botonInsertarCiudad {
+		left: 20px;
+	}
+	.menuLateral {
+		margin-top: 135px !important;
+		height: auto !important;
+	}
+}
+
+/* PARA MOVIL 480px */
+@media all and (max-width: 500px) and (min-width: 5px) and
+	(orientation:portrait) {
+	.ui-datatable-scrollable-body {
+		margin-right: 0px !important;
+	}
+	.dialogoMostrarProducto {
+		width: 80% !important;
+		overflow-y: scroll;
+		height: 60% !important;
+	}
+	.mostrar {
+		color: black !important;
+		width: 100% !important;
+		border: none !important;
+		box-shadow: none !important;
+		background: none !important;
+		padding-bottom: 0px !important;
+		height: 30px;
+	}
+	.totales {
+		float: left !important;
+	}
+	.asterisco {
+		font-weight: bold;
+		color: blue;
+	}
+	.dialogoInsertarCliente {
+		width: 300px !important;
+		overflow-y: scroll;
+		height: 470px !important;
+	}
+	.dialogoInsertarPersona {
+		overflow-y: scroll;
+		height: 65% !important;
+		width: 80% !important;
+	}
+	.gestionarCliente {
+		text-align: center;
+		width: 3% !important;
+	}
+	.dialogoMostrarCliente {
+		overflow-y: scroll;
+		width: 80% !important;
+		height: 50% !important;
+	}
+	.dialogoInsertarProducto {
+		overflow-y: scroll;
+		height: 60% !important;
+		width: 85% !important;
+	}
+	.dialogoBuscarProducto {
+		width: 85% !important;
+	}
+	.btnDialogoBuscarProducto {
+		left: 10px;
+	}
+	.txtDialogoBuscarProducto {
+		width: 75%;
+	}
+	.dialogoMostrarBodega {
+		width: 80% !important;
+		height: auto !important;
+	}
+	.dialogoResponsableBodega {
+		width: 80% !important;
+		height: auto !important;
+	}
+	.dialogoInsertarEmpleado {
+		width: 80% !important;
+		overflow-y: scroll;
+		height: 27% !important;
+	}
+	.dialogoMostrarCiudades {
+		width: 70% !important;
+	}
+	.botonInsertarCiudad {
+		left: 10px;
+	}
+	.menuLateral {
+		margin-top: 135px !important;
+		height: auto !important;
+	}
+}
+
+@media all and (orientation:portrait) {
+	body { /*background-color: red;*/
+		
+	}
+}
+
+@media all and (orientation:landscape) {
+	body { /*background-color: blue;*/
+		
+	}
+}

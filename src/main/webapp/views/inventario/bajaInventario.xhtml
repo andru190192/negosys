@@ -1,0 +1,184 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:p="http://primefaces.org/ui">
+<ui:composition template="/templates/layout/masterLayout.xhtml">
+	<ui:define name="title">BAJA DE INVENTARIO</ui:define>
+	<ui:define name="content">
+		<p:growl id="mensaje" showDetail="true" life="7000" />
+		<p:panel id="panel" header="BAJA DE INVENTARIO">
+			<h:form id="formDocumento">
+				<h:panelGrid columns="2" cellpadding="1">
+					<p:outputLabel value="LOCAL:" styleClass="negrita" />
+					<p:selectOneMenu id="comboLocal"
+						value="#{bajaInventarioBean.local.id}" styleClass="w180">
+						<f:selectItems value="#{bajaInventarioBean.listaLocales}"
+							var="local" itemValue="#{local.id}" itemLabel="#{local.nombre}" />
+						<p:ajax update=":formDataTable:tablaDetalleEgresos, :mensaje"
+							event="change" listener="#{bajaInventarioBean.obtenerLocal}" />
+					</p:selectOneMenu>
+				</h:panelGrid>
+				<br></br>
+				<h:panelGrid columns="2" cellpadding="1">
+					<p:commandButton value="GUARDAR" update=":mensaje" id="btnGuardar"
+						icon="ui-icon-disk"
+						oncomplete="comprobarGuardar(xhr, status, args)"
+						actionListener="#{bajaInventarioBean.comprobarTodo}" />
+					<p:commandButton value="CANCELAR" id="btnlimpiar"
+						update="formDocumento, :formDataTable" icon="ui-icon-close"
+						actionListener="#{bajaInventarioBean.limpiarEgreso}"
+						process="@this" />
+				</h:panelGrid>
+			</h:form>
+			<br></br>
+			<div class="ui-datatable-header ui-widget-header ui-corner-top">
+				<h:form id="form" styleClass="centrar">
+					<p:commandButton update=":formBusquedaProducto"
+						styleClass="btnInsertarProducto"
+						onclick="PF('busquedaProducto').show();" id="btnNuevo"
+						icon="ui-icon-plus" value="PRODUCTO" />
+				</h:form>
+			</div>
+			<h:form id="formDataTable">
+				<p:dataTable id="tablaDetalleEgresos" var="facturaReporte"
+					value="#{bajaInventarioBean.listaBajaInventarioReporte}"
+					paginator="true" rows="10"
+					emptyMessage="#{msg['lbl.mensajeTabla']}"
+					paginatorPosition="bottom">
+					<p:column headerText="COD - EAN" width="10%">
+						<p:inputText styleClass="w100"
+							value="#{facturaReporte.producto.id} - #{facturaReporte.codigo}"
+							readonly="true" id="txtCodigo" />
+					</p:column>
+					<p:column headerText="DESCRIPCION">
+						<p:inputText id="descripcion" readonly="true" styleClass="w100"
+							value="#{facturaReporte.descripcion}" />
+						<p:tooltip for="descripcion" value="#{facturaReporte.descripcion}" />
+					</p:column>
+					<p:column headerText="CANTIDAD" width="10%">
+						<p:inputText value="#{facturaReporte.cantidad}" styleClass="w100"
+							onkeypress="teclaAbajoArriba(event.keyCode, this.id,'formDataTable:tablaDetalleEgresos_data');">
+							<p:ajax event="change"
+								listener="#{bajaInventarioBean.cambiarCantidad(facturaReporte)}"
+								update="tablaDetalleEgresos, unidades, :mensaje" />
+						</p:inputText>
+					</p:column>
+					<p:column headerText="UNIDADES" width="10%">
+						<h:outputText id="unidades"
+							value="#{facturaReporte.nombreCantidad}" />
+					</p:column>
+					<p:column headerText="MOTIVO DE BAJA" width="10%">
+						<p:selectOneMenu id="motivoBaja" styleClass="w100"
+							value="#{facturaReporte.motivoBaja}">
+							<f:selectItems value="#{bajaInventarioBean.listaMotivoBajas}"
+								var="motivoBaja" itemValue="#{motivoBaja}"
+								itemLabel="#{motivoBaja.nombre}" />
+							<p:ajax event="change"
+								listener="#{bajaInventarioBean.cambiarMotivoBaja(facturaReporte)}"
+								update="motivoBaja, :mensaje" />
+						</p:selectOneMenu>
+					</p:column>
+					<p:column headerText="P. COSTO" width="10%" styleClass="centrarDerecha">
+						<h:outputText value="#{facturaReporte.precioCosto}" />
+					</p:column>
+					<p:column headerText="IMPORTE" width="10%" styleClass="centrarDerecha">
+						<h:outputText value="#{facturaReporte.importe}" />
+					</p:column>
+					<p:columnGroup type="footer">
+						<p:row>
+							<p:column colspan="6" styleClass="centrarDerecha f-z15px negrita"
+								footerText="TOTAL:" />
+							<p:column footerText="#{bajaInventarioBean.total}"
+								styleClass="f-z15px negrita centrarDerecha" />
+						</p:row>
+					</p:columnGroup>
+				</p:dataTable>
+			</h:form>
+			<p:dialog header="GUARDAR" widgetVar="bajaInventario"
+				resizable="false" modal="false" showEffect="clip" hideEffect="fold"
+				id="dialogoBajaInventario">
+				<h:form id="fromAnular">
+					<h:panelGrid columns="1" cellpadding="1">
+						<h:panelGrid columns="2" cellpadding="1">
+							<h:outputLabel value="USUARIO: " />
+							<p:inputText value="#{bajaInventarioBean.login}" required="true"
+								requiredMessage="INGRESE EL USUARIO" />
+							<h:outputLabel value="CLAVE: " />
+							<p:password value="#{bajaInventarioBean.pass}" required="true"
+								requiredMessage="INGRESE LA CLAVE" />
+						</h:panelGrid>
+						<h:panelGrid columns="2" cellpadding="1">
+							<p:commandButton value="SI"
+								actionListener="#{bajaInventarioBean.insertar}"
+								update=":formDocumento, :formDataTable, :mensaje"
+								oncomplete="PF('bajaInventario').hide()" icon="ui-icon-check" />
+							<p:commandButton value="NO"
+								oncomplete="PF('bajaInventario').hide()" icon="ui-icon-close" />
+						</h:panelGrid>
+					</h:panelGrid>
+				</h:form>
+			</p:dialog>
+			<p:dialog header="BUSQUEDA DE PRODUCTO" widgetVar="busquedaProducto"
+				id="dialogoBusquedaProducto" resizable="false" modal="false"
+				showEffect="clip" hideEffect="fold" width="50%">
+				<h:form id="formBusquedaProducto">
+					<h:panelGrid columns="1">
+						<h:panelGrid columns="3">
+							<p:outputLabel value="EAN/NOMBRE" styleClass="negrita" />
+							<p:inputText value="#{bajaInventarioBean.criterioBusquedaRapida}"
+								styleClass="w300" />
+							<p:commandButton id="btnBusquedaRapida"
+								update=":formBusquedaProducto:tablaBusquedaProductos, :mensaje"
+								icon="ui-icon-search"
+								actionListener="#{bajaInventarioBean.busquedaRapida}" />
+						</h:panelGrid>
+						<p:dataTable id="tablaBusquedaProductos" var="producto"
+							paginator="true" rows="6" scrollable="true"
+							styleClass="ui-datatable-scrollable-body"
+							value="#{bajaInventarioBean.listaBusquedaRapida}" editable="true"
+							emptyMessage="#{msg['lbl.mensajeTabla']}"
+							paginatorPosition="bottom" selectionMode="single"
+							selection="#{bajaInventarioBean.producto}"
+							rowKey="#{producto.id}">
+							<p:ajax event="rowSelect"
+								listener="#{bajaInventarioBean.insertarProductoRapido}"
+								update=":formDataTable:tablaDetalleEgresos,:mensaje" />
+							<p:column headerText="EAN" styleClass="w100px">
+									#{producto.ean}
+									</p:column>
+							<p:column headerText="NOMBRE" styleClass="w300">
+									#{producto.nombre}
+								</p:column>
+						</p:dataTable>
+					</h:panelGrid>
+				</h:form>
+			</p:dialog>
+		</p:panel>
+		<script type="text/javascript">
+			//<![CDATA[
+			function pasarFocus() {
+				var n = document
+						.getElementById('formDataTable:tablaDetalleEgresos_data').childNodes.length - 1;
+				if (n > 0) {
+					document
+							.getElementById('formDataTable:tablaDetalleEgresos:'
+									+ (n - 1) + ':txtCodigo').disabled = true;
+					document.getElementById(
+							'formDataTable:tablaDetalleEgresos:' + n
+									+ ':txtCodigo').focus();
+				}
+			}
+
+			function comprobarGuardar(xhr, status, args) {
+				if (args.error) {
+					PF('bajaInventario').show()
+				}
+			}
+			//]]>
+		</script>
+	</ui:define>
+</ui:composition>
+</html>

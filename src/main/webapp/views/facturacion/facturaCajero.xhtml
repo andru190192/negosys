@@ -1,0 +1,537 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:p="http://primefaces.org/ui">
+<ui:composition template="/templates/layout/masterLayout.xhtml">
+	<ui:define name="title">NUEVA FACTURA</ui:define>
+	<ui:define name="content">
+		<p:growl id="mensaje" showDetail="true" life="7000" />
+		<div class="cabezeraFacturaCajero"><h:form id="formTotales"
+				styleClass="height0px centrarDerecha p-t20px">
+				<h:panelGrid columns="2" cellpadding="0"
+					styleClass="totales moverDerecha" columnClasses="abc,dfv">
+					<h:panelGrid columns="2" cellpadding="0">
+						<h:outputText styleClass="letrasGrandes p-l4px"
+							value="SUBTOTAL SIN IMPUESTO (1=2+3+4+5):" />
+						<p:outputLabel
+							value="#{facturaCajeroBean.cfPresentar.stSinImpuesto}"
+							styleClass="f-z25px colorLetras txtFactura negrita height35px w95px" />
+						<h:outputText styleClass="letrasGrandes p-l5px"
+							value="SUBTOTAL 12% (2):" />
+						<p:outputLabel value="#{facturaCajeroBean.cfPresentar.st12}"
+							styleClass="colorLetras txtFactura f-z25px negrita height35px w95px" />
+						<h:outputText styleClass="letrasGrandes p-l5px"
+							value="SUBTOTAL 0% (3):" />
+						<p:outputLabel value="#{facturaCajeroBean.cfPresentar.st0}"
+							styleClass="colorLetras txtFactura f-z25px negrita height35px w95px" />
+						<h:outputText styleClass="letrasGrandes p-l5px"
+							value="SUBTOTAL NO OBJETO DE IVA (4):" />
+						<p:outputLabel
+							value="#{facturaCajeroBean.cfPresentar.stNoObjetoIva}"
+							styleClass="colorLetras txtFactura f-z25px negrita height35px w95px" />
+						<h:outputText styleClass="letrasGrandes p-l5px"
+							value="SUBTOTAL EXENTO DE IVA (5):" />
+						<p:outputLabel
+							value="#{facturaCajeroBean.cfPresentar.stExentoIva}"
+							styleClass="colorLetras txtFactura f-z25px negrita height35px w95px" />
+					</h:panelGrid>
+					<h:panelGrid columns="2" cellpadding="0">
+						<h:outputText styleClass="letrasGrandes p-l4px"
+							value="TOTAL DESCUENTO (6):" />
+						<p:outputLabel
+							value="#{facturaCajeroBean.cfPresentar.tDescuentoProducto}"
+							styleClass="colorLetras txtFactura f-z25px negrita height35px w95px" />
+						<h:outputText styleClass="letrasGrandes p-l4px"
+							value="VALOR ICE (7):" />
+						<p:outputLabel value="#{facturaCajeroBean.cfPresentar.valorIce}"
+							styleClass="colorLetras txtFactura f-z25px negrita height35px w95px" />
+						<h:outputText styleClass="letrasGrandes p-l4px"
+							value="VALOR IRBPNR(8):" />
+						<p:outputLabel
+							value="#{facturaCajeroBean.cfPresentar.valorIRBPNR}"
+							styleClass="colorLetras txtFactura f-z25px negrita height35px w95px" />
+						<h:outputText styleClass="letrasGrandes p-l8px"
+							value="IVA 12% (9=(2+7)*12%):" />
+						<p:outputLabel value="#{facturaCajeroBean.cfPresentar.iva12}"
+							styleClass="colorLetras txtFactura f-z25px negrita height35px w95px" />
+						<h:outputText styleClass="letrasGrandes p-l8px"
+							value="PROPINA (10):" />
+						<p:outputLabel value="#{facturaCajeroBean.cfPresentar.propina}"
+							styleClass="colorLetras txtFactura f-z25px negrita height35px w95px" />
+					</h:panelGrid>
+				</h:panelGrid>
+			</h:form>
+			<div class="cuerpoCabezeraFacturaCajero moverIzquierda p-t0px w700px">
+				<p:hotkey bind="ctrl+shift+m"
+					handler="PF('buscarCliente').show();nuevo();" /> <h:form
+					id="formCliente">
+					<h:panelGrid columns="3" cellpadding="1">
+						<p:outputLabel value="CLIENTE:" styleClass="negrita f-z20px" />
+						<p:outputLabel readonly="true" styleClass="f-z20px w600px"
+							value="#{facturaCajeroBean.cliente}" />
+						<p:commandButton oncomplete="PF('buscarCliente').show()"
+							icon="ui-icon-search" styleClass="ocultarBotones left5px"
+							action="#{facturaCajeroBean.limpiarObjetosBusquedaCliente}"
+							update=":formNuevo" />
+					</h:panelGrid>
+					<br></br>
+					<p:commandButton value="GUARDAR" styleClass="ocultarBotones"
+						update=":datosPago, :mensaje" id="btnGuardar" icon="ui-icon-disk"
+						oncomplete="comprobarFactura(xhr, status, args);"
+						actionListener="#{facturaCajeroBean.comprobarTodo}" />
+					<p:commandButton value="IMPRIMIR" styleClass="ocultarBotones"
+						actionListener="#{facturaCajeroBean.imprimirFactura}" ajax="false"
+						icon="ui-icon-print" />
+					<p:commandButton value="NUEVO" id="btnlimpiar"
+						styleClass="ocultarBotones"
+						update="formCliente, :formDataTable, :formTotales,:mensaje,:formProducto"
+						icon="ui-icon-document"
+						onclick="focusInicial();PF('obtenerProducto').hide(),PF('dialogoCantidadProducto').hide()"
+						actionListener="#{facturaCajeroBean.nuevaFactura(false)}"
+						process="@this" />
+				</h:form> <h:form id="formProducto" styleClass="m-t-10px w845px">
+					<h:panelGrid columns="2">
+						<p:outputLabel id="descripcionProducto"
+							styleClass="w100 f-z30px colorVerde negrita" readonly="true"
+							value="#{facturaCajeroBean.descripcion}" />
+						<p:outputLabel id="descripcionMayorista"
+							styleClass="w100 f-z30px colorRojo negrita" readonly="true"
+							value="#{facturaCajeroBean.mayorista}" />
+					</h:panelGrid>
+					<h:panelGrid columns="2">
+						<p:outputLabel styleClass="w100 f-z30px colorRoyalBlue"
+							readonly="true" value="PRODUCTOS FACTURADOS: " />
+						<p:outputLabel styleClass="w100 f-z30px colorRojo" readonly="true"
+							value="#{facturaCajeroBean.registrosActivos}" />
+					</h:panelGrid>
+					<h:panelGrid columns="2">
+						<h:outputText styleClass="letrasGrandes f-z30px"
+							value="TOTAL A PAGAR:" />
+						<p:outputLabel value="#{facturaCajeroBean.cfPresentar.valorTotal}"
+							styleClass="f-z30px negrita height42px w120px colorRojo" />
+					</h:panelGrid>
+				</h:form>
+				<div class="centrar"><h:form id="datosPago">
+						<h:panelGrid columns="2">
+							<p:outputLabel value="SU CAMBIO ES: "
+								styleClass="negrita f-z30px colorRoyalBlue" />
+							<p:outputLabel readonly="true"
+								value="#{facturaCajeroBean.cambio}"
+								styleClass="f-z30px negrita height42px w120px colorRojo" />
+						</h:panelGrid>
+					</h:form></div>
+		</div></div>
+		<div class="cuerpoFacturaCajero">
+			<div class="ui-datatable-header ui-widget-header ui-corner-top">
+				<h:form id="form" styleClass="centrar">
+					<p:commandButton update=":formBusquedaProducto"
+						styleClass="botonBuscarProducto margin5px height25px"
+						onclick="PF('obtenerProducto').show();" id="btnNuevo"
+						value="PRODUCTOS" />
+				</h:form>
+		</div> <h:form id="formDataTable">
+				<p:dataTable id="tablaDetalleEgresos" var="facturaReporte"
+					value="#{facturaCajeroBean.listaFacturaReporte}"
+					emptyMessage="#{msg['lbl.mensajeTabla']}" scrollable="true"
+					styleClass="ui-datatable-scrollable-body estiloFilasPares w100">
+					<f:facet name="header">
+					</f:facet>
+					<p:column headerText="CODIGO" styleClass="centrar" width="10%">
+						<p:inputText value="#{facturaReporte.codigo}" id="txtcodigo"
+							onkeypress="validar()"
+							onkeydown="if (event.ctrlKey == true) if(event.keyCode == 80) PF('obtenerProducto').show();">
+							<p:ajax event="change" oncomplete="pasarFocus()"
+								listener="#{facturaCajeroBean.cargarProducto(facturaReporte)}"
+								update=":formDataTable:tablaDetalleEgresos,:formTotales, :mensaje,:formProducto" />
+						</p:inputText>
+					</p:column>
+					<p:column headerText="DESCRIPCION" width="55%"
+						filterBy="#{facturaReporte.descripcion}"
+						filterMatchMode="contains" styleClass="centrar">
+						<p:outputLabel id="descripcion" styleClass="w100" readonly="true"
+							value="#{facturaReporte.descripcion}"
+							disabled="#{!facturaReporte.eliminar}" />
+						<p:tooltip for="descripcion" value="#{facturaReporte.descripcion}" />
+					</p:column>
+					<p:column headerText="CANTIDAD" width="5%"
+						styleClass="centrar p-r20px">
+						<p:outputLabel id="cantidad" value="#{facturaReporte.cantidad}"
+							styleClass="w100" />
+					</p:column>
+					<p:column headerText="P. UNIT." width="5%" styleClass="centrar">
+						<p:outputLabel id="precioUnitario"
+							value="#{facturaReporte.precioUnitVenta}"
+							styleClass="w100 centrarDerecha" />
+					</p:column>
+					<p:column headerText="IMPORTE" styleClass="centrar" width="5%">
+						<p:outputLabel id="importe" value="#{facturaReporte.importe}"
+							styleClass="w100 centrarDerecha" />
+					</p:column>
+				</p:dataTable>
+			</h:form>
+		</div>
+		<p:hotkey bind="ctrl+shift+p" handler="PF('obtenerProducto').show()" />
+		<p:dialog header="BUSCAR PRODUCTO" widgetVar="obtenerProducto"
+			onHide="pasarFocus()" closeOnEscape="true" appendTo="@(body)"
+			id="dialogoBusquedaProducto" resizable="false" modal="true"
+			closable="false" width="50%">
+			<h:form id="formBusquedaProducto">
+				<h:panelGrid columns="1">
+					<h:panelGrid columns="4" styleClass="m-b5px w100">
+						<p:hotkey bind="ctrl+shift+b"
+							handler="document.getElementById('formBusquedaProducto:txtEanNombreProducto').focus()" />
+						<p:outputLabel value="EAN/NOMBRE" styleClass="negrita" />
+						<p:remoteCommand name="obtenerProducto"
+							actionListener="#{facturaCajeroBean.obtenerProducto}"
+							update=":formBusquedaProducto:tablaBusquedaProductos, :mensaje" />
+						<p:inputText id="txtEanNombreProducto"
+							onfocus="document.getElementById('formBusquedaProducto:txtEanNombreProducto').select()"
+							value="#{facturaCajeroBean.criterioBusquedaProducto}"
+							styleClass="w100"
+							onkeypress="if (event.keyCode == 13) { obtenerProducto(); return false; }" />
+					</h:panelGrid>
+					<p:dataTable id="tablaBusquedaProductos" var="productoPvp"
+						scrollable="true" styleClass="ui-datatable-scrollable-body"
+						value="#{facturaCajeroBean.listaBusquedaProducto}"
+						emptyMessage="#{msg['lbl.mensajeTabla']}" selectionMode="single"
+						selection="#{facturaCajeroBean.productoPvp}"
+						rowKey="#{productoPvp}" scrollHeight="250">
+						<p:ajax event="rowSelect"
+							oncomplete="PF('dialogoCantidadProducto').show()" />
+						<p:column headerText="SELECCIONAR" width="100px"
+							styleClass="centrar">
+							<p:commandButton id="btnAgregarProductoBoton"
+								onfocus="estiloFila(this.id,2,'formBusquedaProducto:tablaBusquedaProductos')"
+								onblur="sinEstiloFila(this.id,2,'formBusquedaProducto:tablaBusquedaProductos')"
+								onclick="obtenerFilaProducto(this.id)"
+								oncomplete="PF('dialogoCantidadProducto').show()"
+								icon="ui-icon-play">
+								<f:setPropertyActionListener value="#{productoPvp}"
+									target="#{facturaCajeroBean.productoPvp}" />
+							</p:commandButton>
+						</p:column>
+						<p:column headerText="EAN" width="100px">
+									#{productoPvp.producto.ean}
+									</p:column>
+						<p:column headerText="NOMBRE" width="300px">
+									#{productoPvp.producto.nombre}
+								</p:column>
+						<p:column headerText="PVP" width="100px">
+									#{productoPvp.pvp}
+								</p:column>
+					</p:dataTable>
+				</h:panelGrid>
+			</h:form>
+		</p:dialog>
+		<p:dialog header="CANTIDAD DE PRODUCTO"
+			onHide="PF('obtenerProducto').hide();pasarFocus()"
+			widgetVar="dialogoCantidadProducto" closeOnEscape="true"
+			resizable="false" appendTo="@(body)" modal="true" showEffect="clip"
+			hideEffect="fold" id="dialogoCantidadProducto" width="15%">
+			<h:form id="formCantidadProducto">
+				<h:panelGrid columns="3">
+					<p:remoteCommand name="ingresarCantidadProducto"
+						update="txtCantidadProducto, :formDataTable:tablaDetalleEgresos, :formProducto, :formTotales, :mensaje"
+						actionListener="#{facturaCajeroBean.ingresarCantidadProducto}" />
+					<p:outputLabel value="CANTIDAD:" styleClass="negrita" />
+					<p:inputText id="txtCantidadProducto"
+						styleClass="w94 m-b5px m-r5px"
+						value="#{facturaCajeroBean.cantidadProducto}"
+						onkeypress="if (event.keyCode == 13) { ingresarCantidadProducto(); return false; }" />
+				</h:panelGrid>
+			</h:form>
+		</p:dialog>
+		<p:dialog header="BUSCAR CLIENTE" widgetVar="buscarCliente"
+			closable="false" resizable="false" appendTo="@(body)" modal="true"
+			showEffect="clip" hideEffect="fold" id="dialogoCliente" width="20%"
+			onHide="focusInicial()">
+			<h:form id="formNuevoCliente">
+				<h:panelGrid columns="3" width="100%">
+					<p:outputLabel value="CEDULA:" styleClass="negrita" />
+					<p:remoteCommand name="cargarCliente"
+						oncomplete="comprobarCliente(xhr, status, args);"
+						actionListener="#{facturaCajeroBean.cargarCliente}"
+						update="comboCedula, :mensaje,:formCliente, :formNuevo, :datosPago" />
+					<p:inputText id="comboCedula"
+						onkeypress="if (event.keyCode == 13) { cargarCliente(); return false; }"
+						value="#{facturaCajeroBean.criterioClienteBusqueda}" />
+				</h:panelGrid>
+			</h:form>
+		</p:dialog>
+		<p:hotkey bind="ctrl+shift+c"
+			handler="PF('personaDialogoNuevo').show()" />
+		<p:dialog header="INSERTAR CLIENTE" widgetVar="personaDialogoNuevo"
+			onHide="document.getElementById('formDataTable:tablaDetalleEgresos:0:txtcodigo').focus()"
+			resizable="false" modal="false" showEffect="clip" hideEffect="fold"
+			id="dialogoNuevo" styleClass="clienteFactura">
+			<h:form id="formNuevo">
+				<h:outputText value="LOS CAMPOS MARCADOS CON" />
+				<h:outputText value=" * " styleClass="asterisco" />
+				<h:outputText value="SON REQUERIDOS" />
+				<h:panelGrid columns="1" cellpadding="1" styleClass="w100">
+					<h:panelGrid id="panelNuevo" columns="3" cellpadding="1"
+						styleClass="w100" columnClasses="anchoMinimo,anchoMinimo">
+						<h:outputText value="" />
+						<h:outputText value="DATOS/PERSONALES" styleClass="negrita" />
+						<h:outputText value="" />
+						<p:outputLabel value="*" styleClass="asterisco" />
+						<h:outputText value="CÉDULA:" />
+						<p:inputText value="#{facturaCajeroBean.persona.cedula}"
+							styleClass="w100">
+						</p:inputText>
+						<h:outputText value="*" styleClass="asterisco" />
+						<h:outputText value="APELLIDOS:" />
+						<p:inputText id="apellidos" styleClass="w100"
+							value="#{facturaCajeroBean.persona.apellido}"
+							onblur="this.value=this.value.toUpperCase(), concatenarNuevo()" />
+						<h:outputText value="*" styleClass="asterisco" />
+						<h:outputText value="NOMBRES:" />
+						<p:inputText id="nombres"
+							value="#{facturaCajeroBean.persona.nombre}" styleClass="w100"
+							onblur="this.value=this.value.toUpperCase(), concatenarNuevo()" />
+						<h:outputText value="*" styleClass="asterisco" />
+						<h:outputText value="NOMBRE COMERCIAL:" />
+						<p:inputText id="nombreComercial" styleClass="w100"
+							value="#{facturaCajeroBean.persona.cliente.nombreComercial}"
+							onblur="this.value=this.value.toUpperCase();" />
+						<h:outputText value="" />
+						<h:outputText value="TELÉFONOS:" />
+						<p:inputTextarea rows="2" styleClass="w100"
+							value="#{facturaCajeroBean.persona.telefono}" />
+						<h:outputText value="" />
+						<h:outputText value="EMAIL:" />
+						<p:inputTextarea rows="2" styleClass="w100"
+							value="#{facturaCajeroBean.persona.email}" />
+						<h:outputText value="" />
+						<h:outputText value="DATOS/RESIDENCIA" styleClass="negrita" />
+						<h:outputText value="" />
+						<h:outputText value="*" styleClass="asterisco" />
+						<h:outputText value="PROVINCIA:" />
+						<p:selectOneMenu id="comboProvincia"
+							styleClass="comboNacimientoCliente w100"
+							value="#{facturaCajeroBean.persona.ciudad.provincia}">
+							<f:selectItem itemLabel="ESCOJA UNA PROVINCIA" />
+							<f:selectItems value="#{facturaCajeroBean.listaProvincias}"
+								var="provincia" itemValue="#{provincia}"
+								itemLabel="#{provincia.nombre}" />
+							<p:ajax event="change"
+								listener="#{facturaCajeroBean.cargarCiudades}"
+								update="comboCiudad" />
+						</p:selectOneMenu>
+						<h:outputText value="*" styleClass="asterisco" />
+						<h:outputText value="CIUDAD:" />
+						<p:selectOneMenu id="comboCiudad"
+							styleClass="w100 comboNacimientoCliente"
+							value="#{facturaCajeroBean.persona.ciudad.id}">
+							<f:selectItem itemLabel="ESCOJA UNA CIUDAD" />
+							<f:selectItems value="#{facturaCajeroBean.listaCiudades}"
+								var="ciudad" itemValue="#{ciudad.id}"
+								itemLabel="#{ciudad.nombre}" />
+						</p:selectOneMenu>
+						<h:outputText value="*" styleClass="asterisco" />
+						<h:outputText value="DIRECCION:" />
+						<p:inputTextarea value="#{facturaCajeroBean.persona.direccion}"
+							rows="2" styleClass="w100"
+							onblur="this.value=this.value.toUpperCase();" />
+						<h:outputText value="" />
+						<h:outputText value="REFERENCIA:" />
+						<p:inputTextarea rows="2"
+							value="#{facturaCajeroBean.persona.referencia}" styleClass="w100"
+							onblur="this.value = this.value.toUpperCase();" />
+						<h:outputText value="" />
+						<h:outputText value="REGISTRO FÍSICO" styleClass="negrita" />
+						<h:outputText value="" />
+						<h:outputText value="" />
+						<h:outputText value="# CARPETA:" />
+						<p:inputText value="#{facturaCajeroBean.persona.cliente.folio}"
+							styleClass="w100" onblur="this.value = this.value.toUpperCase();" />
+					</h:panelGrid>
+					<f:facet name="footer">
+						<p:separator />
+						<p:commandButton value="#{msg['btn.guardar']}"
+							update=":formDataTable ,:mensaje, formNuevo,:formCliente"
+							oncomplete="comprobar(xhr, status, args)" id="btnNuevoAceptar"
+							icon="#{msg['iconoGuardar']}"
+							actionListener="#{facturaCajeroBean.insertarCliente}" />
+						<p:commandButton value="#{msg['btn.cancelar']}"
+							oncomplete="PF('personaDialogoNuevo').hide() PF('buscarCliente').show()"
+							id="btnNuevolimpiar" icon="#{msg['iconoCancelar']}"
+							process="@this" />
+					</f:facet>
+				</h:panelGrid>
+			</h:form>
+		</p:dialog>
+		<p:hotkey bind="ctrl+shift+f"
+			handler="PF('clienteDialogoPago').show();" />
+		<p:dialog header="PAGO DE FACTURA" widgetVar="clienteDialogoPago"
+			resizable="false" appendTo="@(body)" modal="true" showEffect="clip"
+			hideEffect="fold" width="50%" closable="false">
+			<h:form id="facturaNombre">
+				<h:panelGrid columns="1" styleClass="w100">
+					<h:panelGrid columns="2" width="100%">
+						<p:outputLabel value="FACTURA A :" styleClass="negrita f-z20px" />
+						<p:autoComplete id="autoCompletarClienteFactura" styleClass="w100"
+							scrollHeight="200" effect="drop"
+							placeholder="MINIMO 3 CARACTERES"
+							emptyMessage="NO HAY DATOS A MOSTRAR"
+							panelStyle="width:400px !important" minQueryLength="3"
+							maxResults="20" value="#{facturaCajeroBean.clienteFactura}"
+							completeMethod="#{facturaCajeroBean.obtenerClienteFacturaPorBusqueda}">
+							<p:ajax event="itemSelect" id="prueba"
+								listener="#{facturaCajeroBean.cargarClienteFactura}"
+								update="autoCompletarClienteFactura, :mensaje" />
+						</p:autoComplete>
+						<p:outputLabel value="VALOR RECIBIDO $" styleClass="negrita f-z20px" />
+						<p:inputText value="#{facturaCajeroBean.montoEntrada}" />
+					</h:panelGrid>
+					<f:facet name="footer">
+						<p:separator />
+						<p:commandButton value="GUARDAR"
+							update=":formCliente, :formDataTable,  :formTotales, :mensaje,:formProducto,:datosPago,:facturaNombre"
+							actionListener="#{facturaCajeroBean.insertar}"
+							oncomplete="comprobarPago(xhr, status, args)" id="btnPagoAceptar"
+							icon="ui-icon-disk" />
+					</f:facet>
+				</h:panelGrid>
+			</h:form>
+		</p:dialog>
+		<script type="text/javascript">
+			//<![CDATA[
+
+			function comprobarPago(xhr, status, args) {
+				if (args.consumidorFinal) {
+					PF('clienteDialogoPago').show();
+				} else {
+					PF('clienteDialogoPago').hide();
+				}
+			}
+
+			var producto;
+
+			function focusProducto() {
+				producto.focus();
+			}
+
+			function pasarFocus() {
+				var n = document
+						.getElementById('formDataTable:tablaDetalleEgresos_data').childNodes.length - 1;
+				if (n > 0) {
+					document
+							.getElementById('formDataTable:tablaDetalleEgresos:'
+									+ (n - 1) + ':txtCodigo').disabled = true;
+					document.getElementById(
+							'formDataTable:tablaDetalleEgresos:' + n
+									+ ':txtCodigo').focus();
+				}
+			}
+
+			function obtenerFilaProducto(registroProducto) {
+				producto = document.getElementById(registroProducto);
+			}
+
+			window.onload = function() {
+				var a = document.getElementById('formCliente:j_idt44');
+				a.click();
+				document.getElementById("formDataTable:tablaDetalleEgresos").childNodes[0]
+						.setAttribute("class", "hola");
+			}
+
+			function validar() {
+				var n = document
+						.getElementById('formDataTable:tablaDetalleEgresos_data').childNodes.length - 1;
+				var codigo = document
+						.getElementById('formDataTable:tablaDetalleEgresos:'
+								+ n + ':txtcodigo').value;
+				console.log(codigo);
+				if (codigo.toUpperCase() == 'PP') {
+					document.getElementById('formCliente:btnGuardar').click();
+				}
+			}
+
+			function focusInicial() {
+				document.getElementById(
+						'formDataTable:tablaDetalleEgresos:0:txtcodigo')
+						.focus();
+			}
+
+			function nuevo() {
+				document.getElementById('formCliente:btnlimpiar').click();
+				document.getElementById('formNuevoCliente:comboCedula').focus();
+			}
+
+			function pasarFocus() {
+				var n = document
+						.getElementById('formDataTable:tablaDetalleEgresos_data').childNodes.length - 1;
+				if (n > 0) {
+					document
+							.getElementById('formDataTable:tablaDetalleEgresos:'
+									+ (n - 1) + ':txtcodigo').disabled = true;
+					document.getElementById(
+							'formDataTable:tablaDetalleEgresos:' + n
+									+ ':txtcodigo').focus();
+					document
+							.getElementById("formDataTable:tablaDetalleEgresos").childNodes[0]
+							.setAttribute("class", "hola");
+				}
+			}
+
+			function comprobarFactura(xhr, status, args) {
+				if (!args.errorFactura) {
+					PF('clienteDialogoPago').show();
+				}
+			}
+
+			function comprobarCliente(xhr, status, args) {
+				if (!args.errorCliente) {
+					PF('buscarCliente').hide();
+				} else if (args.errorClienteNoExiste) {
+					PF('buscarCliente').hide();
+					PF('personaDialogoNuevo').show();
+				}
+			}
+
+			function comprobarClienteFacturaNombre(xhr, status, args) {
+				if (!args.errorCliente1) {
+					PF('buscarClienteNombreFactura').hide();
+				} else if (args.errorClienteNoExiste1) {
+					PF('buscarClienteNombreFactura').hide();
+					PF('personaDialogoNuevo').show();
+				}
+			}
+
+			function comprobar(xhr, status, args) {
+				if (!args.validationFailed && args.cerrar) {
+					PF('personaDialogoNuevo').hide();
+					focusInicial();
+				}
+			}
+
+			function concatenarNuevo() {
+				var apellidos = jQuery('#formNuevo\\:apellidos').val();
+				var nombres = jQuery('#formNuevo\\:nombres').val();
+				jQuery('#formNuevo\\:nombreComercial').val(
+						apellidos + " " + nombres);
+			}
+
+			function concatenarEditar() {
+				var apellidos = jQuery('#formEditar\\:apellidos').val();
+				var nombres = jQuery('#formEditar\\:nombres').val();
+				jQuery('#formEditar\\:nombreComercial').val(
+						apellidos + " " + nombres);
+			}
+
+			function comprobarConsumidorFinal(xhr, status, args) {
+				if (args.consumidorFinal) {
+					PF('clienteDialogoPago').show();
+				} else {
+					PF('clienteDialogoPago').hide();
+				}
+			}
+			//]]>
+		</script>
+	</ui:define>
+</ui:composition>
+</html>

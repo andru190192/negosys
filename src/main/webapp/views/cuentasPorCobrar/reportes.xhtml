@@ -1,0 +1,111 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:p="http://primefaces.org/ui">
+<ui:composition template="/templates/layout/masterLayout.xhtml">
+	<ui:define name="title">
+            REPORTES
+        </ui:define>
+	<ui:define name="content">
+		<f:view>
+			<p:growl id="mensaje" showDetail="true" life="7000" />
+			<p:panel id="panel" header="REPORTES">
+				<div class="row">
+					<div class="col-xs-12 col-sm-4 col-md-4 col-lg-4"><h:form>
+							<h:panelGrid columns="1" cellpadding="1" styleClass="centrar w100">
+								<p:graphicImage styleClass="imagenReporte"
+									value="../../resources/imagenes/r4.svg" />
+								<h:panelGrid columns="2" cellpadding="1">
+									<h:outputText value="PROVINCIA:" />
+									<p:selectOneMenu id="comboProvincia" filter="true"
+										styleClass="w100" filterMatchMode="contains"
+										value="#{cuentasPorCobrarReport.provincia}">
+										<f:selectItem itemLabel="ESCOJA UNA PROVINCIA" />
+										<f:selectItems
+											value="#{cuentasPorCobrarReport.listaProvincias}"
+											var="provincia" itemValue="#{provincia}"
+											itemLabel="#{provincia.nombre}" />
+										<p:ajax event="change"
+											listener="#{cuentasPorCobrarReport.cargarCiudades}"
+											update="comboCiudad" />
+									</p:selectOneMenu>
+									<h:outputText value="CIUDAD:" />
+									<p:selectOneMenu id="comboCiudad" styleClass="w100"
+										value="#{cuentasPorCobrarReport.ciudad.id}" filter="true"
+										filterMatchMode="contains">
+										<f:selectItem itemLabel="ESCOJA UNA CIUDAD" />
+										<f:selectItems value="#{cuentasPorCobrarReport.listaCiudades}"
+											var="ciudad" itemValue="#{ciudad.id}"
+											itemLabel="#{ciudad.nombre}" />
+									</p:selectOneMenu>
+									<p:outputLabel value="VENDEDOR:" />
+									<p:selectOneMenu value="#{cuentasPorCobrarReport.vendedorId}"
+										filter="true" filterMatchMode="contains">
+										<f:selectItem itemLabel="ESCOJA UN VENDEDOR" />
+										<f:selectItems
+											value="#{cuentasPorCobrarReport.listaVendedores}"
+											var="vendedor" itemValue="#{vendedor.id}"
+											itemLabel="#{vendedor.cedula} - #{vendedor.apellido} #{vendedor.nombre}" />
+									</p:selectOneMenu>
+								</h:panelGrid>
+								<p:commandButton
+									actionListener="#{cuentasPorCobrarReport.reporteCobranzaFactura}"
+									value="COBROS DE FACTURAS" ajax="false"
+									update="formCobranzaFactura" />
+							</h:panelGrid>
+						</h:form></div>
+					<div class="col-xs-12 col-sm-4 col-md-4 col-lg-4"><h:form>
+							<h:panelGrid columns="1" cellpadding="1" styleClass="centrar w100">
+								<p:graphicImage styleClass="imagenReporte"
+									value="../../resources/imagenes/r4.svg" style="centrar" />
+								<h:panelGrid columns="2" cellpadding="1"
+									styleClass="centrar w100">
+									<h:outputText value="PROVINCIA:" />
+									<p:selectOneMenu id="comboProvincia" filter="true"
+										styleClass="w100" filterMatchMode="contains"
+										value="#{cuentasPorCobrarReport.provincia}" required="true"
+										requiredMessage="ESCOJA UNA PROVINCIA">
+										<f:selectItem itemLabel="ESCOJA UNA PROVINCIA" />
+										<f:selectItems
+											value="#{cuentasPorCobrarReport.listaProvincias}"
+											var="provincia" itemValue="#{provincia}"
+											itemLabel="#{provincia.nombre}" />
+										<p:ajax event="change"
+											listener="#{cuentasPorCobrarReport.cargarCiudades}"
+											update="comboCiudad" />
+									</p:selectOneMenu>
+									<h:outputText value="CIUDAD:" />
+									<p:selectOneMenu id="comboCiudad" styleClass="w100"
+										value="#{cuentasPorCobrarReport.ciudad.id}" filter="true"
+										filterMatchMode="contains" required="true"
+										requiredMessage="ESCOJA UNA CIUDAD">
+										<f:selectItem itemLabel="ESCOJA UNA CIUDAD" />
+										<f:selectItems value="#{cuentasPorCobrarReport.listaCiudades}"
+											var="ciudad" itemValue="#{ciudad.id}"
+											itemLabel="#{ciudad.nombre}" />
+									</p:selectOneMenu>
+								</h:panelGrid>
+								<p:commandButton
+									actionListener="#{cuentasPorCobrarReport.reporteCobranza}"
+									value="COBROS DE CREDITOS" ajax="false" styleClass="centrar"
+									update=":mensaje" />
+							</h:panelGrid>
+						</h:form></div>
+					<div class="col-xs-12 col-sm-4 col-md-4 col-lg-4"><h:form>
+							<h:panelGrid columns="1" cellpadding="1" styleClass="centrar w100">
+								<p:graphicImage styleClass="imagenReporte"
+									value="../../resources/imagenes/r4.svg" />
+								<p:commandButton
+									actionListener="#{cuentasPorCobrarReport.reporteCentralRiesgo}"
+									value="CENTRAL DE RIESGO" ajax="false" />
+							</h:panelGrid>
+						</h:form></div>
+				</div>
+			</p:panel>
+		</f:view>
+	</ui:define>
+</ui:composition>
+</html>

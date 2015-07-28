@@ -1,0 +1,243 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:p="http://primefaces.org/ui">
+
+<ui:composition template="/templates/layout/masterLayout.xhtml">
+
+	<ui:define name="title">NUEVA FACTURA INTERNA</ui:define>
+	<ui:define name="content">
+
+		<p:growl id="mensaje" showDetail="true" life="7000" />
+
+		<p:panel id="panel" header="CUADRE FACTURA/NOTA ENTREGA"
+			style="margin-bottom:10px;height:auto;">
+
+			<h:form id="formTotales" style="height: 0px;">
+				<h:panelGrid columns="2" cellpadding="0" styleClass="totales"
+					style="float: right;">
+					<h:panelGrid columns="2" cellpadding="0">
+						<h:outputText styleClass="letrasGrandes"
+							value="SUBTOTAL SIN IMPUESTO (1=2+3+4+5):"
+							style="padding-left: 4px;" />
+						<p:outputLabel readonly="true"
+							value="#{facturaInternaBean.cantidadFactura.stSinImpuesto}"
+							styleClass="colorLetras txtFactura" />
+
+						<h:outputText styleClass="letrasGrandes"
+							style="padding-left: 5px;" value="SUBTOTAL 12% (2):" />
+						<p:outputLabel readonly="true"
+							value="#{facturaInternaBean.cantidadFactura.st12}"
+							styleClass="colorLetras txtFactura" />
+
+						<h:outputText styleClass="letrasGrandes"
+							style="padding-left: 5px;" value="SUBTOTAL 0% (3):" />
+						<p:outputLabel readonly="true"
+							value="#{facturaInternaBean.cantidadFactura.st0}"
+							styleClass="colorLetras txtFactura" />
+
+						<h:outputText styleClass="letrasGrandes"
+							style="padding-left: 5px;" value="SUBTOTAL NO OBJETO DE IVA (4):" />
+						<p:outputLabel readonly="true"
+							value="#{facturaInternaBean.cantidadFactura.stNoObjetoIva}"
+							styleClass="colorLetras txtFactura" />
+
+						<h:outputText styleClass="letrasGrandes"
+							style="padding-left: 5px;" value="SUBTOTAL EXENTO DE IVA (5):" />
+						<p:outputLabel readonly="true"
+							value="#{facturaInternaBean.cantidadFactura.stExentoIva}"
+							styleClass="colorLetras txtFactura" />
+					</h:panelGrid>
+					<h:panelGrid columns="2" cellpadding="0">
+
+						<h:outputText styleClass="letrasGrandes"
+							style="padding-left: 4px;" value="TOTAL DESCUENTO (6):" />
+						<p:outputLabel readonly="true"
+							value="#{facturaInternaBean.cantidadFactura.tDescuentoProducto}"
+							styleClass="colorLetras txtFactura" />
+
+						<h:outputText styleClass="letrasGrandes"
+							style="padding-left: 4px;" value="VALOR ICE (7):" />
+						<p:outputLabel readonly="true"
+							value="#{facturaInternaBean.cantidadFactura.valorIce}"
+							styleClass="colorLetras txtFactura" />
+
+						<h:outputText styleClass="letrasGrandes"
+							style="padding-left: 4px;" value="VALOR IRBPNR(8):" />
+						<p:outputLabel readonly="true"
+							value="#{facturaInternaBean.cantidadFactura.valorIRBPNR}"
+							styleClass="colorLetras txtFactura" />
+
+						<h:outputText styleClass="letrasGrandes"
+							value="IVA 12% (9=(2+7)*12%):" style="padding-left: 8px;" />
+						<p:outputLabel readonly="true"
+							value="#{facturaInternaBean.cantidadFactura.iva12}"
+							styleClass="colorLetras txtFactura" />
+
+						<h:outputText styleClass="letrasGrandes" value="PROPINA (10):"
+							style="padding-left: 8px;" />
+						<p:outputLabel readonly="true"
+							value="#{facturaInternaBean.cantidadFactura.propina}"
+							styleClass="colorLetras txtFactura" />
+					</h:panelGrid>
+				</h:panelGrid>
+			</h:form>
+
+			<h:form id="formDocumento">
+				<h:panelGrid columns="3" cellpadding="1"
+					style="margin-bottom: 10px;"
+					rowClasses="centrar,centrar1,centrar2,centrar3,centrar4,centrar5">
+
+					<h:outputText value="# DOCUMENTO:" styleClass="negrita" />
+					<p:inputText readonly="true" style="width:300px !important"
+						value="#{facturaInternaBean.factura.establecimiento}-#{facturaInternaBean.factura.puntoEmision}-#{facturaInternaBean.factura.secuencia}" />
+					<p:outputLabel value="" />
+
+					<p:outputLabel value="CLIENTE:" styleClass="negrita" />
+					<p:inputText readonly="true"
+						value="#{facturaInternaBean.cliente.cedula} - #{facturaInternaBean.cliente.apellido} #{facturaInternaBean.cliente.nombre}"
+						style="width:300px !important" />
+					<p:outputLabel value="" />
+
+					<h:outputText value="VENDEDOR:" styleClass="negrita" />
+					<p:inputText readonly="true" style="width:300px !important"
+						value="#{facturaInternaBean.factura.vendedor.empleado.persona.apellido} #{facturaInternaBean.factura.vendedor.empleado.persona.nombre}" />
+					<p:outputLabel value="" />
+
+				</h:panelGrid>
+				<p:commandButton value="GUARDAR"
+					update="formDocumento, :formDataTable,  :formTotales, :mensaje"
+					id="btnGuardar" icon="ui-icon-bookmark"
+					actionListener="#{facturaInternaBean.actualizar}" />
+
+				<p:commandButton value="CANCELAR" id="btnlimpiar"
+					update="formDocumento, :formDataTable, :formTotales"
+					icon="ui-icon-close"
+					actionListener="#{facturaInternaBean.nuevoCuadre}" process="@this" />
+
+			</h:form>
+
+			<h:form id="formTotal">
+				<h:panelGrid columns="2" cellpadding="1">
+					<h:outputText styleClass="letrasGrandes" style="padding-left: 8px;"
+						value="VALOR TOTAL (11=1+7+8+9+10):" />
+					<p:outputLabel readonly="true"
+						value="#{facturaInternaBean.cantidadFactura.valorTotal}"
+						styleClass="colorLetras txtFactura" />
+				</h:panelGrid>
+			</h:form>
+
+			<h:form id="formDataTable" style="margin-top: 90px;">
+
+				<p:dataTable id="tablaDetalleEgresos" var="facturaReporte"
+					value="#{facturaInternaBean.listaFacturaReporte}"
+					emptyMessage="#{msg['lbl.mensajeTabla']}"
+					paginatorPosition="bottom">
+
+					<p:column headerText="IMPUESTO"
+						style="text-align:center;width: 5%;">
+						<h:outputLabel id="impuesto" value="#{facturaReporte.impuesto}"
+							style="width:100%" />
+					</p:column>
+
+					<p:column headerText="CODIGO"
+						style="text-align:center;width: 40px;">
+							 	#{facturaReporte.codigo}
+					</p:column>
+
+					<p:column headerText="DESCRIPCION"
+						style="text-align:center;width: 80px;">
+						<p:inputText id="descripcion" style="width:100%"
+							value="#{facturaReporte.descripcion}" readonly="true" />
+						<p:tooltip for="descripcion" value="#{facturaReporte.descripcion}" />
+					</p:column>
+
+					<p:column headerText="CANTIDAD FACTURADA"
+						style="text-align:center;width: 40px;">
+						<h:outputText value="#{facturaReporte.cantidad}"
+							style="width:100%" />
+					</p:column>
+
+					<p:column headerText="CANTIDAD "
+						style="text-align:center;width: 40px;">
+						<p:inputText value="#{facturaReporte.cantidadCuadre}"
+							style="width:100%">
+							<p:ajax event="change"
+								listener="#{facturaInternaBean.cambiarCantidad(facturaReporte)}"
+								update=":formDataTable ,:mensaje, :formTotales, :formTotal" />
+						</p:inputText>
+					</p:column>
+
+					<p:column headerText="P. UNIT. FACTURADO"
+						style="text-align:center;width: 40px;">
+						<h:outputText value="#{facturaReporte.precioUnitVenta}"
+							style="width:100%" />
+					</p:column>
+
+					<p:column headerText="P. UNIT."
+						style="text-align:center;width: 40px;">
+						<p:inputText value="#{facturaReporte.precioUnitVentaCuadre}"
+							style="width:100%">
+							<p:ajax event="change"
+								listener="#{facturaInternaBean.cambiarPrecio(facturaReporte)}"
+								update=":formDataTable ,:mensaje, :formTotales, :formTotal" />
+						</p:inputText>
+					</p:column>
+
+					<p:column headerText="DESC FACTURADO"
+						style="text-align:center;width: 40px;">
+						<h:outputText value="#{facturaReporte.descuentoDolares}"
+							style="width:100%" />
+					</p:column>
+
+					<p:column headerText="DESC" style="text-align:center;width: 40px;">
+						<p:inputText value="#{facturaReporte.descuentoDolaresCuadre}"
+							style="width:100%">
+							<p:ajax event="change"
+								listener="#{facturaInternaBean.cambiarDescDol(facturaReporte)}"
+								update=":formDataTable ,:mensaje, :formTotales, :formTotal" />
+						</p:inputText>
+					</p:column>
+
+					<p:column headerText="IMPORTE"
+						style="text-align:center;width: 40px;">
+						<p:inputText value="#{facturaReporte.importe}" style="width:100%">
+							<p:ajax event="change"
+								listener="#{facturaInternaBean.cambiarImporte(facturaReporte)}"
+								update=":formDataTable ,:mensaje, :formTotales, :formTotal" />
+						</p:inputText>
+					</p:column>
+				</p:dataTable>
+			</h:form>
+
+		</p:panel>
+
+		<script type="text/javascript">
+			//<![CDATA[
+			function comprobar(xhr, status, args) {
+				if (!args.validationFailed && args.error) {
+					PF('clienteDialogoNuevo').hide();
+				}
+			}
+			function comprobarAutorizacion(xhr, status, args) {
+				if (args.error) {
+					PF('detalleEgresoDialogoEliminar').show()
+				}
+			}
+			//]]>
+
+			function handleSubmitRequest(args) {
+				if (!args.validationFailed) {
+					PF('productoDialogoNuevo').hide();
+				}
+			}
+		</script>
+
+	</ui:define>
+
+</ui:composition>
+</html>

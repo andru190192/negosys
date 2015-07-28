@@ -1,0 +1,124 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:p="http://primefaces.org/ui">
+
+<ui:composition template="/templates/layout/masterLayout.xhtml">
+
+	<ui:define name="title">
+			INVENTARIO INICIAL
+	</ui:define>
+
+	<ui:define name="content">
+
+		<p:growl id="mensaje" showDetail="true" life="7000" />
+
+		<p:panel id="panel" header="INVENTARIO INICIAL"
+			style="margin-bottom:10px;">
+
+			<h:form id="busquedaTabla">
+				<h:panelGrid columns="3">
+					<h:outputText value="GRUPO " />
+					<p:selectOneMenu filter="true" filterMatchMode="contains"
+						value="#{inventarioInicialBean.grupo.grupoid}">
+						<f:selectItem itemLabel="ESCOJA UN GRUPO" />
+						<f:selectItems value="#{inventarioInicialBean.listaGrupos}"
+							var="grupo" itemValue="#{grupo.grupoid}"
+							itemLabel="#{grupo.nombre}" />
+					</p:selectOneMenu>
+					<h:outputText />
+
+					<h:outputText value="EAN / CÓDIGOS / NOMBRE " />
+					<p:inputText value="#{inventarioInicialBean.criterioBusqueda}"
+						onblur="this.value=this.value.toUpperCase();" />
+					<p:commandButton id="btnBuscar"
+						update="busquedaTabla, :formDataTable, :mensaje"
+						icon="#{msg['iconoBuscar']}"
+						actionListener="#{inventarioInicialBean.obtenerProductos}" />
+					<p:focus context="btnBuscar" />
+				</h:panelGrid>
+			</h:form>
+
+			<div class="row" style="width: 100%;">
+				<div class="col-xs-12 col-sm-12 col-md-10 col-lg-10">
+					<h:form id="formDataTable">
+						<p:dataTable id="tablaProductos" var="producto"
+							value="#{inventarioInicialBean.listaProductos}" paginator="true"
+							rows="10" emptyMessage="#{msg['lbl.mensajeTabla']}"
+							paginatorPosition="bottom" rowKey="#{producto.productoid}"
+							selection="#{inventarioInicialBean.producto}"
+							selectionMode="single">
+
+							<p:ajax event="rowSelect" update=":formInventarioInicial"
+								listener="#{inventarioInicialBean.obtenerProducto}" />
+
+							<p:column headerText="EAN" style="text-align:center;" width="20%">
+							 	#{producto.ean}
+						</p:column>
+
+							<p:column headerText="NOMBRE" style="text-align:center;">
+							 	#{producto.nombre}
+						</p:column>
+
+							<p:column headerText="GRUPO" style="text-align:center;"
+								width="20%">
+							 	#{producto.grupo.nombre}
+						</p:column>
+
+							<p:column headerText="CAN. MIN." style="text-align:center;"
+								width="20%">
+							 	#{producto.cantidadminima}
+						</p:column>
+
+						</p:dataTable>
+
+					</h:form>
+				</div>
+				<div class="col-xs-12 col-sm-12 col-md-2 col-lg-2">
+					<h:form id="formInventarioInicial">
+						<h:panelGrid columns="2" cellpadding="1">
+
+							<h:outputText value="NOMBRE:" styleClass="negrita" />
+							<p:inputTextarea
+								value="#{inventarioInicialBean.producto.nombre}"
+								readonly="true" />
+
+							<h:outputText value="PRECIO ACTUAL:" styleClass="negrita" />
+							<p:inputText value="#{inventarioInicialBean.producto.precio}"
+								readonly="true" />
+
+							<h:outputText value="PRECIO NUEVO:" styleClass="negrita" />
+							<p:inputText value="#{inventarioInicialBean.precio}"
+								required="true" requiredMessage="INGRESE UN PRECIO" />
+
+							<h:outputText value="CANTIDAD:" styleClass="negrita" />
+							<p:inputText value="#{inventarioInicialBean.cantidad}"
+								required="true" requiredMessage="INGRESE UNA CANTIDAD" />
+
+							<h:outputText style="font-weight: bold;" value="BODEGA:" />
+							<p:selectOneMenu value="#{inventarioInicialBean.bodega.bodegaid}"
+								disabled="#{inventarioInicialBean.bnBodega}">
+								<f:selectItem itemLabel="ESCOJA UNA BODEGA" id="comboFormNuevo" />
+								<f:selectItems value="#{inventarioInicialBean.listaBodegas}"
+									var="bodega" itemValue="#{bodega.bodegaid}"
+									itemLabel="#{bodega.nombre}" />
+							</p:selectOneMenu>
+
+							<p:commandButton value="ACTUALIZAR"
+								update="formInventarioInicial, :formDataTable, :mensaje"
+								id="btnNuevoAceptar" icon="ui-icon-refresh"
+								actionListener="#{inventarioInicialBean.actualizarKardexInicial}" />
+						</h:panelGrid>
+					</h:form>
+				</div>
+			</div>
+		</p:panel>
+
+	</ui:define>
+
+</ui:composition>
+</html>

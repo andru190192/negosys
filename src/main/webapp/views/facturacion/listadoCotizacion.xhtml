@@ -1,0 +1,212 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:p="http://primefaces.org/ui">
+<ui:composition template="/templates/layout/masterLayout.xhtml">
+	<ui:define name="title">
+			LISTADO DE COTIZACIONES
+		</ui:define>
+	<ui:define name="content">
+		<p:growl id="mensaje" showDetail="true" life="7000" />
+		<p:panel id="panel" header="LISTADO DE COTIZACIONES">
+			<h:form id="busquedaTabla">
+				<h:panelGrid columns="3">
+					<h:outputText value="CÉDULA / APELLIDOS / NOMBRES " />
+					<p:inputText
+						value="#{listadoCotizacionBean.criterioBusquedaCliente}"
+						onblur="this.value=this.value.toUpperCase();" />
+					<h:outputText />
+					<h:outputText value="# COTIZACION Ó # COD. " />
+					<p:inputText
+						value="#{listadoCotizacionBean.criterioBusquedaCodigo}"
+						onblur="this.value=this.value.toUpperCase();" />
+					<h:outputText />
+					<h:outputText value="EAN / CODIGO1 / CODIGO2 / NOMBRE " />
+					<p:inputText
+						value="#{listadoCotizacionBean.criterioBusquedaDetalle}"
+						onblur="this.value=this.value.toUpperCase();" />
+					<h:outputText />
+					<p:outputLabel value="FECHA INGRESO" />
+					<p:calendar
+						value="#{listadoCotizacionBean.criterioBusquedaFechaDocumento}"
+						navigator="true" />
+					<p:commandButton update="busquedaTabla, :formDataTable, :mensaje"
+						icon="#{msg['iconoBuscar']}"
+						actionListener="#{listadoCotizacionBean.obtener}" />
+				</h:panelGrid>
+			</h:form>
+			<h:form id="formDataTable">
+				<p:dataTable id="tablaListadocotizacions" var="cotizacion"
+					scrollable="true" styleClass="ui-datatable-scrollable-body"
+					value="#{listadoCotizacionBean.listaCotizaciones}" paginator="true"
+					rows="10" rowsPerPageTemplate="5,10,15"
+					paginatorTemplate="{RowsPerPageDropdown} {FirstPageLink} {PreviousPageLink} {CurrentPageReport} {NextPageLink} {LastPageLink}"
+					paginatorPosition="bottom"
+					emptyMessage="#{msg['lbl.mensajeTabla']}">
+					<f:facet name="header">
+						<p:tooltip for="btnNuevo" value="#{msg['lbl.insertar']}" />
+						<p:commandButton id="btnNuevo"
+							action="#{listadoCotizacionBean.redirecionar}"
+							icon="ui-icon-plus" />
+					</f:facet>
+					<p:column headerText="GESTIONAR" styleClass="centrar" width="20%">
+						<p:tooltip value="MOSTRAR" for="btnMostrar" />
+						<p:commandButton id="btnMostrar" update=":formMostrar"
+							oncomplete="PF('cotizacionDialogoMostrar').show()"
+							icon="ui-icon-newwin"
+							action="#{listadoCotizacionBean.generarListaDetalle}">
+							<f:setPropertyActionListener value="#{cotizacion}"
+								target="#{listadoCotizacionBean.cotizacion}" />
+						</p:commandButton>
+						<p:tooltip value="CONVERTIR" for="btnConvertir" />
+						<p:commandButton id="btnConvertir"
+							action="#{listadoCotizacionBean.convertirFactura}"
+							icon="ui-icon-extlink">
+							<f:setPropertyActionListener value="#{cotizacion}"
+								target="#{listadoCotizacionBean.cotizacion}" />
+						</p:commandButton>
+					</p:column>
+					<p:column headerText="COD." styleClass="centrar" width="8%">  
+            			#{cotizacion.id}
+        			</p:column>
+					<p:column headerText="# COTIZACION " styleClass="centrar"
+						width="20%">  
+            			#{cotizacion.establecimiento}-#{cotizacion.puntoEmision}-#{cotizacion.secuencia}
+        			</p:column>
+					<p:column headerText="CÉDULA" width="30%" styleClass="centrar">  
+            			#{cotizacion.cliente.persona.cedula}
+        			</p:column>
+					<p:column headerText="CLIENTE" width="50%" styleClass="centrar">  
+            			#{cotizacion.cliente.persona.apellido} #{cotizacion.cliente.persona.nombre}
+        			</p:column>
+					<p:column headerText="FECHA" width="20%" styleClass="centrar">
+						<p:outputLabel value="#{cotizacion.fecha}">
+							<f:convertDateTime pattern="dd/MM/yyyy"
+								timeZone="America/Guayaquil" />
+						</p:outputLabel>
+					</p:column>
+				</p:dataTable>
+			</h:form>
+		</p:panel>
+		<p:dialog header="MOSTRAR COTIZACIÓN"
+			widgetVar="cotizacionDialogoMostrar" resizable="false" modal="false"
+			showEffect="clip" hideEffect="fold" id="dialogoMostrar" width="50%">
+			<h:form id="formMostrar">
+				<h:panelGrid id="panelMostrar" columns="3" width="100%"
+					columnClasses="x,b">
+					<h:panelGrid columns="2">
+						<h:outputText value="# COTIZACION "
+							styleClass="colorLetraAzul negrita" />
+						<h:outputText
+							value="#{listadoCotizacionBean.cotizacion.establecimiento}-#{listadoCotizacionBean.cotizacion.puntoEmision}-#{listadoCotizacionBean.cotizacion.secuencia}" />
+						<h:outputText value="CLIENTE" styleClass="colorLetraAzul negrita" />
+						<h:outputText
+							value="#{listadoCotizacionBean.cotizacion.cliente.persona.cedula} - #{listadoCotizacionBean.cotizacion.cliente.persona.apellido} #{listadoCotizacionBean.cotizacion.cliente.persona.nombre}" />
+						<h:outputText value="FECHA" styleClass="colorLetraAzul negrita" />
+						<h:outputText value="#{listadoCotizacionBean.cotizacion.fecha}">
+							<f:convertDateTime pattern="dd/MM/yyyy"
+								timeZone="America/Guayaquil" />
+						</h:outputText>
+					</h:panelGrid>
+					<h:panelGrid columns="2" cellpadding="0" cellspacing="0">
+						<h:panelGrid columns="2" cellpadding="0" styleClass="m-r10px">
+							<h:outputText styleClass="negrita letrasAzules"
+								value="SUBTOTAL SIN IMPUESTO (1=2+3+4+5):" />
+							<p:outputLabel
+								value="#{listadoCotizacionBean.cantidadFactura.stSinImpuesto}" />
+							<h:outputText styleClass="negrita letrasAzules"
+								value="SUBTOTAL 12% (2):" />
+							<p:outputLabel
+								value="#{listadoCotizacionBean.cantidadFactura.st12}" />
+							<h:outputText styleClass="negrita letrasAzules"
+								value="SUBTOTAL 0% (3):" />
+							<p:outputLabel
+								value="#{listadoCotizacionBean.cantidadFactura.st0}" />
+							<h:outputText styleClass="negrita letrasAzules"
+								value="SUBTOTAL NO OBJETO DE IVA (4):" />
+							<p:outputLabel
+								value="#{listadoCotizacionBean.cantidadFactura.stNoObjetoIva}" />
+							<h:outputText styleClass="negrita letrasAzules"
+								value="SUBTOTAL EXENTO DE IVA (5):" />
+							<p:outputLabel
+								value="#{listadoCotizacionBean.cantidadFactura.stExentoIva}" />
+						</h:panelGrid>
+						<h:panelGrid columns="2" cellpadding="0">
+							<h:outputText styleClass="negrita letrasAzules"
+								value="TOTAL DESCUENTO (6):" />
+							<p:outputLabel
+								value="#{listadoCotizacionBean.cantidadFactura.tDescuentoProducto}" />
+							<h:outputText styleClass="negrita letrasAzules"
+								value="VALOR ICE (7):" />
+							<p:outputLabel
+								value="#{listadoCotizacionBean.cantidadFactura.valorIce}" />
+							<h:outputText styleClass="negrita letrasAzules"
+								value="VALOR IRBPNR(8):" />
+							<p:outputLabel
+								value="#{listadoCotizacionBean.cantidadFactura.valorIRBPNR}" />
+							<h:outputText styleClass="negrita letrasAzules"
+								value="IVA 12% (9=(2+7)*12%):" />
+							<p:outputLabel
+								value="#{listadoCotizacionBean.cantidadFactura.iva12}" />
+							<h:outputText styleClass="negrita letrasAzules"
+								value="PROPINA (10):" />
+							<p:outputLabel
+								value="#{listadoCotizacionBean.cantidadFactura.propina}" />
+						</h:panelGrid>
+					</h:panelGrid>
+				</h:panelGrid>
+				<p:dataTable id="tablaDetallecotizacions" var="detallecotizacion"
+					value="#{listadoCotizacionBean.listaCotizacionesDetalle}"
+					paginator="true" rows="5"
+					emptyMessage="No hay informacion disponible."
+					paginatorPosition="bottom">
+					<p:column headerText="IMPUESTO" styleClass="centrar" width="13%">
+						<h:outputLabel id="impuesto" value="#{detallecotizacion.impuesto}"
+							styleClass="w100" />
+					</p:column>
+					<p:column headerText="CODIGO" styleClass="centrar" width="20%">
+							 	#{detallecotizacion.codigo}
+						</p:column>
+					<p:column headerText="DESCRIPCION" width="50%"
+						filterBy="#{detallecotizacion.descripcion}"
+						styleClass="centrar p-l0px">
+						<p:inputText id="txtDescripcion" styleClass="w100" readonly="true"
+							value="#{detallecotizacion.descripcion}" />
+						<p:tooltip for="txtDescripcion"
+							value="#{detallecotizacion.descripcion}" />
+					</p:column>
+					<p:column headerText="CANTIDAD" styleClass="centrar" width="15%">  
+            				#{detallecotizacion.cantidad}  
+        				</p:column>
+					<p:column headerText="UNIDADES" styleClass="centrar">  
+						#{detallecotizacion.nombreCantidad}
+					</p:column>
+					<p:column headerText="P. UNITARIO" styleClass="centrar" width="15%">  
+							#{detallecotizacion.precioUnitVenta}
+        				</p:column>
+					<p:column headerText="DESC $" styleClass="centrarDerecha" width="15%">  
+            				#{detallecotizacion.descuentoDolares}  
+        				</p:column>
+					<p:column headerText="DESC %" styleClass="centrarDerecha" width="15%">  
+            				#{detallecotizacion.descuentoPorcentaje}  
+        				</p:column>
+					<p:column headerText="IMPORTE" styleClass="centrarDerecha" width="15%">  
+            				#{detallecotizacion.importe}  
+        				</p:column>
+					<p:columnGroup type="footer">
+						<p:row>
+							<p:column colspan="8" styleClass="centrarDerecha f-z15px negrita"
+								footerText="TOTAL" />
+							<p:column styleClass="f-z15px negrita"
+								footerText="#{listadoCotizacionBean.cantidadFactura.valorTotal}" />
+						</p:row>
+					</p:columnGroup>
+				</p:dataTable>
+			</h:form>
+		</p:dialog>
+	</ui:define>
+</ui:composition>
+</html>

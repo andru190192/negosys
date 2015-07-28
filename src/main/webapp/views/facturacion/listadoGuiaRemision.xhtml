@@ -1,0 +1,202 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:p="http://primefaces.org/ui">
+
+<ui:composition template="/templates/layout/masterLayout.xhtml">
+
+	<ui:define name="title">
+			LISTADO DE GUIA DE REMISION
+		</ui:define>
+	<ui:define name="content">
+
+		<p:growl id="mensaje" showDetail="true" life="7000" />
+
+		<p:panel id="panel" header="LISTADO DE GUIA DE REMISION"
+			>
+
+			<h:form id="busquedaTabla">
+				<h:panelGrid columns="3">
+					<h:outputText value="CÉDULA / APELLIDOS / NOMBRES " />
+					<p:inputText
+						value="#{listadoGuiaRemisionBean.criterioBusquedaCliente}"
+						onblur="this.value=this.value.toUpperCase();" />
+					<h:outputText />
+
+					<h:outputText value="CÓDIGO " />
+					<p:inputText
+						value="#{listadoGuiaRemisionBean.criterioBusquedaCodigo}"
+						onblur="this.value=this.value.toUpperCase();" />
+					<p:commandButton update="busquedaTabla, :formDataTable, :mensaje"
+						icon="#{msg['iconoBuscar']}"
+						actionListener="#{listadoGuiaRemisionBean.obtener}" />
+				</h:panelGrid>
+			</h:form>
+
+			<h:form id="formDataTable">
+				<p:dataTable id="tablaListadoEgresos" var="guiaRemision"
+					value="#{listadoGuiaRemisionBean.listaGuiaRemision}"
+					paginator="true" rows="10" rowsPerPageTemplate="5,10,15"
+					paginatorTemplate="{RowsPerPageDropdown} {FirstPageLink} {PreviousPageLink} {CurrentPageReport} {NextPageLink} {LastPageLink}"
+					paginatorPosition="bottom"
+					emptyMessage="#{msg['lbl.mensajeTabla']}">
+
+					<f:facet name="header">
+						<p:tooltip for="btnNuevo" value="#{msg['lbl.insertar']}" />
+						<p:commandButton id="btnNuevo"
+							action="#{listadoGuiaRemisionBean.redirecionar}"
+							icon="ui-icon-plus" />
+					</f:facet>
+
+					<p:column headerText="GESTIONAR"
+						style="text-align:center;width: 90px;">
+
+						<p:tooltip value="MOSTRAR" for="btnMostrar" />
+						<p:commandButton id="btnMostrar" update=":formMostrar"
+							oncomplete="PF('egresoDialogoMostrar').show()"
+							icon="ui-icon-newwin">
+							<f:setPropertyActionListener value="#{guiaRemision}"
+								target="#{listadoGuiaRemisionBean.guiaRemision}" />
+						</p:commandButton>
+
+						<p:tooltip value="IMPRIMIR" for="btnImprimir" />
+						<p:commandButton id="btnImprimir"
+							oncomplete="PF('imprimir').show()" icon="ui-icon-print">
+							<f:setPropertyActionListener value="#{guiaRemision}"
+								target="#{listadoGuiaRemisionBean.guiaRemision}" />
+						</p:commandButton>
+
+					</p:column>
+
+					<p:column headerText="CÉDULA"
+						style="text-align:center;width: 50px;">  
+            			#{guiaRemision.cliente.persona.cedula}
+        			</p:column>
+
+					<p:column headerText="CLIENTE"
+						style="text-align:center;width: 50px;">  
+            			#{guiaRemision.cliente.persona.apellido} #{guiaRemision.cliente.persona.nombre}
+        			</p:column>
+
+					<p:column headerText="CÓDIGO"
+						filterBy="#{guiaRemision.codigodocumento}"
+						filterMatchMode="contains" style="text-align:center;width: 50px;">  
+            			#{guiaRemision.codigodocumento}  
+        			</p:column>
+
+					<p:column headerText="PUNTO DE PARTIDA"
+						filterBy="#{guiaRemision.codigodocumento}"
+						filterMatchMode="contains" style="text-align:center;width: 50px;">  
+            			#{guiaRemision.puntopartida}  
+        			</p:column>
+
+					<p:column headerText="PUNTO DE LLEGADA"
+						filterBy="#{guiaRemision.codigodocumento}"
+						filterMatchMode="contains" style="text-align:center;width: 50px;">  
+            			#{guiaRemision.puntollegada}  
+        			</p:column>
+
+					<p:column headerText="FECHA" style="text-align:center;width: 50px;">
+						<p:outputLabel value="#{guiaRemision.fechainicio}">
+							<f:convertDateTime pattern="dd/MM/yyyy"
+								timeZone="America/Guayaquil" />
+						</p:outputLabel>
+					</p:column>
+
+				</p:dataTable>
+			</h:form>
+		</p:panel>
+
+		<p:dialog header="IMPRIMIR" widgetVar="imprimir" resizable="false"
+			modal="false" showEffect="clip" hideEffect="fold"
+			id="dialogoImprimir">
+			<h:form target="_blank">
+				<p:outputLabel value="¿DESEA IMPRIMIR LA GUIA DE REMISION?" />
+				<h:panelGrid columns="2" cellpadding="1">
+					<p:commandButton value="SI"
+						actionListener="#{listadoGuiaRemisionBean.imprimirGuiaRemision}"
+						ajax="false" oncomplete="PF('imprimir').hide()"
+						icon="ui-icon-check" />
+
+					<p:commandButton value="NO" oncomplete="PF('imprimir').hide()"
+						icon="ui-icon-close" />
+				</h:panelGrid>
+			</h:form>
+		</p:dialog>
+
+		<p:dialog header="MOSTRAR FACTURA" widgetVar="egresoDialogoMostrar"
+			resizable="false" modal="false" showEffect="clip" hideEffect="fold"
+			id="dialogoMostrar" width="50%">
+
+			<h:form id="formMostrar">
+
+				<h:panelGrid id="panelMostrar" columns="2">
+					<h:panelGrid columns="2">
+						<h:outputText value="NÚMERO INTERNO" styleClass="negrita" />
+						<h:outputText value="#{listadoGuiaRemisionBean.guiaRemision.id}  " />
+						<h:outputText value="CÓDIGO" styleClass="negrita" />
+						<h:outputText
+							value="#{listadoGuiaRemisionBean.guiaRemision.establecimiento}-#{listadoGuiaRemisionBean.guiaRemision.puntoEmision}-#{listadoGuiaRemisionBean.guiaRemision.secuencia}" />
+						<h:outputText value="FECHA INICIO" styleClass="negrita" />
+						<h:outputText
+							value="#{listadoGuiaRemisionBean.guiaRemision.fechaInicio}">
+							<f:convertDateTime pattern="dd/MM/yyyy"
+								timeZone="America/Guayaquil" />
+						</h:outputText>
+						<h:outputText value="FECHA FIN" styleClass="negrita"/>
+						<h:outputText
+							value="#{listadoGuiaRemisionBean.guiaRemision.fechaTerminacion}">
+							<f:convertDateTime pattern="dd/MM/yyyy"
+								timeZone="America/Guayaquil" />
+						</h:outputText>
+						<h:outputText value="MOTIVO DE TRANSLADO" styleClass="negrita" />
+						<h:outputText
+							value="#{listadoGuiaRemisionBean.guiaRemision.motivoTraslado.nombre}" />
+					</h:panelGrid>
+
+					<h:panelGrid columns="2">
+						<h:outputText value="CLIENTE" styleClass="negrita" />
+						<h:outputText
+							value="#{listadoGuiaRemisionBean.guiaRemision.cliente.persona.cedula} - #{listadoGuiaRemisionBean.guiaRemision.cliente.persona.apellido} #{listadoGuiaRemisionBean.guiaRemision.cliente.persona.nombre}" />
+						<h:outputText value="TRANSPORTISTA" styleClass="negrita"/>
+						<h:outputText
+							value="#{listadoGuiaRemisionBean.guiaRemision.transportista.empleado.persona.cedula} - #{listadoGuiaRemisionBean.guiaRemision.transportista.empleado.persona.apellido} #{listadoGuiaRemisionBean.guiaRemision.transportista.empleado.persona.nombre}" />
+						<h:outputText value="PLACA" styleClass="negrita"/>
+						<h:outputText
+							value="#{listadoGuiaRemisionBean.guiaRemision.placa}" />
+						<h:outputText value="PUNTO DE PARTIDA" styleClass="negrita"/>
+						<h:outputText
+							value="#{listadoGuiaRemisionBean.guiaRemision.puntoPartida}" />
+						<h:outputText value="PUNTO DE LLEGADA" styleClass="negrita"/>
+						<h:outputText
+							value="#{listadoGuiaRemisionBean.guiaRemision.puntoLlegada}" />
+					</h:panelGrid>
+				</h:panelGrid>
+
+				<p:dataTable id="tablaDetalleEgresos" var="detalleGuiaRemision"
+					value="#{listadoGuiaRemisionBean.guiaRemision.detalleGuiaRemisions}"
+					paginator="true" rows="8"
+					emptyMessage="No hay informacion
+					disponible."
+					paginatorPosition="bottom">
+
+					<p:column headerText="DESCRIPCION"
+						filterBy="#{detalleEgreso.descripcion}" width="50%">
+						#{detalleGuiaRemision.descripcion}
+						</p:column>
+					<p:column headerText="CANTIDAD" style="width: 50px;">  
+            				#{detalleGuiaRemision.cantidad}  
+        				</p:column>
+				</p:dataTable>
+
+			</h:form>
+		</p:dialog>
+
+	</ui:define>
+
+</ui:composition>
+</html>

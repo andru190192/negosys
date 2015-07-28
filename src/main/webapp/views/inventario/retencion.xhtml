@@ -1,0 +1,211 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:p="http://primefaces.org/ui">
+<ui:composition template="/templates/layout/masterLayout.xhtml">
+	<ui:define name="title">
+            NUEVA RETENCION
+        </ui:define>
+	<ui:define name="content">
+		<p:growl id="mensaje" showDetail="true" showSummary="false"
+			life="7000" />
+		<p:panel id="panel" header="NUEVA RETENCION">
+			<h:form id="formCabecera">
+				<p:focus for="formCabecera" />
+				<h:panelGrid columns="2">
+					<h:outputText value="PROVEEDOR" styleClass="negrita" />
+					<p:autoComplete id="autoCompletarProveedor" styleClass="w445px"
+						scrollHeight="200" effect="drop" placeholder="MINIMO 3 CARACTERES"
+						emptyMessage="NO HAY DATOS A MOSTRAR"
+						panelStyle="width:400px !important" minQueryLength="3"
+						maxResults="20" value="#{retencionBean.proveedor}"
+						completeMethod="#{retencionBean.obtenerProveedorPorBusqueda}">
+						<p:ajax event="itemSelect" id="prueba"
+							listener="#{retencionBean.cargarProveedor}"
+							update="autoCompletarProveedor, :mensaje" />
+					</p:autoComplete>
+					<h:outputText value="ESTABLECIMIENTO" />
+					<p:selectOneMenu value="#{retencionBean.retencion.establecimiento}"
+						styleClass="comboBodega w100">
+						<f:selectItems value="#{retencionBean.listaLocales}" var="local"
+							itemValue="#{local.codigoEstablecimiento}"
+							itemLabel="#{local.nombre}" />
+					</p:selectOneMenu>
+					<p:commandButton value="GUARDAR" update=":formCabecera, :mensaje"
+						id="btnGuardar" icon="ui-icon-disk"
+						actionListener="#{retencionBean.insertar}" />
+					<p:commandButton value="NUEVO"
+						update=":formCabecera,:formInsertarComprobante" id="btnlimpiar"
+						icon="ui-icon-document"
+						actionListener="#{retencionBean.limpiarRetencion}" process="@this" />
+				</h:panelGrid>
+				<p:dataTable id="tablaDetalleRetencion" var="detalleRetencion"
+					value="#{retencionBean.retencion.detallesRetenciones}"
+					editable="true" editMode="cell"
+					emptyMessage="#{msg['lbl.mensajeTabla']}"
+					paginatorPosition="bottom">
+					<f:facet name="header">
+						<p:tooltip for="btnNuevo" value="#{msg['lbl.insertar']}" />
+						<p:commandButton id="btnNuevo" value="INSERTAR COMPROBANTE"
+							oncomplete="PF('dialogoInsertarComprobante').show()"
+							icon="ui-icon-plus" />
+					</f:facet>
+					<p:column headerText="COMPROBANTE" width="10%">
+						#{detalleRetencion.tipoComprobanteRetencion.nombre}
+					</p:column>
+
+					<p:column headerText="NUMERO" width="10%">
+						#{detalleRetencion.numeroComprobante}
+					</p:column>
+
+					<p:column headerText="AUTORIZACION SRI" width="10%">
+						#{detalleRetencion.autorizacionSri}
+					</p:column>
+
+					<p:column headerText="FECHA EMISION" width="10%">
+						<p:outputLabel value="#{detalleRetencion.fechaEmision}">
+							<f:convertDateTime pattern="dd/MM/yyyy"
+								timeZone="America/Guayaquil" />
+						</p:outputLabel>
+					</p:column>
+					<p:column headerText="EJERCICIO FISCAL" width="10%">
+						<p:outputLabel value="#{detalleRetencion.fechaEmision}">
+							<f:convertDateTime pattern="MM/yyyy" timeZone="America/Guayaquil" />
+						</p:outputLabel>
+					</p:column>
+					<p:column headerText="BASE IMPONIBLE RETENCION" width="10%">
+						#{detalleRetencion.baseImponible}
+					</p:column>
+					<p:column headerText="IMPUESTO" width="10%">
+						#{detalleRetencion.impuestoRetencion.nombre}
+					</p:column>
+					<p:column headerText="PORCENTAJE RETENCION" width="10%">
+						#{detalleRetencion.porcentajeRetencion}
+					</p:column>
+					<p:column headerText="VALOR RETENIDO" width="10%">
+						<h:outputText
+							value="#{detalleRetencion.baseImponible*detalleRetencion.porcentajeRetencion/100}">
+							<f:convertNumber type="number" groupingUsed="true"
+								minFractionDigits="2" pattern="#0.00" />
+						</h:outputText>
+					</p:column>
+					<p:columnGroup type="footer">
+						<p:row>
+							<p:column colspan="7" styleClass="centrarDereha f-z15px negrita"
+								footerText="TOTAL RETENIDO" />
+							<p:column footerText="#{retencionBean.totalRetenido}"
+								styleClass="centrarDerecha f-z15px negrita" />
+						</p:row>
+					</p:columnGroup>
+				</p:dataTable>
+			</h:form>
+		</p:panel>
+		<p:dialog header="INSERTAR COMPROBANTE" resizable="false"
+			widgetVar="dialogoInsertarComprobante" modal="false"
+			showEffect="clip" hideEffect="fold" width="40%">
+			<h:form id="formInsertarComprobante">
+				<h:panelGrid columns="1" styleClass="w100">
+					<h:panelGrid columns="2" styleClass="w100"
+						columnClasses="anchoMinimo100px">
+						<p:outputLabel value="COMPROBANTE" />
+						<p:selectOneMenu id="comboComprobante"
+							value="#{retencionBean.detalleRetencion.tipoComprobanteRetencion}"
+							styleClass="w100">
+							<f:selectItem itemLabel="ESCOJA UN COMPROBANTE" itemValue="" />
+							<f:selectItems value="#{retencionBean.listaComprobantes}"
+								var="comprobante" itemValue="#{comprobante}"
+								itemLabel="#{comprobante.nombre}" />
+						</p:selectOneMenu>
+						<p:outputLabel value="NUMERO" />
+						<h:panelGrid>
+							<p:inputText id="txtNumeroComprobante"
+								value="#{retencionBean.detalleRetencion.numeroComprobante}"
+								styleClass="w348" />
+							<p:watermark for="txtNumeroComprobante"
+								value="INSERTAR 15 DIGITOS (EJEMPLO 123456789012345)"
+								id="watermark" />
+						</h:panelGrid>
+
+						<p:outputLabel value="AUTORIZACIÓN SRI" />
+						<p:inputText id="txtAutorizacionSri"
+							value="#{retencionBean.detalleRetencion.autorizacionSri}"
+							styleClass="w100" />
+
+						<p:outputLabel value="FECHA EMISION" />
+						<p:calendar id="inline" styleClass="w100"
+							value="#{retencionBean.detalleRetencion.fechaEmision}" />
+						<p:outputLabel value="IMPUESTO" />
+						<p:selectOneMenu id="comboImpuesto"
+							value="#{retencionBean.detalleRetencion.impuestoRetencion}"
+							styleClass="w100">
+							<f:selectItem itemLabel="ESCOJA UN IMPUESTO" itemValue="" />
+							<f:selectItems value="#{retencionBean.listaImpuestos}"
+								var="impuesto" itemValue="#{impuesto}"
+								itemLabel="#{impuesto.nombre}">
+							</f:selectItems>
+							<p:ajax event="change"
+								listener="#{retencionBean.obtenerListaTarifas}"
+								update=":formInsertarComprobante:comboTarifa" />
+						</p:selectOneMenu>
+						<p:outputLabel value="TARIFA" />
+						<p:selectOneMenu id="comboTarifa"
+							value="#{retencionBean.detalleRetencion.tarifa}" filter="true"
+							filterMatchMode="contains" styleClass="w100">
+							<f:selectItem itemLabel="ESCOJA UNA TARIFA" itemValue="" />
+							<f:selectItems value="#{retencionBean.listaTarifas}" var="tarifa"
+								itemValue="#{tarifa}" itemLabel="#{tarifa.id}-#{tarifa.nombre}" />
+							<p:ajax event="change"
+								listener="#{retencionBean.obtenerPorcentaje}"
+								update=":formInsertarComprobante:txtPorcentajeRetencion" />
+						</p:selectOneMenu>
+						<p:outputLabel value="PORCENTAJE RETENCION" />
+						<p:inputText id="txtPorcentajeRetencion"
+							value="#{retencionBean.detalleRetencion.porcentajeRetencion}"
+							styleClass="w100">
+							<p:ajax event="blur"
+								listener="#{retencionBean.cambiarPorcentaje}"
+								update=":formInsertarComprobante:txtPorcentajeRetencion" />
+						</p:inputText>
+						<p:outputLabel value="BASE IMPONIBLE RETENCION" />
+						<p:inputText
+							value="#{retencionBean.detalleRetencion.baseImponible}"
+							styleClass="w100">
+							<p:ajax event="blur"
+								listener="#{retencionBean.obtenerValorRetenido}"
+								update=":formInsertarComprobante:txtValorRetenido" />
+						</p:inputText>
+						<p:outputLabel value="VALOR RETENIDO" />
+						<p:inputText id="txtValorRetenido"
+							value="#{retencionBean.valorRetenido}" styleClass="w100" />
+					</h:panelGrid>
+					<p:separator />
+					<f:facet name="footer">
+						<p:commandButton value="INSERTAR"
+							update=":formInsertarComprobante,:formCabecera ,:mensaje"
+							oncomplete="comprobarRetencion(xhr, status, args)"
+							id="btnNuevoAceptar" icon="ui-icon-plus"
+							actionListener="#{retencionBean.insertarDetalle}" />
+						<p:commandButton value="CANCELAR"
+							oncomplete="PF('dialogoInsertarComprobante').hide()"
+							id="btnNuevolimpiar" icon="ui-icon-close" process="@this" />
+					</f:facet>
+				</h:panelGrid>
+			</h:form>
+		</p:dialog>
+		<script type="text/javascript">
+			//<![CDATA[
+			function comprobarRetencion(xhr, status, args) {
+				if (args.error) {
+					PF('dialogoInsertarComprobante').show();
+				} else {
+					PF('dialogoInsertarComprobante').hide();
+				}
+			}
+			//]]>
+		</script>
+	</ui:define>
+</ui:composition>
+</html>

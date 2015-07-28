@@ -1,0 +1,322 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:p="http://primefaces.org/ui">
+<ui:composition template="/templates/layout/masterLayout.xhtml">
+	<ui:define name="title">
+            PROVEEDOR
+        </ui:define>
+	<ui:define name="content">
+		<p:growl id="mensaje" showDetail="true" life="7000"
+			showSummary="false" />
+		<p:panel id="panel" header="LISTADO DE PROVEEDORES">
+			<h:form id="busquedaTabla">
+				<h:panelGrid columns="3">
+					<h:outputText value="CIUDAD:" />
+					<p:selectOneMenu id="comboCiudad" filter="true"
+						value="#{proveedorBean.criterioBusquedaCiudad}">
+						<f:selectItem itemLabel="ESCOJA UNA CIUDAD" />
+						<f:selectItems value="#{proveedorBean.listaCiudadesBusqueda}"
+							var="ciudad" itemValue="#{ciudad.id}"
+							itemLabel="#{ciudad.nombre}" />
+					</p:selectOneMenu>
+					<h:outputText />
+					<h:outputText
+						value="CÉDULA/RUC / APELLIDO / NOMBRE / NOMBRE COMERCIAL" />
+					<p:inputText value="#{proveedorBean.criterioBusquedaProveedor}"
+						styleClass="w100" onblur="this.value = this.value.toUpperCase();" />
+					<p:commandButton update="busquedaTabla, :formDataTable, :mensaje"
+						icon="#{msg['iconoBuscar']}"
+						actionListener="#{proveedorBean.obtenerProveedores}" />
+				</h:panelGrid>
+			</h:form>
+			<h:form id="formDataTable">
+				<p:dataTable id="tablaPersonas" var="persona" scrollable="true"
+					styleClass="ui-datatable-scrollable-body estiloFilasPares"
+					value="#{proveedorBean.listaPersonasProveedores}" paginator="true"
+					rows="10"
+					paginatorTemplate="{RowsPerPageDropdown} {FirstPageLink} {PreviousPageLink} {CurrentPageReport} {NextPageLink} {LastPageLink}"
+					rowsPerPageTemplate="5,10,15" paginatorPosition="bottom"
+					rowStyleClass="#{persona.proveedor.activo eq true ? null:'desactivo'}"
+					emptyMessage="#{msg['lbl.mensajeTabla']}">
+					<f:facet name="header">
+						<p:tooltip for="btnNuevo" value="#{msg['lbl.insertar']}" />
+						<p:commandButton update=":formNuevo"
+							oncomplete="PF('personaDialogoNuevo').show()" id="btnNuevo"
+							icon="ui-icon-plus"
+							actionListener="#{proveedorBean.cargarInsertar}" />
+					</f:facet>
+					<p:column headerText="#{msg['lbl.gestionar']}" styleClass="centrar">
+						<p:tooltip for="btnEditar" value="EDITAR" />
+						<p:commandButton id="btnEditar" update=":formEditar"
+							oncomplete="PF('personaDialogoEditar').show()"
+							action="#{proveedorBean.cargarEditar}" icon="ui-icon-pencil">
+							<f:setPropertyActionListener value="#{persona}"
+								target="#{proveedorBean.persona}" />
+						</p:commandButton>
+						<p:tooltip for="btnEliminar"
+							value="#{persona.proveedor.activo eq true ? msg['lbl.desactivar']:msg['lbl.activar']}" />
+						<p:commandButton id="btnEliminar" update=":formEliminar"
+							oncomplete="PF('personaDialogoEliminar').show()"
+							icon="#{persona.proveedor.activo eq true ? 'ui-icon-close':'ui-icon-check'}">
+							<f:setPropertyActionListener value="#{persona}"
+								target="#{proveedorBean.persona}" />
+						</p:commandButton>
+					</p:column>
+					<p:column headerText="COD." width="5%">  
+                            #{persona.proveedor.id}  
+                        </p:column>
+					<p:column headerText="# CARPETA" width="5%">  
+                            #{persona.proveedor.folio}  
+                        </p:column>
+					<p:column headerText="CÉDULA/RUC">  
+                            #{persona.cedula}  
+                        </p:column>
+					<p:column headerText="APELLIDOS">  
+                            #{persona.apellido}  
+                        </p:column>
+					<p:column headerText="NOMBRES">  
+                            #{persona.nombre}  
+                        </p:column>
+					<p:column headerText="NOM. COMERCIAL">  
+                            #{persona.proveedor.nombreComercial}  
+                        </p:column>
+					<p:column headerText="CIUDAD">  
+                            #{persona.ciudad.nombre}  
+                        </p:column>
+					<p:column headerText="DIRECCIÓN" width="20%">  
+                            #{persona.direccion}  
+                        </p:column>
+				</p:dataTable>
+			</h:form>
+		</p:panel>
+		<p:dialog header="INSERTAR PROVEEDOR" widgetVar="personaDialogoNuevo"
+			resizable="false" modal="false" showEffect="clip" hideEffect="fold"
+			id="dialogoNuevo" styleClass="dialogoInsertarCliente">
+			<h:form id="formNuevo">
+				<h:outputText value="LOS CAMPOS MARCADOS CON" />
+				<h:outputText value=" * " class="asterisco" />
+				<h:outputText value="SON OBLIGATORIOS" />
+				<h:panelGrid id="panelNuevo" columns="3" cellpadding="1"
+					styleClass="w100" columnClasses="anchoMinimo,anchoMinimo">
+					<h:outputText value="" />
+					<h:outputText value="DATOS/PERSONALES" styleClass="negrita" />
+					<h:outputText value="" />
+					<h:outputText value=" * " class="asterisco" />
+					<h:outputText value="CÉDULA/RUC:" />
+					<p:inputText value="#{proveedorBean.persona.cedula}"
+						styleClass="w100" onblur="this.value = this.value.toUpperCase();">
+						<p:ajax event="change"
+							listener="#{proveedorBean.comprobarPersona}"
+							update="formNuevo,:mensaje" />
+					</p:inputText>
+					<h:outputText value=" * " class="asterisco" />
+					<h:outputText value="APELLIDOS:" />
+					<p:inputText value="#{proveedorBean.persona.apellido}"
+						styleClass="w100" onblur="this.value = this.value.toUpperCase();" />
+					<h:outputText value=" * " class="asterisco" />
+					<h:outputText value="NOMBRES:" />
+					<p:inputText value="#{proveedorBean.persona.nombre}"
+						styleClass="w100" onblur="this.value = this.value.toUpperCase();" />
+					<h:outputText value=" * " class="asterisco" />
+					<h:outputText value="NOMBRE COMERCIAL:" />
+					<p:inputText
+						value="#{proveedorBean.persona.proveedor.nombreComercial}"
+						styleClass="w100" onblur="this.value = this.value.toUpperCase();" />
+					<h:outputText value="" />
+					<h:outputText value="TELÉFONOS:" />
+					<p:inputTextarea value="#{proveedorBean.persona.telefono}" rows="2"
+						styleClass="w100" onblur="this.value = this.value.toUpperCase();" />
+					<h:outputText value="" />
+					<h:outputText value="EMAIL:" />
+					<p:inputText rows="2" value="#{proveedorBean.persona.email}"
+						styleClass="w100" onblur="this.value = this.value.toUpperCase();" />
+					<h:outputText value=" * " class="asterisco" />
+					<h:outputText value="DATOS/RESIDENCIA" styleClass="negrita" />
+					<h:outputText value="" />
+					<h:outputText value=" * " class="asterisco" />
+					<h:outputText value="PROVINCIA:" />
+					<p:selectOneMenu id="comboProvincia"
+						styleClass="comboProvinciaProveedor w100"
+						value="#{proveedorBean.persona.ciudad.provincia}">
+						<f:selectItem itemLabel="ESCOJA UNA PROVINCIA" />
+						<f:selectItems value="#{proveedorBean.listaProvincias}"
+							var="provincia" itemValue="#{provincia}"
+							itemLabel="#{provincia.nombre}" />
+						<p:ajax event="change" listener="#{proveeeditardorBean.cargarCiudades}"
+							update="comboCiudad" />
+					</p:selectOneMenu>
+					<h:outputText value=" * " class="asterisco" />
+					<h:outputText value="CIUDAD:" />
+					<p:selectOneMenu id="comboCiudad"
+						styleClass="comboProvinciaProveedor w100"
+						value="#{proveedorBean.persona.ciudad.id}">
+						<f:selectItem itemLabel="ESCOJA UNA CIUDAD" />
+						<f:selectItems value="#{proveedorBean.listaCiudades}" var="ciudad"
+							itemValue="#{ciudad.id}" itemLabel="#{ciudad.nombre}" />
+					</p:selectOneMenu>
+					<h:outputText value=" * " class="asterisco" />
+					<h:outputText value="DIRECCION:" />
+					<p:inputText value="#{proveedorBean.persona.direccion}"
+						rows="2" styleClass="w100"
+						onblur="this.value = this.value.toUpperCase();" />
+					<h:outputText value="" />
+					<h:outputText value="REFERENCIA:" />
+					<p:inputTextarea value="#{proveedorBean.persona.referencia}"
+						rows="2" styleClass="w100"
+						onblur="this.value = this.value.toUpperCase();" />
+					<h:outputText value="" />
+					<h:outputText value="REGISTRO FÍSICO" styleClass="negrita" />
+					<h:outputText value="" />
+					<h:outputText value="" />
+					<h:outputText value="# CARPETA:" />
+					<p:inputText value="#{proveedorBean.persona.proveedor.folio}"
+						styleClass="w100" onblur="this.value = this.value.toUpperCase();" />
+					<f:facet name="footer">
+						<p:separator />
+						<p:commandButton value="#{msg['btn.guardar']}"
+							update=":formDataTable ,:mensaje, formNuevo"
+							oncomplete="comprobar(xhr, status, args)" id="btnNuevoAceptar"
+							icon="#{msg['iconoGuardar']}"
+							actionListener="#{proveedorBean.insertar}" />
+						<p:commandButton value="#{msg['btn.cancelar']}"
+							oncomplete="PF('personaDialogoNuevo').hide()"
+							id="btnNuevolimpiar" icon="#{msg['iconoCancelar']}"
+							process="@this" />
+					</f:facet>
+				</h:panelGrid>
+			</h:form>
+		</p:dialog>
+		<p:dialog header="EDITAR PROVEEDOR" widgetVar="personaDialogoEditar"
+			resizable="false" modal="false" showEffect="clip" hideEffect="fold"
+			id="dialogoEditar" width="50%" styleClass="dialogoInsertarCliente">
+			<h:form id="formEditar">
+				<h:outputText value="LOS CAMPOS MARCADOS CON" />
+				<h:outputText value=" * " class="asterisco" />
+				<h:outputText value="SON OBLIGATORIOS" />
+				<h:panelGrid id="panelEditar" columns="3" cellpadding="0"
+					width="100%" columnClasses="anchoMinimo,anchoMinimo">
+					<h:outputText value="" />
+					<h:outputText value="DATOS/PERSONALES" styleClass="negrita" />
+					<h:outputText value="" />
+					<h:outputText value=" * " class="asterisco" />
+					<h:outputText value="CÉDULA/RUC:" />
+					<p:inputText value="#{proveedorBean.persona.cedula}"
+						styleClass="w100" onblur="this.value = this.value.toUpperCase();" />
+					<h:outputText value=" * " class="asterisco" />
+					<h:outputText value="APELLIDOS:" />
+					<p:inputText value="#{proveedorBean.persona.apellido}"
+						styleClass="w100" onblur="this.value = this.value.toUpperCase();" />
+					<h:outputText value=" * " class="asterisco" />
+					<h:outputText value="NOMBRES:" />
+					<p:inputText value="#{proveedorBean.persona.nombre}"
+						styleClass="w100" onblur="this.value = this.value.toUpperCase();" />
+					<h:outputText value=" * " class="asterisco" />
+					<h:outputText value="NOMBRE COMERCIAL:" />
+					<p:inputText
+						value="#{proveedorBean.persona.proveedor.nombreComercial}"
+						styleClass="w100" onblur="this.value = this.value.toUpperCase();" />
+					<h:outputText value="" />
+					<h:outputText value="TELEFONOS" />
+					<p:inputTextarea value="#{proveedorBean.persona.telefono}" rows="2"
+						styleClass="w100" onblur="this.value = this.value.toUpperCase();" />
+					<h:outputText value="" />
+					<h:outputText value="EMAIL:" />
+					<p:inputText value="#{proveedorBean.persona.email}" rows="2"
+						styleClass="w100" onblur="this.value = this.value.toUpperCase();" />
+					<h:outputText value="" />
+					<h:outputText value="DATOS/RESIDENCIA" styleClass="negrita" />
+					<h:outputText value="" />
+					<h:outputText value=" * " class="asterisco" />
+					<h:outputText value="PROVINCIA:" />
+					<p:selectOneMenu id="comboProvincia"
+						styleClass="comboProvinciaProveedor w100"
+						value="#{proveedorBean.persona.ciudad.provincia}">
+						<f:selectItem itemLabel="ESCOJA UNA PROVINCIA" />
+						<f:selectItems value="#{proveedorBean.listaProvincias}"
+							var="provincia" itemValue="#{provincia}"
+							itemLabel="#{provincia.nombre}" />
+						<p:ajax event="change" listener="#{proveedorBean.cargarCiudades}"
+							update="comboCiudad" />
+					</p:selectOneMenu>
+					<h:outputText value=" * " class="asterisco" />
+					<h:outputText value="CIUDAD:" />
+					<p:selectOneMenu id="comboCiudad"
+						styleClass="comboProvinciaProveedor w100"
+						value="#{proveedorBean.persona.ciudad.id}">
+						<f:selectItem itemLabel="ESCOJA UNA CIUDAD" />
+						<f:selectItems value="#{proveedorBean.listaCiudades}" var="ciudad"
+							itemValue="#{ciudad.id}" itemLabel="#{ciudad.nombre}" />
+					</p:selectOneMenu>
+					<h:outputText value=" * " class="asterisco" />
+					<h:outputText value="DIRECCION:" />
+					<p:inputText value="#{proveedorBean.persona.direccion}"
+						rows="2" styleClass="w100"
+						onblur="this.value = this.value.toUpperCase();" />
+					<h:outputText value="" />
+					<h:outputText value="REFERENCIA:" />
+					<p:inputTextarea value="#{proveedorBean.persona.referencia}"
+						rows="2" styleClass="w100"
+						onblur="this.value = this.value.toUpperCase();" />
+					<h:outputText value="" />
+					<h:outputText value="REGISTRO FÍSICO" styleClass="negrita" />
+					<h:outputText value="" />
+					<h:outputText value="" />
+					<h:outputText value="# CARPETA:" />
+					<p:inputText value="#{proveedorBean.persona.proveedor.folio}"
+						styleClass="w100" onblur="this.value = this.value.toUpperCase();" />
+					<f:facet name="footer">
+						<p:separator />
+						<p:commandButton value="#{msg['btn.guardar']}"
+							update=":formDataTable ,:mensaje, formEditar"
+							oncomplete="comprobar(xhr, status, args)" id="btnEditarAceptar"
+							icon="#{msg['iconoGuardar']}"
+							actionListener="#{proveedorBean.actualizar}" />
+						<p:commandButton value="#{msg['btn.cancelar']}"
+							oncomplete="PF('personaDialogoEditar').hide()"
+							id="btnEditarlimpiar" icon="#{msg['iconoCancelar']}"
+							process="@this" />
+					</f:facet>
+				</h:panelGrid>
+			</h:form>
+		</p:dialog>
+		<p:dialog widgetVar="personaDialogoEliminar"
+			header="ACTIVAR / DESACTIVAR PROVEEDOR" showEffect="explode"
+			hideEffect="explode" modal="false" resizable="false" width="258px"
+			styleClass="centrar">
+			<h:form id="formEliminar">
+				<h:inputHidden value="#{proveedorBean.persona.id}" />
+				<br />
+				<ui:param name="desactivar"
+					value="¿ DESEA DESACTIVAR EL PROVEEDOR: #{proveedorBean.persona.apellido} #{proveedorBean.persona.nombre} ?" />
+				<ui:param name="activar"
+					value="¿ DESEA ACTIVAR EL PROVEEDOR: #{proveedorBean.persona.apellido} #{proveedorBean.persona.nombre} ?" />
+				<h:outputText
+					value="#{proveedorBean.persona.proveedor.activo eq true ? desactivar : activar}" />
+				<br />
+				<br />
+				<p:commandButton value="#{msg['btn.aceptar']}"
+					update=":formDataTable,:mensaje" icon="#{msg['iconoAceptar']}"
+					oncomplete="PF('personaDialogoEliminar').hide()"
+					actionListener="#{proveedorBean.eliminar}" />
+				<p:commandButton value="#{msg['btn.cancelar']}" type="button"
+					onclick="PF('personaDialogoEliminar').hide()"
+					icon="#{msg['iconoCancelar']}" />
+			</h:form>
+		</p:dialog>
+		<script type="text/javascript">
+			//<![CDATA[
+			function comprobar(xhr, status, args) {
+				if (!args.validationFailed && args.cerrar) {
+					PF('personaDialogoNuevo').hide();
+					PF('personaDialogoEditar').hide();
+				}
+			}
+			//]]>
+		</script>
+	</ui:define>
+</ui:composition>
+</html>

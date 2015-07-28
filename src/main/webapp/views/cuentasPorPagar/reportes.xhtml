@@ -1,0 +1,42 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:p="http://primefaces.org/ui">
+
+<ui:composition template="/templates/layout/masterLayout.xhtml">
+
+	<ui:define name="title">
+            REPORTES
+        </ui:define>
+	<ui:define name="content">
+
+		<f:view>
+			<p:growl id="mensaje" showDetail="true" life="7000" />
+			<p:panel id="panel" header="REPORTES" style="margin-bottom:10px;">
+
+				<h:panelGrid columns="3" cellpadding="1">
+
+					<h:form>
+						<h:panelGrid columns="1" cellpadding="1"
+							style="text-align: center;">
+							<p:graphicImage value="../../resources/imagenes/r4.svg" />
+
+							<p:commandButton
+								actionListener="#{cuentasPorPagarReport.reportePagoFactura}"
+								value="PAGOS DE FACTURAS" ajax="false" />
+						</h:panelGrid>
+					</h:form>
+
+				</h:panelGrid>
+			</p:panel>
+
+		</f:view>
+
+	</ui:define>
+
+</ui:composition>
+</html>

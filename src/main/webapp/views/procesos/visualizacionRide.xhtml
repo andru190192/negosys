@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:p="http://primefaces.org/ui">
+<ui:composition template="/templates/layout/masterLayout.xhtml">
+	<ui:define name="title">
+           VER RIDE
+        </ui:define>
+	<ui:define name="content">
+		<p:growl id="mensaje" showDetail="true" life="7000" />
+		<p:panel id="panel" header="LISTADO DE DOCUMENTOS AUTORIZADOS">
+			<h:form id="formBusqueda">
+				<h:panelGrid>
+					<h:outputLabel value="PERSONA" />
+					<p:autoComplete id="autoCompletarPersona" styleClass="w100"
+						scrollHeight="200" effect="drop" placeholder="MINIMO 4 CARACTERES"
+						emptyMessage="NO HAY DATOS A MOSTRAR"
+						panelStyle="width:400px !important" minQueryLength="4"
+						maxResults="20" value="#{visualizacionRideBean.persona}"
+						completeMethod="#{visualizacionRideBean.obtenerPersonaPorBusqueda}">
+						<p:ajax event="itemSelect" id="prueba"
+							listener="#{visualizacionRideBean.cargarPersona}"
+							update="autoCompletarPersona, :mensaje" />
+					</p:autoComplete>
+					<h:outputLabel value="MES" />
+					<p:selectOneMenu id="mes" value="#{visualizacionRideBean.mes}"
+						style="width:150px !important">
+						<f:selectItems value="#{visualizacionRideBean.listaMes}" var="mes"
+							itemValue="#{mes}" itemLabel="#{mes.nombre}" />
+					</p:selectOneMenu>
+					<h:outputLabel value="AÑO" />
+					<p:selectOneMenu id="anio" style="width:150px !important"
+						value="#{visualizacionRideBean.anio}">
+						<f:selectItems value="#{visualizacionRideBean.listaAnio}"
+							var="anio" itemValue="#{anio}" itemLabel="#{anio.id}" />
+					</p:selectOneMenu>
+				</h:panelGrid>
+				<p:commandButton id="buscar"
+					update=":formDataTable:tablaDocumentosAutorizados, :mensaje"
+					value="BUSCAR" actionListener="#{visualizacionRideBean.obtener}"
+					icon="ui-icon-search" />
+			</h:form>
+			<h:form id="formDataTable">
+				<p:dataTable id="tablaDocumentosAutorizados" var="docAutorizados"
+					scrollable="true" styleClass="ui-datatable-scrollable-body"
+					value="#{visualizacionRideBean.listaDocumentosAutorizados}"
+					paginator="true" rows="10"
+					paginatorTemplate="{RowsPerPageDropdown} {FirstPageLink} {PreviousPageLink} {CurrentPageReport} {NextPageLink} {LastPageLink}"
+					rowsPerPageTemplate="5,10,15" paginatorPosition="bottom"
+					emptyMessage="#{msg['lbl.mensajeTabla']}">
+					<p:column headerText="#{msg['lbl.gestionar']}" styleClass="centrar">
+						<p:tooltip for="btnXML" value="DESCARGAR XML" />
+						<p:commandButton id="btnXML" ajax="false"
+							action="#{visualizacionRideBean.descargarXML(docAutorizados)}"
+							icon="ui-icon-arrowthick-1-s">
+							<p:fileDownload value="#{visualizacionRideBean.documento}" />
+						</p:commandButton>
+						<p:tooltip for="btnVerRide" value="VER RIDE" />
+						<p:commandButton id="btnVerRide" ajax="false"
+							action="#{visualizacionRideBean.verRide(docAutorizados)}"
+							icon="ui-icon-document" />
+						<p:tooltip for="btnEnvioCorreo" value="ENVIAR AL CORREO" />
+						<p:commandButton id="btnEnvioCorreo" ajax="false"
+							action="#{visualizacionRideBean.enviarCorreo(docAutorizados)}"
+							icon="ui-icon-mail-closed" />
+						<p:tooltip for="btnMostrar" value="MOSTRAR" />
+						<p:commandButton id="btnMostrar"
+							update=":mensaje, :formDocumentoXML"
+							icon="#{msg['iconoMostrar']}"
+							oncomplete="PF('documentoXML').show()">
+							<f:setPropertyActionListener value="#{docAutorizados}"
+								target="#{visualizacionRideBean.documentoElectronico}" />
+						</p:commandButton>
+					</p:column>
+					<p:column headerText="NOMBRE DOCUMENTO" filterBy="#{docFirmados}"
+						filterMatchMode="contains" styleClass="centrar">  
+                            #{docAutorizados.nombreDocumento}  
+                        </p:column>
+					<p:column headerText="TIPO DOCUMENTO"
+						filterBy="#{docFirmados.tipoDocumento}" filterMatchMode="contains"
+						styleClass="centrar">  
+                            #{docAutorizados.tipoDocumento}  
+                        </p:column>
+				</p:dataTable>
+			</h:form>
+		</p:panel>
+		<p:dialog header="XML" widgetVar="documentoXML"
+			id="dialogoDocumentoXML" resizable="false" width="50%">
+			<h:form id="formDocumentoXML">
+				<p:inputTextarea
+					value="#{visualizacionRideBean.documentoElectronico.documento}"
+					styleClass="w100 height450px scroll-y" readonly="true" />
+			</h:form>
+		</p:dialog>
+	</ui:define>
+</ui:composition>
+</html>

@@ -1,0 +1,157 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:p="http://primefaces.org/ui">
+<ui:composition template="/templates/layout/masterLayout.xhtml">
+	<ui:define name="title">
+			LISTADO DE NOTA DE CREDITO
+		</ui:define>
+	<ui:define name="content">
+		<p:growl id="mensaje" showDetail="true" life="7000" />
+		<p:panel id="panel" header="LISTADO DE NOTA DE CREDITO">
+			<h:form id="busquedaTabla">
+				<h:panelGrid columns="3">
+					<h:outputText value="CÉDULA / APELLIDOS / NOMBRES " />
+					<p:inputText
+						value="#{listadoNotaCreditoBean.criterioBusquedaCliente}"
+						onblur="this.value=this.value.toUpperCase();" />
+					<h:outputText />
+					<h:outputText value="# NOTA CREDITO Ó # COD. " />
+					<p:inputText
+						value="#{listadoNotaCreditoBean.criterioBusquedaCodigo}"
+						onblur="this.value=this.value.toUpperCase();" />
+					<h:outputText />
+					<h:outputText value="EAN / CODIGO1 / CODIGO2 / NOMBRE " />
+					<p:inputText
+						value="#{listadoNotaCreditoBean.criterioBusquedaDetalle}"
+						onblur="this.value=this.value.toUpperCase();" />
+					<h:outputText />
+					<p:outputLabel value="FECHA INGRESO" />
+					<p:calendar
+						value="#{listadoNotaCreditoBean.criterioBusquedaFechaDocumento}"
+						navigator="true" />
+					<p:commandButton update="busquedaTabla, :formDataTable, :mensaje"
+						icon="#{msg['iconoBuscar']}"
+						actionListener="#{listadoNotaCreditoBean.obtener}" />
+				</h:panelGrid>
+			</h:form>
+			<h:form id="formDataTable">
+				<p:dataTable id="tablaListadoEgresos" var="factura"
+					value="#{listadoNotaCreditoBean.listaFacturas}" paginator="true"
+					rows="10" rowsPerPageTemplate="5,10,15"
+					paginatorTemplate="{RowsPerPageDropdown} {FirstPageLink} {PreviousPageLink} {CurrentPageReport} {NextPageLink} {LastPageLink}"
+					paginatorPosition="bottom"
+					emptyMessage="#{msg['lbl.mensajeTabla']}">
+					<p:column headerText="GESTIONAR" styleClass="centrar">
+						<p:tooltip value="MOSTRAR" for="btnMostrar" />
+						<p:commandButton id="btnMostrar" update=":formMostrar"
+							oncomplete="PF('notaCreditoDialogoMostrar').show()"
+							icon="ui-icon-newwin"
+							action="#{listadoNotaCreditoBean.generarListaDetalle}">
+							<f:setPropertyActionListener value="#{factura}"
+								target="#{listadoNotaCreditoBean.factura}" />
+						</p:commandButton>
+						<p:tooltip for="btnXML" value="GENERAR XML" />
+						<p:commandButton id="btnXML"
+							action="#{listadoNotaCreditoBean.generarXML}"
+							icon="ui-icon-carat-2-e-w">
+							<f:setPropertyActionListener value="#{factura}"
+								target="#{listadoRetencionBean.factura}" />
+						</p:commandButton>
+					</p:column>
+					<p:column headerText="# COD." styleClass="centrar">  
+            			#{factura.notaCredito.id}
+        			</p:column>
+					<p:column headerText="# NOTA CREDITO" styleClass="centrar">  
+            			  #{factura.notaCredito.establecimiento}-#{factura.notaCredito.puntoEmision}-#{factura.notaCredito.secuencia}
+        			</p:column>
+					<p:column headerText="# FACTURA" styleClass="centrar">  
+            			#{factura.establecimiento}-#{factura.puntoEmision}-#{factura.secuencia}
+        			</p:column>
+					<p:column headerText="CÉDULA" styleClass="centrar">  
+            			#{factura.cliente.persona.cedula}
+        			</p:column>
+					<p:column headerText="CLIENTE" styleClass="centrar">  
+            			#{factura.cliente.persona.apellido} #{factura.cliente.persona.nombre}
+        			</p:column>
+					<p:column headerText="FECHA" styleClass="centrar">
+						<p:outputLabel value="#{factura.notaCredito.fecha}">
+							<f:convertDateTime pattern="dd/MM/yyyy"
+								timeZone="America/Guayaquil" />
+						</p:outputLabel>
+					</p:column>
+				</p:dataTable>
+			</h:form>
+		</p:panel>
+		<p:dialog header="IMPRIMIR" widgetVar="imprimir" resizable="false"
+			modal="false" showEffect="clip" hideEffect="fold"
+			id="dialogoImprimir">
+			<h:form target="_blank">
+				<p:outputLabel value="¿DESEA IMPRIMIR LA FACTURA?"></p:outputLabel>
+				<h:panelGrid columns="2" cellpadding="1">
+					<p:commandButton value="SI"
+						actionListener="#{listadoNotaCreditoBean.imprimirFactura}"
+						ajax="false" oncomplete="PF('imprimir').hide()"
+						icon="ui-icon-check" />
+					<p:commandButton value="NO" oncomplete="PF('imprimir').hide()"
+						icon="ui-icon-close" />
+				</h:panelGrid>
+			</h:form>
+		</p:dialog>
+		<p:dialog header="MOSTRAR NOTA DE CREDITO" width="50%"
+			widgetVar="notaCreditoDialogoMostrar" resizable="false" modal="false"
+			showEffect="clip" hideEffect="fold" id="dialogoMostrar">
+			<h:form id="formMostrar">
+				<h:panelGrid id="panelMostrar" columns="4" cellpadding="1"
+					styleClass="w100">
+					<h:outputText value="# NOTA CREDITO" styleClass="negrita" />
+					<h:outputText
+						value="#{listadoNotaCreditoBean.notaCredito.establecimiento}-#{listadoNotaCreditoBean.notaCredito.puntoEmision}-#{listadoNotaCreditoBean.notaCredito.secuencia}" />
+					<h:outputText value="# FACTURA" styleClass="negrita" />
+					<h:outputText
+						value="#{listadoNotaCreditoBean.notaCredito.factura.establecimiento}-#{listadoNotaCreditoBean.notaCredito.factura.puntoEmision}-#{listadoNotaCreditoBean.notaCredito.factura.secuencia}" />
+					<h:outputText value="FECHA" styleClass="negrita" />
+					<h:outputText value="#{listadoNotaCreditoBean.notaCredito.fecha}" />
+					<h:outputText value="CLIENTE" styleClass="negrita" />
+					<h:outputText
+						value="#{listadoNotaCreditoBean.notaCredito.factura.cliente.persona.apellido} #{listadoNotaCreditoBean.notaCredito.factura.cliente.persona.nombre}" />
+				</h:panelGrid>
+				<p:dataTable id="tablaDetalleEgresos" var="detalleEgreso"
+					value="#{listadoNotaCreditoBean.listaNotaCreditosDetalle}"
+					paginator="true" rows="8"
+					emptyMessage="No hay informacion disponible."
+					paginatorPosition="bottom">
+					<p:column headerText="CODIGO" styleClass="centrar">
+							 	#{detalleEgreso.codigo}
+						</p:column>
+					<p:column headerText="DESCRIPCION" styleClass="centrar" width="30%">
+						<p:inputText readonly="true" value="#{detalleEgreso.descripcion}"
+							styleClass="w100" />
+					</p:column>
+					<p:column headerText="CANTIDAD" styleClass="centrar">  
+            				#{detalleEgreso.cantidad}  
+        				</p:column>
+					<p:column headerText="UNIDADES" styleClass="centrar">  
+						#{detalleEgreso.nombreCantidad}
+					</p:column>
+					<p:column headerText="P. UNIT." styleClass="centrar">  
+            				#{detalleEgreso.precioUnitVenta}
+        				</p:column>
+					<p:column headerText="DESC $" styleClass="centrar">  
+            				#{detalleEgreso.descuentoDolares}  
+        				</p:column>
+					<p:column headerText="DESC %" styleClass="centrar">  
+            				#{detalleEgreso.descuentoPorcentaje}  
+        				</p:column>
+					<p:column headerText="IMPORTE" styleClass="centrar">  
+            				#{detalleEgreso.importe}  
+        				</p:column>
+				</p:dataTable>
+			</h:form>
+		</p:dialog>
+	</ui:define>
+</ui:composition>
+</html>

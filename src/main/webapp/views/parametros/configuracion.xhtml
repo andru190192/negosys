@@ -1,0 +1,290 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:p="http://primefaces.org/ui">
+<ui:composition template="/templates/layout/masterLayout.xhtml">
+	<ui:define name="title">
+			PARAMETROS
+	</ui:define>
+	<ui:define name="content">
+		<p:growl id="mensaje" showDetail="true" life="7000" />
+		<p:tabView id="tabViewConfiguraciones" dynamic="true" cache="true">
+			<p:tab id="tabGenerales" title="CONFIGURACIONES GENERALES">
+				<h:form id="formParametro">
+					<p:focus context="formParametro" />
+					<p:panel id="panel" header="DATOS DEL CONTRIBUYENTE">
+						<h:panelGrid columns="2" cellpadding="1">
+							<h:outputText value="RUC:" styleClass="negrita" />
+							<p:inputText value="#{parametroBean.parametro.ruc}"
+								onblur="this.value=this.value.toUpperCase();" />
+							<h:outputText value="RAZON SOCIAL:" styleClass="negrita" />
+							<p:inputText value="#{parametroBean.parametro.razonSocial}"
+								onblur="this.value=this.value.toUpperCase();" />
+							<h:outputText value="NOMBRE COMERCIAL:" styleClass="negrita" />
+							<p:inputText value="#{parametroBean.parametro.nombreComercial}"
+								onblur="this.value=this.value.toUpperCase();" />
+							<h:outputText value="DIRECCION:" styleClass="negrita" />
+							<p:inputText value="#{parametroBean.parametro.direccion}"
+								onblur="this.value=this.value.toUpperCase();" />
+							<h:outputText value="RES. CONTRIBUYENTE ESPECIAL:"
+								styleClass="negrita" />
+							<p:inputText
+								value="#{parametroBean.parametro.codigoContribuyente}"
+								onblur="this.value=this.value.toUpperCase();" />
+							<h:outputText value="CONTABILIDAD:" styleClass="negrita" />
+							<p:selectBooleanCheckbox
+								value="#{parametroBean.parametro.contabilidad}" />
+						</h:panelGrid>
+					</p:panel>
+					<p:commandButton value="#{msg['btn.guardar']}"
+						update="formParametro :mensaje" id="btnNuevoAceptar"
+						icon="#{msg['iconoGuardar']}"
+						actionListener="#{parametroBean.guardar}" />
+				</h:form>
+				<h:form>
+					<h:outputText value="LOGO:" styleClass="negrita" />
+					<p:fileUpload fileUploadListener="#{parametroBean.subirImagen}"
+						mode="advanced" dragDropSupport="true" multiple="true"
+						update=":mensaje" fileLimit="1"
+						allowTypes="/(\.|\/)(gif|jpe?g|png)$/" />
+				</h:form>
+			</p:tab>
+			<p:tab id="tabCiudad" title="CONFIGURACIONES DE CIUDADES">
+				<h:form id="formDataTableCiudad">
+					<p:focus context="formDataTableCiudad" />
+					<p:dataTable id="tablaProvincias" var="provincia"
+						styleClass="estiloFilasPares centrar"
+						value="#{provinciaBean.listaProvincias}" paginator="true"
+						rows="10" emptyMessage="#{msg['lbl.mensajeTabla']}"
+						paginatorPosition="bottom">
+						<p:column headerText="#{msg['lbl.gestionar']}" width="20%">
+							<p:commandButton id="btnEditar"
+								update=":tabViewConfiguraciones:formEditar"
+								oncomplete="PF('provinciaDialogoEditar').show()"
+								icon="ui-icon-pencil" action="#{provinciaBean.cargarCiudades}">
+								<f:setPropertyActionListener value="#{provincia}"
+									target="#{provinciaBean.provincia}" />
+							</p:commandButton>
+						</p:column>
+						<p:column headerText="NOMBRE PROVINCIAS" width="80px">  
+            			#{provincia.nombre}  
+        			</p:column>
+					</p:dataTable>
+				</h:form>
+				<p:dialog header="EDITAR PROVINCIA"
+					widgetVar="provinciaDialogoEditar" resizable="false" modal="false"
+					showEffect="clip" hideEffect="fold" id="dialogoEditar" width="50%">
+					<h:form id="formEditar">
+						<h:panelGrid columns="1">
+							<h:panelGrid columns="3" width="100%">
+								<h:outputText value="NOMBRE PROVINCIA:" styleClass="negrita" />
+								<h:outputText value="#{provinciaBean.provincia.nombre}" />
+								<h:outputText value="" />
+								<h:outputText value="NOMBRE CIUDAD:" styleClass="negrita" />
+								<p:inputText value="#{provinciaBean.ciudad.nombre}"
+									onblur="this.value=this.value.toUpperCase();" styleClass="w100" />
+								<p:commandButton update=":mensaje, formEditar"
+									styleClass="botonInsertarCiudad"
+									actionListener="#{provinciaBean.insertarCiudad}"
+									icon="ui-icon-plus" />
+							</h:panelGrid>
+							<p:dataTable id="tablaCiudades" var="ciudad"
+								value="#{provinciaBean.listaCiudades}" paginator="true"
+								rows="10" emptyMessage="#{msg['lbl.mensajeTabla']}"
+								paginatorPosition="bottom">
+								<p:column headerText="NOMBRE CIUDADES">  
+            				#{ciudad.nombre}  
+        				</p:column>
+							</p:dataTable>
+						</h:panelGrid>
+					</h:form>
+				</p:dialog>
+			</p:tab>
+			<p:tab id="tabBanco" title="CONFIGURACIONES DE BANCOS">
+				<h:form id="formDataTableBanco">
+					<p:focus context="formDataTableBanco" />
+					<p:dataTable id="tablaBancos" var="banco"
+						value="#{bancoBean.listaBancos}" paginator="true" rows="10"
+						styleClass="estiloFilasPares centrar"
+						emptyMessage="#{msg['lbl.mensajeTabla']}"
+						paginatorPosition="bottom"
+						rowStyleClass="#{banco.activo eq true ? null:'desactivo'}">
+						<f:facet name="header">
+							<h:form>
+								<p:commandButton value="#{msg['btn.insertar']}"
+									update=":tabViewConfiguraciones:formNuevoBanco"
+									oncomplete="PF('bancoDialogoNuevo').show()" id="btnNuevo"
+									icon="ui-icon-plus" styleClass="botonNuevo"
+									actionListener="#{bancoBean.limpiar}" />
+							</h:form>
+						</f:facet>
+						<p:column headerText="#{msg['lbl.gestionar']}" width="30%">
+							<p:tooltip for="btnEditarBanco" value="EDITAR" />
+							<p:tooltip for="btnEliminarBanco"
+								value="#{banco.activo eq true ? msg['lbl.desactivar']:msg['lbl.activar']}" />
+							<p:commandButton id="btnEditarBanco"
+								update=":tabViewConfiguraciones:formEditarBanco"
+								oncomplete="PF('bancoDialogoEditar').show()"
+								icon="ui-icon-pencil">
+								<f:setPropertyActionListener value="#{banco}"
+									target="#{bancoBean.banco}" />
+							</p:commandButton>
+							<p:commandButton id="btnEliminarBanco"
+								update=":tabViewConfiguraciones:formEliminarBanco"
+								oncomplete="PF('bancoDialogoEliminar').show()"
+								icon="#{banco.activo eq true ? 'ui-icon-close':'ui-icon-check'}">
+								<f:setPropertyActionListener value="#{banco}"
+									target="#{bancoBean.banco}" />
+							</p:commandButton>
+						</p:column>
+						<p:column headerText="NOMBRE" styleClass="columnaInfo">  
+                            #{banco.nombre}  
+                        </p:column>
+					</p:dataTable>
+				</h:form>
+				<h:form id="formEliminarBanco">
+					<p:dialog widgetVar="bancoDialogoEliminar"
+						header="#{msg['lbl.eliminarBanco']}" showEffect="explode"
+						hideEffect="fold" modal="false" resizable="false" width="230px"
+						styleClass="centrar">
+						<h:inputHidden value="#{bancoBean.banco.id}" />
+						<br />
+						<ui:param name="desactivar"
+							value="¿ DESEA DESACTIVAR EL BANCO: #{bancoBean.banco.nombre} ?" />
+						<ui:param name="activar"
+							value="¿ DESEA ACTIVAR EL BANCO #{bancoBean.banco.nombre} ?" />
+						<h:outputText
+							value="#{bancoBean.banco.activo eq true ? desactivar : activar}" />
+						<br />
+						<br />
+						<p:commandButton value="#{msg['btn.aceptar']}"
+							update=":tabViewConfiguraciones:formDataTableBanco, :mensaje"
+							icon="#{msg['iconoAceptar']}"
+							oncomplete="PF('bancoDialogoEliminar').hide()"
+							actionListener="#{bancoBean.eliminar}" />
+						<p:commandButton value="CANCELAR" type="button"
+							onclick="PF('bancoDialogoEliminar').hide()"
+							icon="#{msg['iconoCancelar']}" />
+					</p:dialog>
+				</h:form>
+				<p:dialog header="INSERTAR BANCO" widgetVar="bancoDialogoNuevo"
+					resizable="false" modal="false" showEffect="clip" hideEffect="fold"
+					id="dialogoNuevo">
+					<h:form id="formNuevoBanco">
+						<p:focus context="formNuevoBanco" />
+						<h:panelGrid columns="3" cellpadding="5">
+							<h:outputText value="NOMBRE:" />
+							<p:inputText id="nombre" value="#{bancoBean.banco.nombre}"
+								required="true" requiredMessage="INGRESE UN BANCO"
+								label="nombre" onblur="this.value = this.value.toUpperCase();" />
+							<f:facet name="footer">
+								<p:separator />
+								<p:commandButton value="#{msg['btn.guardar']}"
+									oncomplete="comprobarBanco(xhr, status, args)"
+									update=":tabViewConfiguraciones:formDataTableBanco,:tabViewConfiguraciones:formDataTableBanco:tablaBancos, :mensaje, :tabViewConfiguraciones:formNuevoBanco"
+									id="btnNuevoAceptar" icon="#{msg['iconoGuardar']}"
+									actionListener="#{bancoBean.insertar}" />
+								<p:commandButton value="#{msg['btn.cancelar']}"
+									oncomplete="PF('bancoDialogoNuevo').hide()"
+									id="btnNuevolimpiar" icon="#{msg['iconoCancelar']}"
+									actionListener="#{bancoBean.limpiar}" process="@this" />
+							</f:facet>
+						</h:panelGrid>
+					</h:form>
+				</p:dialog>
+				<p:dialog header="EDITAR BANCO" widgetVar="bancoDialogoEditar"
+					resizable="false" modal="false" showEffect="clip" hideEffect="fold"
+					id="dialogoEditarBanco">
+					<h:form id="formEditarBanco">
+						<p:focus context="formEditarBanco" />
+						<h:panelGrid id="panelEditarBanco" columns="2" cellpadding="8">
+							<h:outputText value="NOMBRE:" />
+							<p:inputText value="#{bancoBean.banco.nombre}" required="true"
+								requiredMessage="INGRESE UN BANCO"
+								onblur="this.value = this.value.toUpperCase();" />
+							<f:facet name="footer">
+								<p:separator />
+								<p:commandButton value="#{msg['btn.guardar']}"
+									update=":tabViewConfiguraciones:formDataTableBanco, :mensaje, :tabViewConfiguraciones:formEditarBanco"
+									oncomplete="comprobarBanco(xhr, status, args)"
+									id="btnModificarAceptar"
+									actionListener="#{bancoBean.actualizar}" icon="ui-icon-disk" />
+								<p:commandButton value="#{msg['btn.cancelar']}"
+									oncomplete="PF('bancoDialogoEditar').hide()"
+									id="btnModificarlimpiar" icon="ui-icon-close" />
+							</f:facet>
+						</h:panelGrid>
+					</h:form>
+				</p:dialog>
+			</p:tab>
+		</p:tabView>
+		<script type="text/javascript">
+			//<![CDATA[
+			function comprobarBanco(xhr, status, args) {
+				if (!args.validationFailed && args.error) {
+					PF('bancoDialogoNuevo').hide();
+					PF('bancoDialogoEditar').hide();
+				}
+			}
+
+			function comprobarDocumento(xhr, status, args) {
+				if (!args.validationFailed && args.error) {
+					PF('tipoDocumentoDialogoNuevo').hide();
+					PF('tipoDocumentoDialogoEditar').hide();
+				}
+			}
+
+			function comprobar(xhr, status, args) {
+				if (!args.validationFailed && args.error) {
+					PF('bodegaDialogoNuevo').hide();
+				}
+			}
+
+			function comprobarListaBodegueros(xhr, status, args) {
+				if (!args.error) {
+					PF('bodeguerosDialogoNuevo').hide()
+				}
+			}
+
+			function comprobarEditar(xhr, status, args) {
+				if (!args.validationFailed && args.error) {
+					PF('bodegaDialogoEditar').hide();
+				}
+			}
+
+			function validacionInsertarBodega() {
+				var nombreBodega = jQuery('#formNuevoBodega\\:txtNombre').val();
+				var ciudad = jQuery(
+						'#formNuevoBodega\\:comboCiudad option:selected')
+						.text();
+				var direccion = jQuery('#formNuevoBodega\\:txtDireccion').val();
+				if (nombreBodega != "") {
+					if (ciudad != "ESCOJA UNA CIUDAD") {
+						if (direccion != "") {
+							PF('responsableDialogoNuevo').show();
+						}
+					}
+				}
+			}
+
+			function comprobarLocal(xhr, status, args) {
+				if (!args.validationFailed && args.error) {
+					PF('localDialogoNuevo').hide();
+					PF('localDialogoEditar').hide();
+				}
+			}
+
+			function comprobarListaCajeros(xhr, status, args) {
+				if (!args.error) {
+					PF('cajerosDialogoNuevo').hide()
+				}
+			}
+
+			//]]>
+		</script>
+	</ui:define>
+</ui:composition>
+</html>

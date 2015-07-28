@@ -1,0 +1,203 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:p="http://primefaces.org/ui">
+
+    <ui:composition template="/templates/layout/masterLayout.xhtml">
+
+        <ui:define name="title">
+            #{msg['btn.cargo']}
+        </ui:define>
+
+        <ui:define name="content">
+
+            <p:growl id="mensaje" showDetail="true" life="7000" />
+
+            <p:panel id="panel"
+                     header="#{msg['lbl.listadoDe']} #{msg['lbl.cargos']}"
+                     style="margin-bottom:10px;">
+
+                <h:form id="formDataTable">
+
+                    <p:dataTable id="tablaCargos" var="cargo"
+                                 value="#{cargoBean.listaCargos}" paginator="true" rows="10"
+                                 emptyMessage="#{msg['lbl.mensajeTabla']}"
+                                 paginatorPosition="bottom"
+                                 rowStyleClass="#{cargo.activo eq true ? null:'desactivo'}">
+
+                        <f:facet name="header">
+                            <h:form>
+                                <p:commandButton value="#{msg['btn.insertar']}"
+                                                 oncomplete="PF('cargoDialogoNuevo').show()" id="btnNuevo"
+                                                 icon="#{msg['iconoInsertar']}"
+                                                 actionListener="#{cargoBean.limpiar}" />
+                            </h:form>
+                        </f:facet>
+
+                        <p:column headerText="#{msg['lbl.gestionar']}"
+                                  style="text-align:center;width: 50px;">
+                            <p:tooltip for="btnMostrar" value="#{msg['lbl.mostrar']}" />
+                            <p:tooltip for="btnEditar" value="#{msg['lbl.editar']}" />
+                            <p:tooltip for="btnEliminar"
+                                       value="#{cargo.activo eq true ? msg['lbl.desactivar']:msg['lbl.activar']}" />
+
+                            <p:commandButton id="btnMostrar" update=":formMostrar"
+                                             oncomplete="PF('cargoDialogoMostrar').show()"
+                                             icon="#{msg['iconoMostrar']}">
+                                <f:setPropertyActionListener value="#{cargo}"
+                                                             target="#{cargoBean.cargo}" />
+                            </p:commandButton>
+
+                            <p:commandButton id="btnEditar" update=":formEditar"
+                                             oncomplete="PF('cargoDialogoEditar').show()"
+                                             icon="#{msg['iconoEditar']}"
+                                             disabled="#{cargo.pordefecto eq true ? true:false}">
+
+                                <f:setPropertyActionListener value="#{cargo}"
+                                                             target="#{cargoBean.cargo}" />
+                            </p:commandButton>
+
+                            <p:commandButton id="btnEliminar" update=":formEliminar"
+                                             oncomplete="PF('cargoDialogoEliminar').show()"
+                                             icon="#{cargo.activo eq true ? 'ui-icon-close':'ui-icon-check'}"
+                                             disabled="#{cargo.pordefecto eq true ? true:false}">
+
+                                <f:setPropertyActionListener value="#{cargo}"
+                                                             target="#{cargoBean.cargo}" />
+                            </p:commandButton>
+
+                        </p:column>
+
+                        <p:column headerText="NOMBRE" filterBy="#{cargo.nombre}"
+                                  style="text-align:center;width: 50px;">  
+                            #{cargo.nombre}  
+                        </p:column>
+
+                    </p:dataTable>
+                </h:form>
+
+            </p:panel>
+
+            <p:dialog widgetVar="cargoDialogoEliminar" 
+                      header="ELIMINAR CARGO" showEffect="explode" hideEffect="shake"
+                      modal="false" resizable="false" width="230px"
+                      style="text-align: center;">
+                <h:form id="formEliminar">
+
+                    <h:inputHidden value="#{cargoBean.cargo.cargoid}" />
+                    <br />
+                    <ui:param name="desactivar"
+                              value="¿ DESEA DESACTIVAR EL CARGO: #{cargoBean.cargo.nombre} ?" />
+                    <ui:param name="activar"
+                              value="¿ DESEA ACTIVAR EL CARGO: #{cargoBean.cargo.nombre} ?" />
+                    <h:outputText
+                        value="#{cargoBean.cargo.activo eq true ? desactivar : activar}" />
+                    <br />
+                    <br />
+                    <p:commandButton value="#{msg['btn.aceptar']}"
+                                     update=":formDataTable,:mensaje" icon="#{msg['iconoAceptar']}"
+                                     oncomplete="PF('cargoDialogoEliminar').hide()"
+                                     actionListener="#{cargoBean.eliminar}" />
+                    <p:commandButton value="#{msg['btn.cancelar']}" type="button"
+                                     onclick="PF('cargoDialogoEliminar').hide()"
+                                     icon="#{msg['iconoCancelar']}" />
+                </h:form>
+            </p:dialog>
+
+            <p:dialog header="INSERTAR CARGO" widgetVar="cargoDialogoNuevo"
+                      resizable="false" modal="false" showEffect="clip" hideEffect="fold"
+                      id="dialogoNuevo">
+
+                <h:form id="formNuevo">
+
+                    <p:focus context="formNuevo" />
+
+                    <h:panelGrid id="panelNuevo" columns="2" cellpadding="5">
+
+                        <h:outputText value="NOMBRE:" />
+                        <p:inputText value="#{cargoBean.cargo.nombre}" required="true"
+                                     requiredMessage="INGRESE UN CARGO"
+                                     onblur="this.value = this.value.toUpperCase();" />
+
+                        <f:facet name="footer">
+                            <p:separator />
+                            <p:commandButton value="#{msg['btn.guardar']}"
+                                             update=":formDataTable ,:mensaje, formNuevo"
+                                             oncomplete="comprobar(xhr, status, args)" id="btnNuevoAceptar"
+                                             icon="#{msg['iconoGuardar']}"
+                                             actionListener="#{cargoBean.insertar}" />
+
+                            <p:commandButton value="#{msg['btn.cancelar']}"
+                                             oncomplete="PF('cargoDialogoNuevo').hide()" id="btnNuevolimpiar"
+                                             icon="#{msg['iconoCancelar']}"
+                                             actionListener="#{cargoBean.limpiar}" process="@this" />
+                        </f:facet>
+                    </h:panelGrid>
+                </h:form>
+            </p:dialog>
+
+            <script type="text/javascript">
+                //<![CDATA[
+                function comprobar(xhr, status, args) {
+                    if (!args.validationFailed && args.error) {
+                        PF('cargoDialogoNuevo').hide();
+                        PF('cargoDialogoEditar').hide();
+                    }
+                }
+                //]]>
+            </script>
+
+            <p:dialog header="MOSTRAR CARGO" widgetVar="cargoDialogoMostrar"
+                      resizable="false" modal="false" showEffect="clip" hideEffect="fold"
+                      id="dialogoMostrar">
+
+                <h:form id="formMostrar">
+
+                    <h:panelGrid id="panelMostrar" columns="2" cellpadding="8">
+
+                        <h:outputText value="NOMBRE:" />
+                        <h:outputText value="#{cargoBean.cargo.nombre}"
+                                      style="font-weight:bold" />
+
+                    </h:panelGrid>
+                </h:form>
+            </p:dialog>
+
+            <p:dialog header="EDITAR CARGO" widgetVar="cargoDialogoEditar"
+                      resizable="false" modal="false" showEffect="clip" hideEffect="fold"
+                      id="dialogoEditar">
+
+                <h:form id="formEditar">
+
+                    <p:focus context="formEditar" />
+
+                    <h:panelGrid id="panelEditar" columns="2" cellpadding="8">
+
+                        <h:outputText value="NOMBRE:" />
+                        <p:inputText value="#{cargoBean.cargo.nombre}"
+                                     onblur="this.value = this.value.toUpperCase();" required="true"
+                                     requiredMessage="INGRESE UN CARGO" />
+
+                        <f:facet name="footer">
+                            <p:separator />
+                            <p:commandButton value="#{msg['btn.guardar']}"
+                                             update=":formDataTable ,:mensaje, formEditar"
+                                             oncomplete="comprobar(xhr, status, args)" id="btnEditarAceptar"
+                                             icon="#{msg['iconoGuardar']}"
+                                             actionListener="#{cargoBean.actualizar}" />
+
+                            <p:commandButton value="#{msg['btn.cancelar']}"
+                                             oncomplete="PF('cargoDialogoEditar').hide()"
+                                             id="btnEditarlimpiar" icon="#{msg['iconoCancelar']}" />
+                        </f:facet>
+
+                    </h:panelGrid>
+                </h:form>
+            </p:dialog>
+        </ui:define>
+    </ui:composition>
+</html>

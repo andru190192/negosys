@@ -1,0 +1,6 @@
+*.settings
+/target
+*.classpath
+*.project
+src/main/java/ec/com/redepronik/negosys/config/PersistenceConfig.java
+/bin/

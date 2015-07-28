@@ -1,0 +1,277 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:p="http://primefaces.org/ui">
+<ui:composition template="/templates/layout/masterLayout.xhtml">
+	<ui:define name="title">PAGOS</ui:define>
+	<ui:define name="content">
+		<p:growl id="mensaje" showDetail="true" life="7000" />
+		<p:panel id="panel" header="PAGOS DE FACTURAS"
+			>
+			<h:form id="formCliente">
+				<h:panelGrid columns="2" cellpadding="10" cellspacing="10">
+					<p:outputLabel value="CÉDULA/NOMBRE:" styleClass="negrita" />
+					<h:panelGrid columns="2">
+						<p:inputText readonly="true"
+							value="#{pagoBean.criterioBusquedaProveedor.cedula} - #{pagoBean.criterioBusquedaProveedor.apellido} #{pagoBean.criterioBusquedaProveedor.nombre}"
+							styleClass="w445px"/>
+						<p:commandButton
+							update=":formBusquedaProveedor, :formNuevoProveedor"
+							oncomplete="PF('buscarProveedor').show()"
+							action="#{pagoBean.limpiarObjetosBusquedaCliente}"
+							icon="#{msg['iconoBuscar']}"  />
+					</h:panelGrid>
+					<h:outputText value="FECHA INICIO:" styleClass="negrita" />
+					<p:calendar value="#{pagoBean.criterioBusquedafechaInicio}"
+						styleClass="fechaFinCobro" />
+					<h:outputText value="FECHA FIN:" styleClass="negrita" />
+					<p:calendar value="#{pagoBean.criterioBusquedafechaFin}"
+						styleClass="fechaFinCobro" />
+					<h:outputText value="# DOCUMENTO" styleClass="negrita" />
+					<h:panelGrid columns="2">
+						<p:inputText value="#{pagoBean.criterioBusquedaDocumento}"
+							styleClass="w445px"
+							onblur="this.value=this.value.toUpperCase();" />
+						<p:commandButton 
+							update="formCliente, :formDataTable:tablaIngresos, :mensaje"
+							icon="#{msg['iconoBuscar']}"
+							actionListener="#{pagoBean.obtenerFacturasPendientes}" />
+					</h:panelGrid>
+				</h:panelGrid>
+			</h:form>
+		</p:panel>
+		<p:dialog header="BUSCAR PROVEEDOR" widgetVar="buscarProveedor"
+			resizable="false" modal="false" showEffect="clip" hideEffect="fold"
+			id="dialogoCliente" width="50%">
+			<h:form id="formBusquedaProveedor">
+				<p:outputLabel value="CEDULA/RUC/NOMBRE/APELLIDO:"
+					styleClass="negrita" />
+				<p:inputText id="comboCedula"
+					value="#{pagoBean.criterioProveedorBusqueda}"
+					onblur="this.value=this.value.toUpperCase();" />
+				<p:commandButton
+					update="comboCedula, :formNuevoProveedor:tablaProveedores, :mensaje"
+					icon="#{msg['iconoBuscar']}"
+					actionListener="#{pagoBean.obtenerProveedorPorBusqueda}" />
+			</h:form>
+			<h:form id="formNuevoProveedor">
+				<p:dataTable id="tablaProveedores" var="proveedor"
+					value="#{pagoBean.listaProveedorBusqueda}" paginator="true"
+					rows="10" emptyMessage="#{msg['lbl.mensajeTabla']}"
+					paginatorPosition="bottom" rowKey="#{proveedor.id}"
+					selection="#{pagoBean.criterioBusquedaProveedor}"
+					selectionMode="single">
+					<p:ajax event="rowSelect" update=":formCliente"
+						listener="#{pagoBean.cargarProveedor}"
+						oncomplete="PF('buscarProveedor').hide()" />
+					<p:column headerText="CEDULA" styleClass="centrar" width="20%">
+							 	#{proveedor.cedula}
+						</p:column>
+					<p:column headerText="APELLIDO" styleClass="centrar">
+							 	#{proveedor.apellido}
+						</p:column>
+					<p:column headerText="NOMBRE" styleClass="centrar">
+							 	#{proveedor.nombre}
+						</p:column>
+				</p:dataTable>
+			</h:form>
+		</p:dialog>
+		<h:form id="formDataTable">
+			<p:dataTable id="tablaIngresos" var="ingreso" rows="10"
+				paginator="true" paginatorPosition="bottom"
+				emptyMessage="#{msg['lbl.mensajeTabla']}"
+				value="#{pagoBean.listaIngresos}" selectionMode="multiple"
+				selection="#{pagoBean.listaIngresosSeleccionados}"
+				rowKey="#{ingreso.id}">
+				<p:ajax event="rowSelect" listener="#{pagoBean.onRowSelect}"
+					update=":formDataTable:tablaIngresos, :mensaje" />
+				<p:ajax event="rowUnselect" listener="#{pagoBean.onRowUnselect}"
+					update=":formDataTable:tablaIngresos" />
+				<p:column headerText="■" styleClass="centrar" width="5%">
+					<p:selectBooleanCheckbox disabled="true"
+						value="#{ingreso.escogido}" />
+				</p:column>
+				<p:column headerText="ORDEN" styleClass="centrar" width="5%">
+				 	#{ingreso.orden eq 0 ? "" : ingreso.orden}
+				</p:column>
+				<p:column headerText="PROVEEDOR" styleClass="centrar" width="30%">
+				 	#{ingreso.nombre}
+				</p:column>
+				<p:column headerText="# DOCUMENTO" styleClass="centrar">
+				 	#{ingreso.codigoDocumento}
+				</p:column>
+				<p:column headerText="FECHA EMISION" styleClass="centrar">
+					<p:outputLabel value="#{ingreso.fechaEmision}">
+						<f:convertDateTime pattern="dd/MM/yyyy"
+							timeZone="America/Guayaquil" />
+					</p:outputLabel>
+				</p:column>
+				<p:column headerText="TOTAL" styleClass="centrar" >
+					#{ingreso.total}
+				</p:column>
+				<p:column headerText="ABONOS" styleClass="centrar">
+					#{ingreso.abono}
+				</p:column>
+				<p:column headerText="SALDO" styleClass="centrar">
+					#{ingreso.saldo}
+				</p:column>
+				<p:columnGroup type="footer">
+					<p:row>
+						<p:column colspan="5" footerText="TOTALES: "
+							styleClass="centrar" />
+						<p:column footerText="$ #{pagoBean.totalTotal}" />
+						<p:column footerText="$ #{pagoBean.totalAbonos}" />
+						<p:column footerText="$ #{pagoBean.totalSaldo}" />
+					</p:row>
+				</p:columnGroup>
+				<f:facet name="footer">
+					<p:commandButton process="tablaIngresos" value="ABONAR"
+						disabled="#{pagoBean.bn}"
+						actionListener="#{pagoBean.comprobarIngresosSeleccionados}"
+						oncomplete="comprobarIngresosSeleccionados(xhr, status, args)"
+						update=":formTablaPagosCredito, :formPagarCredito, :mensaje" />
+					<p:tooltip for="btnPagarTodo" value="PAGO RAPIDO" />
+					<p:commandButton id="btnPagarTodo" disabled="#{pagoBean.bn}"
+						value="PAGO RAPIDO"
+						oncomplete="PF('dialogoProveedorPagoTotal').show()">
+						<f:setPropertyActionListener value="#{ingreso}"
+							target="#{pagoBean.cobroReporte}" />
+					</p:commandButton>
+				</f:facet>
+			</p:dataTable>
+		</h:form>
+		<p:dialog header="COBRO DEUDAS" widgetVar="dialogoPagarCredito"
+			resizable="false" modal="false" showEffect="clip" hideEffect="fold"
+			id="dialogoPagarCredito" width="50%">
+			<h:form id="formPagarCredito">
+				<p:focus context="formPagarCredito" />
+				<h:panelGrid columns="2" cellpadding="5">
+					<p:outputLabel value="TIPO DE PAGO" />
+					<p:selectOneMenu styleClass="comboCedula"
+						value="#{pagoBean.pagoEntrada.tipoPago}" filter="true"
+						filterMatchMode="contains">
+						<f:selectItem itemLabel="ESCOJA UN TIPO DE PAGO" />
+						<f:selectItems value="#{pagoBean.listaFormasPago}" var="tipoPago"
+							itemValue="#{tipoPago}" itemLabel="#{tipoPago.nombre}" />
+						<p:ajax event="change" update="formPagarCredito"
+							listener="#{pagoBean.tipoPago}" />
+					</p:selectOneMenu>
+					<p:outputLabel value="MONTO" />
+					<p:inputText value="#{pagoBean.pagoEntrada.cuota}" />
+					<p:outputLabel value="FECHA PAGO" />
+					<p:calendar value="#{pagoBean.fechapago}" navigator="true" />
+					<p:outputLabel value="BANCO" rendered="#{pagoBean.bnBanco}" />
+					<p:selectOneMenu styleClass="comboCedula"
+						rendered="#{pagoBean.bnBanco}"
+						value="#{pagoBean.pagoEntrada.banco}" filter="true"
+						filterMatchMode="contains">
+						<f:selectItem itemLabel="ESCOJA UN BANCO" itemValue="" />
+						<f:selectItems value="#{bancoBean.listaBancos}" var="banco"
+							itemValue="#{banco.nombre}" itemLabel="#{banco.nombre}" />
+					</p:selectOneMenu>
+					<p:outputLabel value="FECHA GIRO" rendered="#{pagoBean.bnBanco}" />
+					<p:calendar value="#{pagoBean.pagoEntrada.fechaGiro}"
+						navigator="true" rendered="#{pagoBean.bnBanco}" required="true"
+						requiredMessage="ESCOJA UNA FECHA GIRO" />
+					<p:outputLabel value="FECHA DE COBRO"
+						rendered="#{pagoBean.bnBanco}" />
+					<p:calendar value="#{pagoBean.pagoEntrada.fechaCheque}"
+						navigator="true" rendered="#{pagoBean.bnBanco}" required="true"
+						requiredMessage="ESCOJA UNA FECHA COBRO" />
+					<p:outputLabel value="#{pagoBean.chequeTarjetaVaucher}"
+						rendered="#{pagoBean.bnTarjeta}" />
+					<p:inputText value="#{pagoBean.pagoEntrada.chequeVaucher}"
+						rendered="#{pagoBean.bnTarjeta}" required="true"
+						requiredMessage="INGRESE NUMERO CHEQUE/VAUCHER" />
+					<p:outputLabel value="#{pagoBean.chequeTarjetaCuenta}"
+						rendered="#{pagoBean.bnTarjeta}" />
+					<p:inputText value="#{pagoBean.pagoEntrada.cuentaTarjeta}"
+						rendered="#{pagoBean.bnTarjeta}" required="true"
+						requiredMessage="INGRESE NUMERO CUENTA/TARJETA" />
+					<p:commandButton value="AGREGAR PAGO"
+						actionListener="#{pagoBean.insertarPagoEntrada}"
+						update="formPagarCredito, :formTablaPagosCredito :mensaje" />
+				</h:panelGrid>
+			</h:form>
+			<h:form id="formTablaPagosCredito">
+				<p:dataTable id="tablaPagosCredito" var="pagoEntrada"
+					emptyMessage="No hay informacion disponible"
+					value="#{pagoBean.listaCuotaIngreso}">
+					<p:column headerText="GESTIONAR" styleClass="centrar">
+						<p:commandButton id="btnMostrar" icon="ui-icon-trash"
+							action="#{pagoBean.eliminarPagoEntrada}"
+							update="tablaPagosCredito">
+							<f:setPropertyActionListener value="#{pagoEntrada}"
+								target="#{pagoBean.pagoEntrada}" />
+						</p:commandButton>
+					</p:column>
+					<p:column headerText="FECHA DE PAGO">
+						<p:outputLabel value="#{pagoEntrada.fechaPago}">
+							<f:convertDateTime pattern="dd/MM/yyyy"
+								timeZone="America/Guayaquil" />
+						</p:outputLabel>
+					</p:column>
+					<p:column headerText="TIPO DE PAGO">
+							#{pagoEntrada.tipoPago.nombre}		
+						</p:column>
+					<p:column headerText="CUOTA">
+							#{pagoEntrada.cuota}		
+						</p:column>
+					<p:columnGroup type="footer">
+						<p:row>
+							<p:column colspan="3" footerText="TOTAL: "
+								styleClass="centrarDerecha" />
+							<p:column footerText="$ #{pagoBean.totalCuota}" />
+						</p:row>
+					</p:columnGroup>
+				</p:dataTable>
+			</h:form>
+			<br />
+			<p:commandButton value="GUARDAR" icon="ui-icon-disk"
+				update=":formCliente, :formDataTable:tablaIngresos, :mensaje"
+				actionListener="#{pagoBean.insertarCobro}"
+				oncomplete="comprobarDialogoPago(xhr, status, args)" />
+			<p:commandButton value="CANCELAR" icon="ui-icon-close"
+				update="formPagarCredito"
+				oncomplete="PF('dialogoPagarCredito').hide()" process="@this"
+				actionListener="#{pagoBean.limpiar}" />
+		</p:dialog>
+		<p:dialog header="PAGO TOTAL EN EFECTIVO"
+			widgetVar="dialogoProveedorPagoTotal" resizable="false" modal="false"
+			showEffect="clip" hideEffect="fold" width="300px">
+			<h:panelGrid columns="1" styleClass="centrar">
+				<p:outputLabel styleClass="negrita m-b10px"
+					value="¿ DESEA PAGAR TODAS LAS DEUDAS EN EFECTIVO ?" />
+				<p:calendar id="txtCalendar" navigator="true"
+					value="#{pagoBean.fechaPagoRapido}" showOn="button" />
+				<f:facet name="footer">
+					<p:commandButton value="PAGAR"
+						update=":formDataTable:tablaIngresos"
+						oncomplete="PF('dialogoProveedorPagoTotal').hide()"
+						actionListener="#{pagoBean.pagoLote}" icon="ui-icon-disk" />
+					<p:commandButton value="CANCELAR"
+						oncomplete="PF('dialogoProveedorPagoTotal').hide()"
+						icon="ui-icon-close" />
+				</f:facet>
+			</h:panelGrid>
+		</p:dialog>
+		<script type="text/javascript">
+			//<![CDATA[
+			function comprobarDialogoPago(xhr, status, args) {
+				if (!args.error) {
+					PF('dialogoPagarCredito').hide()
+				}
+			}
+			function comprobarIngresosSeleccionados(xhr, status, args) {
+				if (!args.error1) {
+					PF('dialogoPagarCredito').show()
+				}
+			}
+			//]]>
+		</script>
+	</ui:define>
+</ui:composition>
+</html>

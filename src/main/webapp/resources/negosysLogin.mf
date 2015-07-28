@@ -1,0 +1,11 @@
+CACHE MANIFEST
+CACHE:
+imagenes/logo.svg
+css/estilosLogin.css
+css/normalize.css
+css/bootstrap.min.css
+css/font-awesome.min.css
+fuentes/fontawesome/fontawesome-webfont.woff2?v=4.3.0
+
+NETWORK:
+*

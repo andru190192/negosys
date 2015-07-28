@@ -1,0 +1,52 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:p="http://primefaces.org/ui">
+<ui:composition template="/templates/layout/masterLayout.xhtml">
+	<ui:define name="title">
+    	REPORTES
+    </ui:define>
+	<ui:define name="content">
+		<p:growl id="mensaje" showDetail="true" life="7000"
+			showSummary="false" />
+		<p:panel id="panel" header="REPORTES">
+			<div class="row">
+				<div class="col-xs-6 col-sm-3 col-md-3 col-lg-3"><h:form>
+						<h:panelGrid columns="1" styleClass="centrar">
+							<p:graphicImage value="../../resources/imagenes/r4.svg" />
+							<p:selectOneMenu value="#{directorioReport.ciudadId}"
+								filter="true" filterMatchMode="contains" required="true"
+								requiredMessage="SELECCIONE UNA CIUDAD">
+								<f:selectItem itemLabel="ESCOJA UNA CIUDAD" />
+								<f:selectItems value="#{directorioReport.listaCiudades}"
+									var="ciudad" itemValue="#{ciudad.id}"
+									itemLabel="#{ciudad.nombre}" />
+							</p:selectOneMenu>
+							<p:commandButton update=":mensaje"
+								actionListener="#{directorioReport.reporteCliente}"
+								value="CLIENTES" ajax="false" />
+						</h:panelGrid>
+					</h:form></div>
+				<div class="col-xs-6 col-sm-3 col-md-3 col-lg-3"><h:form>
+						<h:panelGrid columns="1" styleClass="centrar">
+							<p:graphicImage value="../../resources/imagenes/r4.svg" />
+							<p:selectOneMenu value="#{directorioReport.ciudadId}"
+								filter="true" filterMatchMode="contains">
+								<f:selectItem itemLabel="TODOS" itemValue="0" />
+								<f:selectItems value="#{directorioReport.listaCiudades}"
+									var="ciudad" itemValue="#{ciudad.id}"
+									itemLabel="#{ciudad.nombre}" />
+							</p:selectOneMenu>
+							<p:commandButton update=":mensaje"
+								actionListener="#{directorioReport.reporteProveedor}"
+								value="PROVEEDORES" ajax="false" />
+						</h:panelGrid>
+					</h:form></div>
+			</div>
+		</p:panel>
+	</ui:define>
+</ui:composition>
+</html>

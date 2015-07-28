@@ -1,0 +1,270 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Created with Jaspersoft Studio version last-->
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="GiaRemision" pageWidth="612" pageHeight="841" columnWidth="536" leftMargin="34" rightMargin="42" topMargin="116" bottomMargin="48" uuid="162f49b4-7ed4-4226-8bf6-365c56ea66f3">
+	<property name="ireport.zoom" value="1.5"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
+	<style name="Title" forecolor="#FFFFFF" fontName="Arial" fontSize="26" isBold="true" pdfFontName="Helvetica-Bold"/>
+	<style name="SubTitle" forecolor="#666666" fontName="Arial" fontSize="18"/>
+	<style name="Column header" forecolor="#666666" fontName="Arial" fontSize="12" isBold="true"/>
+	<style name="Detail" fontName="Arial" fontSize="12"/>
+	<parameter name="logo" class="java.io.InputStream"/>
+	<parameter name="razonSocial" class="java.lang.String"/>
+	<parameter name="SUBREPORT_DIR" class="java.lang.String" isForPrompting="false"/>
+	<parameter name="fechInicio" class="java.util.Date"/>
+	<parameter name="fechFin" class="java.util.Date"/>
+	<parameter name="paginaWeb" class="java.lang.String"/>
+	<queryString language="SQL">
+		<![CDATA[]]>
+	</queryString>
+	<field name="codigodocumento" class="java.lang.String">
+		<fieldDescription><![CDATA[codigodocumento]]></fieldDescription>
+	</field>
+	<field name="cliente" class="ec.com.redepronik.negosys.rrhh.entity.Cliente">
+		<fieldDescription><![CDATA[cliente]]></fieldDescription>
+	</field>
+	<field name="detalleguiaremisions" class="java.util.List">
+		<fieldDescription><![CDATA[detalleguiaremisions]]></fieldDescription>
+	</field>
+	<field name="fechainicio" class="java.util.Date">
+		<fieldDescription><![CDATA[fechainicio]]></fieldDescription>
+	</field>
+	<field name="fechaterminacion" class="java.util.Date">
+		<fieldDescription><![CDATA[fechaterminacion]]></fieldDescription>
+	</field>
+	<field name="motivotraslado" class="ec.com.redepronik.negosys.invfac.entity.Motivotraslado">
+		<fieldDescription><![CDATA[motivotraslado]]></fieldDescription>
+	</field>
+	<field name="placa" class="java.lang.String">
+		<fieldDescription><![CDATA[placa]]></fieldDescription>
+	</field>
+	<field name="puntollegada" class="java.lang.String">
+		<fieldDescription><![CDATA[puntollegada]]></fieldDescription>
+	</field>
+	<field name="puntopartida" class="java.lang.String">
+		<fieldDescription><![CDATA[puntopartida]]></fieldDescription>
+	</field>
+	<field name="razonsocialdestinatario" class="java.lang.String">
+		<fieldDescription><![CDATA[razonsocialdestinatario]]></fieldDescription>
+	</field>
+	<field name="transportistaid" class="ec.com.redepronik.negosys.rrhh.entity.Empleadocargo">
+		<fieldDescription><![CDATA[transportistaid]]></fieldDescription>
+	</field>
+	<field name="aduana" class="java.lang.String">
+		<fieldDescription><![CDATA[aduana]]></fieldDescription>
+	</field>
+	<field name="egresos" class="java.util.List">
+		<fieldDescription><![CDATA[egresos]]></fieldDescription>
+	</field>
+	<field name="guiaremisionid" class="java.lang.Integer">
+		<fieldDescription><![CDATA[guiaremisionid]]></fieldDescription>
+	</field>
+	<background>
+		<band splitType="Stretch"/>
+	</background>
+	<title>
+		<band height="78" splitType="Stretch">
+			<staticText>
+				<reportElement x="0" y="0" width="80" height="13" uuid="66bf822c-36da-4cd0-a5e4-019f7bbf1cbe"/>
+				<textElement verticalAlignment="Middle">
+					<font size="10" isBold="true"/>
+				</textElement>
+				<text><![CDATA[FECHA INICIO:]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="0" y="13" width="80" height="13" uuid="cdee682c-4ba5-4a1b-9739-64cdf8b5fb9a"/>
+				<textElement verticalAlignment="Middle">
+					<font size="10" isBold="true"/>
+				</textElement>
+				<text><![CDATA[PTO PARTIDA:]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="415" y="0" width="121" height="13" uuid="032f471c-b72a-4494-abe0-79cdeb76fe0a"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font fontName="SansSerif" size="10"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{codigodocumento}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="347" y="0" width="68" height="13" forecolor="#000000" uuid="390b5e5f-bf43-4be8-a0de-3886db3de2c9"/>
+				<textElement verticalAlignment="Middle">
+					<font fontName="SansSerif" size="10" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Nº INTERNO]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="167" y="0" width="80" height="13" uuid="3cc149fd-ac11-4867-a854-400a7412363b"/>
+				<textElement verticalAlignment="Middle">
+					<font size="10" isBold="true"/>
+				</textElement>
+				<text><![CDATA[FECHA FIN:]]></text>
+			</staticText>
+			<textField pattern="dd/MM/yyyy">
+				<reportElement x="247" y="0" width="100" height="13" uuid="d5d13c94-6f57-4bf1-a3ef-afad3ba7cfc2"/>
+				<textElement verticalAlignment="Middle">
+					<font fontName="SansSerif" size="10"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{fechaterminacion}]]></textFieldExpression>
+			</textField>
+			<textField pattern="dd/MM/yyyy">
+				<reportElement x="80" y="0" width="87" height="13" uuid="5bc11885-da67-412c-a3aa-1f05ebf255d3"/>
+				<textElement verticalAlignment="Middle">
+					<font fontName="SansSerif" size="10"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{fechainicio}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="167" y="13" width="57" height="13" uuid="b8a4e4f3-5509-4246-9096-170fe2967843"/>
+				<textElement verticalAlignment="Middle">
+					<font size="10" isBold="true"/>
+				</textElement>
+				<text><![CDATA[DESTINO:]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="324" y="13" width="51" height="13" uuid="c7671e47-5c3c-4193-960f-6b5197e0fb61"/>
+				<textElement verticalAlignment="Middle">
+					<font size="10" isBold="true"/>
+				</textElement>
+				<text><![CDATA[MOTIVO:]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="80" y="13" width="87" height="13" uuid="611f7765-ca0f-41da-ae31-26a2b907097e"/>
+				<textElement verticalAlignment="Middle">
+					<font fontName="SansSerif" size="10"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{puntopartida}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="224" y="13" width="100" height="13" uuid="278acc90-765f-4b61-96e3-c2acdd5602f0"/>
+				<textElement verticalAlignment="Middle">
+					<font fontName="SansSerif" size="10"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{puntollegada}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="375" y="13" width="161" height="12" uuid="8fbece92-6221-4991-981a-0276fbdfc039"/>
+				<textElement verticalAlignment="Middle">
+					<font fontName="SansSerif" size="10"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{motivotraslado}.getNombre()]]></textFieldExpression>
+			</textField>
+			<line>
+				<reportElement x="0" y="25" width="536" height="1" uuid="5d6b4c44-3bf5-4fdd-b3a7-045530d27cfe"/>
+			</line>
+			<staticText>
+				<reportElement x="0" y="25" width="100" height="13" uuid="9a939cf6-180f-452e-a44a-198cbf047752"/>
+				<textElement verticalAlignment="Middle">
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[DESTINATARIO]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="0" y="38" width="80" height="13" uuid="82c4f4a0-3185-42a4-993c-c1f85ec348dc"/>
+				<textElement verticalAlignment="Middle">
+					<font size="10" isBold="true"/>
+				</textElement>
+				<text><![CDATA[CEDULA:]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="80" y="38" width="87" height="13" uuid="f076aaf1-5b41-4d5f-a293-3b6a13de2b0b"/>
+				<textElement verticalAlignment="Middle">
+					<font fontName="SansSerif" size="10"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{cliente}.getPersona().getCedula()]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="167" y="38" width="92" height="13" uuid="6cf1361d-8691-4561-b37a-875c4491a3c1"/>
+				<textElement verticalAlignment="Middle">
+					<font size="10" isBold="true"/>
+				</textElement>
+				<text><![CDATA[RAZÓN SOCIAL:]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="259" y="38" width="277" height="12" uuid="cf407acd-9463-48e9-a9fe-2da1b13c5040"/>
+				<textElement verticalAlignment="Middle">
+					<font fontName="SansSerif" size="10"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{cliente}.getNombrecomercial()]]></textFieldExpression>
+			</textField>
+			<line>
+				<reportElement x="0" y="51" width="536" height="1" uuid="bcfcfef8-4ad4-49b2-aa37-f91bbdc41724"/>
+			</line>
+			<textField>
+				<reportElement x="259" y="64" width="169" height="13" uuid="5fbc6178-467d-40ca-a62c-b9a1d7edc5d4"/>
+				<textElement verticalAlignment="Middle">
+					<font fontName="SansSerif" size="10"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{transportistaid}.getEmpleado().getPersona().getApellido()+" "+$F{transportistaid}.getEmpleado().getPersona().getNombre()]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="0" y="64" width="80" height="13" uuid="1d5bd72e-fa92-48c9-bf5f-043e9016c52d"/>
+				<textElement verticalAlignment="Middle">
+					<font size="10" isBold="true"/>
+				</textElement>
+				<text><![CDATA[CEDULA:]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="80" y="64" width="87" height="13" uuid="ba89201a-6389-4eb0-9b83-e8fab1bacf2b"/>
+				<textElement verticalAlignment="Middle">
+					<font fontName="SansSerif" size="10"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{transportistaid}.getEmpleado().getPersona().getCedula()]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="167" y="64" width="92" height="13" uuid="ae192737-1e97-49b5-8489-2e8ee534f220"/>
+				<textElement verticalAlignment="Middle">
+					<font size="10" isBold="true"/>
+				</textElement>
+				<text><![CDATA[NOMBRES:]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="0" y="51" width="100" height="13" uuid="c62d8194-d21c-450b-bfbc-81c4f43229f6"/>
+				<textElement verticalAlignment="Middle">
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[TRANSPORTISTA]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="470" y="64" width="66" height="12" uuid="5b8a3147-3b33-4f32-9df4-98d9e137ac06"/>
+				<textElement verticalAlignment="Middle">
+					<font fontName="SansSerif" size="10"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{placa}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="428" y="64" width="42" height="13" uuid="59284cff-a27c-4d08-8d58-cbefbd89182a"/>
+				<textElement verticalAlignment="Middle">
+					<font size="10" isBold="true"/>
+				</textElement>
+				<text><![CDATA[PLACA:]]></text>
+			</staticText>
+			<line>
+				<reportElement x="0" y="77" width="536" height="1" uuid="104ca3af-bbf1-46bf-bf71-1fa503b274d1"/>
+			</line>
+		</band>
+	</title>
+	<pageHeader>
+		<band splitType="Stretch"/>
+	</pageHeader>
+	<columnHeader>
+		<band splitType="Stretch"/>
+	</columnHeader>
+	<detail>
+		<band height="59" splitType="Stretch">
+			<subreport>
+				<reportElement x="0" y="0" width="536" height="58" uuid="65654d8b-bab6-4071-ad4f-253fc1de9fbe"/>
+				<dataSourceExpression><![CDATA[new net.sf.jasperreports.engine.data.JRBeanCollectionDataSource($F{detalleguiaremisions})]]></dataSourceExpression>
+				<subreportExpression><![CDATA[$P{SUBREPORT_DIR} + "Subrep_DetalleGuiaRemision.jasper"]]></subreportExpression>
+			</subreport>
+		</band>
+	</detail>
+	<columnFooter>
+		<band splitType="Stretch"/>
+	</columnFooter>
+	<pageFooter>
+		<band splitType="Stretch"/>
+	</pageFooter>
+	<summary>
+		<band splitType="Stretch"/>
+	</summary>
+</jasperReport>

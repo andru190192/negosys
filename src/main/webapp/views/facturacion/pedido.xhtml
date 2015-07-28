@@ -1,0 +1,358 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:p="http://primefaces.org/ui">
+
+<ui:composition template="/templates/layout/masterLayout.xhtml">
+
+	<ui:define name="title">NUEVO PEDIDO </ui:define>
+	<ui:define name="content">
+
+		<p:growl id="mensaje" showDetail="true" life="7000" />
+
+		<p:panel id="panel" header="NUEVO PEDIDO"
+			style="margin-bottom:10px;height:auto;">
+
+			<h:form id="formTotales" style="height: 0px;">
+				<h:panelGrid columns="2" cellpadding="0" styleClass="totales"
+					style="float: right;">
+
+					<h:panelGrid columns="2" cellpadding="0">
+
+						<h:outputText styleClass="letrasGrandes"
+							value="SUBTOTAL SIN IMPUESTO (1=2+3+4+5):"
+							style="padding-left: 4px;" />
+						<p:outputLabel readonly="true"
+							value="#{pedidoBean.cantidadFactura.stSinImpuesto}"
+							styleClass="colorLetras txtFactura"
+							style="font-size: 20px !important;	font-weight: bold;" />
+
+						<h:outputText styleClass="letrasGrandes"
+							style="padding-left: 5px;" value="SUBTOTAL 12% (2):" />
+						<p:outputLabel readonly="true"
+							value="#{pedidoBean.cantidadFactura.st12}"
+							styleClass="colorLetras txtFactura"
+							style="font-size: 20px !important;	font-weight: bold;" />
+
+						<h:outputText styleClass="letrasGrandes"
+							style="padding-left: 5px;" value="SUBTOTAL 0% (3):" />
+						<p:outputLabel readonly="true"
+							value="#{pedidoBean.cantidadFactura.st0}"
+							styleClass="colorLetras txtFactura"
+							style="font-size: 20px !important;	font-weight: bold;" />
+
+						<h:outputText styleClass="letrasGrandes"
+							style="padding-left: 5px;" value="SUBTOTAL NO OBJETO DE IVA (4):" />
+						<p:outputLabel readonly="true"
+							value="#{pedidoBean.cantidadFactura.stNoObjetoIva}"
+							styleClass="colorLetras txtFactura"
+							style="font-size: 20px !important;	font-weight: bold;" />
+
+						<h:outputText styleClass="letrasGrandes"
+							style="padding-left: 5px;" value="SUBTOTAL EXENTO DE IVA (5):" />
+						<p:outputLabel readonly="true"
+							value="#{pedidoBean.cantidadFactura.stExentoIva}"
+							styleClass="colorLetras txtFactura"
+							style="font-size: 20px !important;	font-weight: bold;" />
+
+					</h:panelGrid>
+					<h:panelGrid columns="2" cellpadding="0">
+
+						<h:outputText styleClass="letrasGrandes"
+							style="padding-left: 4px;" value="TOTAL DESCUENTO (6):" />
+						<p:outputLabel readonly="true"
+							value="#{pedidoBean.cantidadFactura.tDescuentoProducto}"
+							styleClass="colorLetras txtFactura"
+							style="font-size: 20px !important;	font-weight: bold;" />
+
+						<h:outputText styleClass="letrasGrandes"
+							style="padding-left: 4px;" value="VALOR ICE (7):" />
+						<p:outputLabel readonly="true"
+							value="#{pedidoBean.cantidadFactura.valorIce}"
+							styleClass="colorLetras txtFactura"
+							style="font-size: 20px !important;	font-weight: bold;" />
+
+						<h:outputText styleClass="letrasGrandes"
+							style="padding-left: 4px;" value="VALOR IRBPNR(8):" />
+						<p:outputLabel readonly="true"
+							value="#{pedidoBean.cantidadFactura.valorIRBPNR}"
+							styleClass="colorLetras txtFactura"
+							style="font-size: 20px !important;	font-weight: bold;" />
+
+						<h:outputText styleClass="letrasGrandes"
+							value="IVA 12% (9=(2+7)*12%):" style="padding-left: 8px;" />
+						<p:outputLabel readonly="true"
+							value="#{pedidoBean.cantidadFactura.iva12}"
+							styleClass="colorLetras txtFactura"
+							style="font-size: 20px !important;	font-weight: bold;" />
+
+						<h:outputText styleClass="letrasGrandes" value="PROPINA (10):"
+							style="padding-left: 8px;" />
+						<p:outputLabel readonly="true"
+							value="#{pedidoBean.cantidadFactura.propina}"
+							styleClass="colorLetras txtFactura"
+							style="font-size: 20px !important;	font-weight: bold;" />
+
+					</h:panelGrid>
+				</h:panelGrid>
+			</h:form>
+
+			<h:form id="formCliente">
+				<h:panelGrid columns="2" cellpadding="1">
+					<p:outputLabel value="CLIENTE" styleClass="negrita" />
+					<p:autoComplete id="autoCompletarCliente" styleClass="w100"
+						disabled="#{!pedidoBean.bn}" scrollHeight="200" effect="drop"
+						placeholder="MINIMO 3 CARACTERES"
+						emptyMessage="NO HAY DATOS A MOSTRAR"
+						panelStyle="width:400px !important"
+						style="width: 330px !important;" minQueryLength="3"
+						maxResults="20" value="#{pedidoBean.cliente}"
+						completeMethod="#{pedidoBean.obtenerClientePorBusqueda}">
+						<p:ajax event="itemSelect" id="prueba"
+							listener="#{pedidoBean.cargarCliente}"
+							update="autoCompletarCliente, :mensaje" />
+					</p:autoComplete>
+
+					<p:outputLabel value="ESTABLEIMIENTO" styleClass="negrita" />
+					<p:selectOneMenu id="comboLocal" disabled="#{!pedidoBean.bn}"
+						value="#{pedidoBean.pedido.establecimiento}"
+						style="width:360px !important">
+						<f:selectItems value="#{pedidoBean.listaLocales}" var="local"
+							itemValue="#{local.codigoEstablecimiento}"
+							itemLabel="#{local.nombre}" />
+						<p:ajax
+							update=":mensaje, :formCliente,:formDataTable:tablaDetalleEgresos"
+							event="change" listener="#{pedidoBean.obtenerBodega}" />
+					</p:selectOneMenu>
+
+					<h:outputText value="CAJERO/VENDEDOR" styleClass="negrita" />
+					<p:inputText readonly="true" style="width:360px !important"
+						value="#{pedidoBean.nombreVendedor}" />
+				</h:panelGrid>
+
+				<br></br>
+				<p:commandButton value="GUARDAR"
+					update=":formCliente, :formDataTable,  :formTotales, :mensaje ,:formTotal"
+					actionListener="#{pedidoBean.insertar}"
+					disabled="#{!pedidoBean.bn}" id="btnGuardar" icon="ui-icon-disk" />
+
+				<p:commandButton value="IMPRIMIR"
+					actionListener="#{pedidoBean.imprimirCotizacion}" ajax="false"
+					icon="ui-icon-print" />
+
+				<p:commandButton value="NUEVO" id="btnlimpiar"
+					update="formCliente, :formDataTable, :formTotales,:mensaje,:formTotal"
+					icon="ui-icon-document" actionListener="#{pedidoBean.nuevoPedido}"
+					process="@this" />
+			</h:form>
+			<br></br>
+			<h:form id="formTotal">
+				<h:panelGrid columns="2" cellpadding="1">
+					<h:outputText styleClass="letrasGrandes" style="padding-left: 8px;"
+						value="VALOR TOTAL (11=1+7+8+9+10):" />
+					<p:outputLabel readonly="true"
+						value="#{pedidoBean.cantidadFactura.valorTotal}"
+						styleClass="colorLetras txtFactura"
+						style="font-size: 20px !important;	font-weight: bold;" />
+				</h:panelGrid>
+			</h:form>
+
+			<br></br>
+
+			<div class="ui-datatable-header ui-widget-header ui-corner-top">
+				<h:form id="form" style="text-align: center;">
+					<p:commandButton update=":formBusquedaProducto"
+						disabled="#{!pedidoBean.bn}" style="margin: 5px;height: 25px;"
+						onclick="PF('busquedaProducto').show();" id="btnNuevo"
+						icon="ui-icon-plus" value="INSERTAR PRODUCTO" />
+				</h:form>
+			</div>
+
+			<h:form id="formDataTable">
+
+				<p:dataTable id="tablaDetalleEgresos" var="facturaReporte"
+					style="width: 100% !important;"
+					value="#{pedidoBean.listaFacturaReporte}" paginator="true"
+					rows="10" emptyMessage="#{msg['lbl.mensajeTabla']}"
+					paginatorPosition="bottom" scrollable="true"
+					styleClass="ui-datatable-scrollable-body">
+
+					<p:column headerText="ESTADO" style="text-align:center;width: 5%;">
+						<p:selectOneMenu id="estado" styleClass="comboPrecio"
+							disabled="#{!pedidoBean.bn}" style="width:100% !important"
+							value="#{facturaReporte.estado}">
+							<f:selectItems value="#{pedidoBean.listaEstadoProductoVenta}"
+								var="estado" itemValue="#{estado}" itemLabel="#{estado.nombre}" />
+							<p:ajax event="change"
+								update="estado, impuesto, importe, descripcion, precioUnitario, descDol, descPorc, :formTotales, :mensaje,:formTotal"
+								listener="#{pedidoBean.cambiarEstado(facturaReporte)}" />
+						</p:selectOneMenu>
+					</p:column>
+
+					<p:column headerText="IMPUESTO"
+						style="text-align:center;width: 5%;">
+						<h:outputLabel id="impuesto" value="#{facturaReporte.impuesto}"
+							style="width:100%" />
+					</p:column>
+
+					<p:column headerText="CODIGO"
+						style="text-align:center;width: 120px;">
+						<p:inputText value="#{facturaReporte.codigo}" id="txtCodigo"
+							disabled="#{!pedidoBean.bn}">
+							<p:ajax event="change" oncomplete="pasarFocus()"
+								disabled="#{!pedidoBean.bn}"
+								listener="#{pedidoBean.cargarProducto(facturaReporte)}"
+								update=":formDataTable:tablaDetalleEgresos,:formTotales, :mensaje,:formTotal" />
+						</p:inputText>
+					</p:column>
+
+					<p:column headerText="DESCRIPCION" width="15%"
+						filterBy="#{facturaReporte.descripcion}"
+						style="text-align:center;">
+						<p:inputText id="descripcion" style="width:100%;" readonly="true"
+							value="#{facturaReporte.descripcion}" />
+						<p:tooltip for="descripcion" value="#{facturaReporte.descripcion}" />
+					</p:column>
+
+					<p:column headerText="CANTIDAD"
+						style="text-align:center;width: 5%;padding-right: 20px;">
+						<p:inputText id="cantidad" value="#{facturaReporte.cantidad}"
+							disabled="#{!pedidoBean.bn}" style="width:100%">
+							<p:ajax event="change"
+								listener="#{pedidoBean.cambiarCantidad(facturaReporte)}"
+								update="tablaDetalleEgresos, cantidad, importe, unidades, :formTotales, :mensaje,:formTotal " />
+						</p:inputText>
+					</p:column>
+
+					<p:column headerText="UNIDADES" style="text-align:center;width:5%;">
+						<h:outputText id="unidades"
+							value="#{facturaReporte.nombreCantidad}" />
+					</p:column>
+
+					<p:column headerText="TIPO PRECIO"
+						style="text-align:center;width: 7%;">
+						<p:selectOneMenu id="comboTipoPrecio" styleClass="comboPrecio"
+							disabled="#{!pedidoBean.bn}" style="width:100% !important"
+							value="#{facturaReporte.precioId}">
+							<f:selectItems
+								value="#{facturaReporte.producto.tipoPrecioProductos}"
+								var="precio" itemValue="#{precio.id}"
+								itemLabel="#{precio.nombre}" />
+							<p:ajax event="change"
+								update="precioUnitario, importe, :formTotales, :mensaje,:formTotal"
+								listener="#{pedidoBean.cambiarTipoPrecio(facturaReporte)}" />
+						</p:selectOneMenu>
+					</p:column>
+
+					<p:column headerText="P. UNIT."
+						style="text-align:center;width: 5%;">
+						<p:inputText id="precioUnitario" disabled="#{!pedidoBean.bn}"
+							value="#{facturaReporte.precioUnitVenta}" style="width:100%">
+							<p:ajax event="change"
+								listener="#{pedidoBean.cambiarPrecio(facturaReporte)}"
+								update="precioUnitario, importe, :formTotales, :mensaje,:formTotal" />
+						</p:inputText>
+					</p:column>
+
+					<p:column headerText="DESC $" style="text-align:center;width: 5%;">
+						<p:inputText id="descDol" disabled="#{!pedidoBean.bn}"
+							value="#{facturaReporte.descuentoDolares}" style="width:100%">
+							<p:ajax event="change"
+								listener="#{pedidoBean.cambiarDescDol(facturaReporte)}"
+								update="descDol, descPorc, importe, estado, :formTotales, :mensaje,:formTotal" />
+						</p:inputText>
+					</p:column>
+
+					<p:column headerText="DESC %" style="text-align:center;width: 5%;">
+						<p:inputText id="descPorc" disabled="#{!pedidoBean.bn}"
+							value="#{facturaReporte.descuentoPorcentaje}" style="width:100%">
+							<p:ajax event="change"
+								listener="#{pedidoBean.cambiarDescPor(facturaReporte)}"
+								update="descPorc, descDol, estado, importe, :formTotales, :mensaje,:formTotal" />
+						</p:inputText>
+					</p:column>
+
+					<p:column headerText="IMPORTE" style="text-align:center;width: 5%;">
+						<p:inputText id="importe" value="#{facturaReporte.importe}"
+							disabled="#{!pedidoBean.bn}" style="width:100%">
+							<p:ajax event="change"
+								listener="#{pedidoBean.cambiarImporte(facturaReporte)}"
+								update="importe, precioUnitario, descDol, descPorc, :formTotales, :mensaje,:formTotal" />
+						</p:inputText>
+					</p:column>
+
+				</p:dataTable>
+			</h:form>
+		</p:panel>
+
+		<p:dialog header="BUSQUEDA DE PRODUCTO" widgetVar="busquedaProducto"
+			id="dialogoBusquedaProducto" resizable="false" modal="false"
+			showEffect="clip" hideEffect="fold" width="50%">
+			<h:form id="formBusquedaProducto">
+				<h:panelGrid columns="1">
+					<h:panelGrid columns="3">
+						<p:outputLabel value="EAN/NOMBRE" style="font-weight: bold;" />
+						<p:inputText value="#{pedidoBean.criterioBusquedaRapida}"
+							style="width:300px !important" />
+
+						<p:commandButton id="btnBusquedaRapida"
+							update=":formBusquedaProducto:tablaBusquedaProductos, :mensaje"
+							icon="ui-icon-search"
+							actionListener="#{pedidoBean.busquedaRapida}" />
+					</h:panelGrid>
+
+					<p:dataTable id="tablaBusquedaProductos" var="producto"
+						paginator="true" rows="6" scrollable="true"
+						styleClass="ui-datatable-scrollable-body"
+						value="#{pedidoBean.listaBusquedaRapida}" editable="true"
+						emptyMessage="#{msg['lbl.mensajeTabla']}"
+						paginatorPosition="bottom" selectionMode="single"
+						selection="#{pedidoBean.producto}" rowKey="#{producto.id}">
+
+						<p:ajax event="rowSelect"
+							listener="#{pedidoBean.insertarProductoRapido}"
+							update=":formDataTable:tablaDetalleEgresos,:mensaje" />
+
+						<p:column headerText="EAN" style="width:100px">
+									#{producto.ean}
+									</p:column>
+
+						<p:column headerText="NOMBRE" style="width:300px">
+									#{producto.nombre}
+								</p:column>
+					</p:dataTable>
+				</h:panelGrid>
+			</h:form>
+		</p:dialog>
+
+		<script type="text/javascript">
+			//<![CDATA[
+			function pasarFocus() {
+				var n = document
+						.getElementById('formDataTable:tablaDetalleEgresos_data').childNodes.length - 1;
+				if (n > 0) {
+					document
+							.getElementById('formDataTable:tablaDetalleEgresos:'
+									+ (n - 1) + ':txtCodigo').disabled = true;
+					document.getElementById(
+							'formDataTable:tablaDetalleEgresos:' + n
+									+ ':txtCodigo').focus();
+				}
+			}
+
+			function comprobar(xhr, status, args) {
+				if (!args.validationFailed && args.cerrar) {
+					PF('personaDialogoNuevo').hide();
+				}
+			}
+			//]]>
+		</script>
+
+	</ui:define>
+
+</ui:composition>
+</html>

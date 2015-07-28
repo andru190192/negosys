@@ -1,0 +1,178 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:p="http://primefaces.org/ui">
+
+<ui:composition template="/templates/layout/masterLayout.xhtml">
+
+	<ui:define name="title">NOTA CREDITO</ui:define>
+	<ui:define name="content">
+
+		<p:growl id="mensaje" showDetail="true" life="7000" />
+
+		<p:panel id="panel" header="NOTA CREDITO">
+			<h:panelGrid columns="3" style="width: 100% !important;"
+				columnClasses="f1,f2">
+				<h:form id="formDatos">
+					<h:panelGrid columns="2" cellpadding="1">
+						<p:outputLabel value="CEDULA/NOMBRE:" styleClass="negrita" />
+						<p:inputText readonly="true" style="width:150% !important"
+							value="#{notaCreditoBean.notaCredito.factura.cliente.persona.cedula} - #{notaCreditoBean.notaCredito.factura.cliente.persona.apellido} #{notaCreditoBean.notaCredito.factura.cliente.persona.nombre}" />
+
+						<h:outputText value="COMP. MODIFICA: " styleClass="negrita" />
+						<p:inputText readonly="true"
+							value="#{notaCreditoBean.notaCredito.factura.establecimiento}-#{notaCreditoBean.notaCredito.factura.puntoEmision}-#{notaCreditoBean.notaCredito.factura.secuencia}" />
+
+						<p:commandButton value="GUARDAR"
+							update="formDatos, :formDataTable, :formTotales, :mensaje"
+							id="btnGuardar" icon="ui-icon-bookmark"
+							actionListener="#{notaCreditoBean.insertar}" />
+
+						<p:commandButton value="CANCELAR" id="btnlimpiar"
+							update="formDatos, :formDataTable, :formTotales, :mensaje"
+							icon="ui-icon-close"
+							actionListener="#{notaCreditoBean.nuevaDevolucion}" />
+					</h:panelGrid>
+				</h:form>
+				<h:form id="formTotal"
+					style="margin-top: -32px;text-align: right;margin-right: 25px;">
+					<h:outputText styleClass="letrasGrandes"
+						style="padding-left: 8px;font-size: 25px !important;"
+						value="VALOR TOTAL (11=1+7+8+9+10)" />
+					<p:outputLabel
+						value="#{notaCreditoBean.cantidadFactura.valorTotal}"
+						style="font-size: 45px !important;margin-left: 50%;"
+						styleClass="colorLetras txtFactura" />
+				</h:form>
+				<h:form id="formTotales" style="height: 0px;">
+					<h:panelGrid columns="2" cellpadding="0" styleClass="totales"
+						style="float: right;">
+						<h:panelGrid columns="2" cellpadding="0">
+							<h:outputText styleClass="letrasGrandes"
+								value="SUBTOTAL SIN IMPUESTO (1=2+3+4+5):"
+								style="padding-left: 4px;" />
+							<p:outputLabel
+								value="#{notaCreditoBean.cantidadFactura.stSinImpuesto}"
+								styleClass="colorLetras txtFactura" />
+							<h:outputText styleClass="letrasGrandes"
+								style="padding-left: 5px;" value="SUBTOTAL 12% (2):" />
+							<p:outputLabel value="#{notaCreditoBean.cantidadFactura.st12}"
+								styleClass="colorLetras txtFactura" />
+							<h:outputText styleClass="letrasGrandes"
+								style="padding-left: 5px;" value="SUBTOTAL 0% (3):" />
+							<p:outputLabel value="#{notaCreditoBean.cantidadFactura.st0}"
+								styleClass="colorLetras txtFactura" />
+							<h:outputText styleClass="letrasGrandes"
+								style="padding-left: 5px;"
+								value="SUBTOTAL NO OBJETO DE IVA (4):" />
+							<p:outputLabel
+								value="#{notaCreditoBean.cantidadFactura.stNoObjetoIva}"
+								styleClass="colorLetras txtFactura" />
+							<h:outputText styleClass="letrasGrandes"
+								style="padding-left: 5px;" value="SUBTOTAL EXENTO DE IVA (5):" />
+							<p:outputLabel
+								value="#{notaCreditoBean.cantidadFactura.stExentoIva}"
+								styleClass="colorLetras txtFactura" />
+						</h:panelGrid>
+						<h:panelGrid columns="2" cellpadding="0">
+							<h:outputText styleClass="letrasGrandes"
+								style="padding-left: 4px;" value="TOTAL DESCUENTO (6):" />
+							<p:outputLabel
+								value="#{notaCreditoBean.cantidadFactura.tDescuentoProducto}"
+								styleClass="colorLetras txtFactura" />
+							<h:outputText styleClass="letrasGrandes"
+								style="padding-left: 4px;" value="VALOR ICE (7):" />
+							<p:outputLabel
+								value="#{notaCreditoBean.cantidadFactura.valorIce}"
+								styleClass="colorLetras txtFactura" />
+							<h:outputText styleClass="letrasGrandes"
+								style="padding-left: 4px;" value="VALOR IRBPNR(8):" />
+							<p:outputLabel
+								value="#{notaCreditoBean.cantidadFactura.valorIRBPNR}"
+								styleClass="colorLetras txtFactura" />
+							<h:outputText styleClass="letrasGrandes"
+								value="IVA 12% (9=(2+7)*12%):" style="padding-left: 8px;" />
+							<p:outputLabel value="#{notaCreditoBean.cantidadFactura.iva12}"
+								styleClass="colorLetras txtFactura" />
+							<h:outputText styleClass="letrasGrandes" value="PROPINA (10):"
+								style="padding-left: 8px;" />
+							<p:outputLabel value="#{notaCreditoBean.cantidadFactura.propina}"
+								styleClass="colorLetras txtFactura" />
+						</h:panelGrid>
+					</h:panelGrid>
+				</h:form>
+			</h:panelGrid>
+
+			<h:form id="formDataTable">
+
+				<p:dataTable id="tablaDetalleEgresos" var="facturaReporte"
+					value="#{notaCreditoBean.listaFacturaReporte}" paginator="true"
+					rows="10" emptyMessage="#{msg['lbl.mensajeTabla']}"
+					paginatorPosition="bottom" editable="true" editMode="cell">
+
+					<p:column headerText="ESTADO" style="text-align:center;width: 10%;">
+						<p:selectOneMenu id="estado" styleClass="comboPrecio"
+							style="width:100% !important" value="#{facturaReporte.estado}">
+							<f:selectItems
+								value="#{notaCreditoBean.listaEstadoProductoVenta}" var="estado"
+								itemValue="#{estado}" itemLabel="#{estado.nombre}" />
+						</p:selectOneMenu>
+					</p:column>
+
+					<p:column headerText="IMPUESTO"
+						style="text-align:center;width: 1px;">  
+            				#{facturaReporte.impuesto}
+        				</p:column>
+
+					<p:column headerText="CODIGO" filterBy="#{facturaReporte.codigo}"
+						style="text-align:center;width: 50px;">
+							 	#{facturaReporte.codigo}
+						</p:column>
+
+					<p:column headerText="DESCRIPCION"
+						filterBy="#{facturaReporte.descripcion}"
+						style="text-align:center;width: 50px;">
+						<p:inputText id="nombre" value="#{facturaReporte.descripcion}"
+							readonly="true" />
+						<p:tooltip for="nombre" value="#{facturaReporte.descripcion}" />
+					</p:column>
+
+					<p:column headerText="CANT. VENDIDA"
+						style="text-align:center;width: 50px;">
+						<h:outputText value="#{facturaReporte.cantidadKardex}"
+							style="width:100%" />
+					</p:column>
+
+					<p:column headerText="CANTIDAD"
+						style="text-align:center;width: 50px;">
+						<p:inputText id="cantidad" value="#{facturaReporte.cantidad}"
+							style="width:100%">
+							<p:ajax event="change"
+								listener="#{notaCreditoBean.cambiarCantidad(facturaReporte)}"
+								update="cantidad, importe, :formTotal, :formTotales, :mensaje " />
+						</p:inputText>
+					</p:column>
+
+					<p:column headerText="P. UNIT."
+						style="text-align:center;width: 50px;">
+						<h:outputText value="#{facturaReporte.precioUnitVenta}" />
+					</p:column>
+
+					<p:column headerText="IMPORTE"
+						style="text-align:center;width: 50px;">
+						<h:outputText id="importe" value="#{facturaReporte.importe}"
+							style="width:100%" />
+					</p:column>
+
+				</p:dataTable>
+			</h:form>
+		</p:panel>
+
+	</ui:define>
+
+</ui:composition>
+</html>

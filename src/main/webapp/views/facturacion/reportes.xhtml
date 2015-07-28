@@ -1,0 +1,353 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:p="http://primefaces.org/ui">
+<ui:composition template="/templates/layout/masterLayout.xhtml">
+	<ui:define name="title">
+            REPORTES
+        </ui:define>
+	<ui:define name="content">
+		<p:growl id="mensaje" showDetail="true" life="7000"
+			showSummary="false" />
+		<p:panel id="panel" header="REPORTES" style="margin-bottom:10px;">
+			<div class="container" style="width: 100% !important">
+				<div class="row">
+					<div class="col-xs-12 col-sm-3 col-md-3 col-lg-3">
+						<h:form>
+							<h:panelGrid columns="1" cellpadding="1"
+								style="text-align: center;">
+								<p:graphicImage styleClass="imagenReporte"
+									value="../../resources/imagenes/r4.svg" />
+								<h:panelGrid columns="2" cellpadding="1">
+									<h:outputText value="FECHA INICIO:" />
+									<p:calendar value="#{facturacionReportes.fechaInicio}" />
+									<h:outputText value="FECHA FIN:" />
+									<p:calendar value="#{facturacionReportes.fechaFin}" />
+									<h:outputText value="GANANCIA:" />
+									<h:panelGrid columns="2">
+										<p:selectBooleanButton id="tipoReporte"
+											value="#{facturacionReportes.gananciaBrutaNeta}"
+											onLabel="BRUTA" offLabel="NETA" style="width:60px" />
+										<p:commandButton
+											actionListener="#{facturacionReportes.reporteGanancia}"
+											value="GANANCIAS" ajax="false" update=":mensaje" />
+									</h:panelGrid>
+								</h:panelGrid>
+							</h:panelGrid>
+						</h:form>
+					</div>
+					<div class="col-xs-12 col-sm-3 col-md-3 col-lg-3">
+						<h:form id="formReporteVolumenVenta">
+							<h:panelGrid columns="1" cellpadding="1" styleClass="centrar">
+								<p:graphicImage styleClass="imagenReporte"
+									value="../../resources/imagenes/r4.svg" />
+								<h:panelGrid columns="2" cellpadding="1">
+									<h:outputText value="FECHA INICIO:" />
+									<p:calendar value="#{facturacionReportes.fechaInicio}"
+										required="true" requiredMessage="INGRESE UNA FECHA INICIO" />
+									<h:outputText value="FECHA FIN:" />
+									<p:calendar value="#{facturacionReportes.fechaFin}"
+										required="true" requiredMessage="INGRESE UNA FECHA FIN" />
+									<p:outputLabel value="VENDEDOR:" />
+									<p:selectOneMenu value="#{facturacionReportes.vendedorId}"
+										styleClass="w100" filter="true" filterMatchMode="contains">
+										<f:selectItem itemLabel="TODOS" itemValue="0" />
+										<f:selectItems value="#{facturacionReportes.listaVendedores}"
+											var="vendedor" itemValue="#{vendedor.id}"
+											itemLabel="#{vendedor.cedula} - #{vendedor.apellido} #{vendedor.nombre}" />
+									</p:selectOneMenu>
+									<p:outputLabel value="ESTADO DE PAGO:" />
+									<p:selectOneMenu value="#{facturacionReportes.estadoDocumento}"
+										styleClass="w100">
+										<f:selectItem itemLabel="TODAS" itemValue="0" />
+										<f:selectItem itemLabel="PAGADAS" itemValue="1" />
+										<f:selectItem itemLabel="NO PAGADAS" itemValue="2" />
+									</p:selectOneMenu>
+								</h:panelGrid>
+								<p:commandButton
+									actionListener="#{facturacionReportes.reporteVolumenVentaFactura}"
+									value="VOLUMEN DE VENTA POR FACTURA" ajax="false"
+									update="formReporteVolumenVenta" />
+							</h:panelGrid>
+						</h:form>
+					</div>
+					<div class="col-xs-12 col-sm-3 col-md-3 col-lg-3">
+						<h:form>
+							<h:panelGrid columns="1" cellpadding="1" styleClass="centrar">
+								<p:graphicImage styleClass="imagenReporte"
+									value="../../resources/imagenes/r4.svg" />
+								<h:panelGrid columns="2" cellpadding="1">
+									<h:outputText value="FECHA INICIO:" />
+									<p:calendar value="#{facturacionReportes.fechaInicio}" />
+									<h:outputText value="FECHA FIN:" />
+									<p:calendar value="#{facturacionReportes.fechaFin}" />
+									<p:outputLabel value="ESTADO DE PAGO:" />
+									<p:selectOneMenu value="#{facturacionReportes.consumidorFinal}"
+										styleClass="w100">
+										<f:selectItem itemLabel="CON CONSUMIDOR FINAL" itemValue="0" />
+										<f:selectItem itemLabel="SIN CONSUMIDOR FINAL" itemValue="1" />
+										<f:selectItem itemLabel="TODOS" itemValue="2" />
+									</p:selectOneMenu>
+								</h:panelGrid>
+								<p:commandButton
+									actionListener="#{facturacionReportes.reporteVolumenVentaConsumidorFinal}"
+									value="VOLUMEN DE VENTA POR CONSUMIDOR FINAL" ajax="false"
+									update="formReporteVolumenVenta" />
+							</h:panelGrid>
+						</h:form>
+					</div>
+					<div class="col-xs-12 col-sm-3 col-md-3 col-lg-3">
+						<h:form>
+							<h:panelGrid columns="1" cellpadding="1"
+								style="text-align: center;">
+								<p:graphicImage styleClass="imagenReporte"
+									value="../../resources/imagenes/r4.svg" />
+								<p:commandButton value="PRODUCTOS A CARGAR" update=":formEgreso"
+									actionListener="#{facturacionReportes.limpiarObjetosBusqueda}"
+									oncomplete="PF('productosCargarDialogo').show()" />
+							</h:panelGrid>
+						</h:form>
+					</div>
+				</div>
+				<div class="row">
+					<div class="col-xs-12 col-sm-3 col-md-3 col-lg-3">
+						<h:form id="formReporteVolumenProducto">
+							<h:panelGrid columns="1" cellpadding="1"
+								style="text-align: center;">
+								<p:graphicImage styleClass="imagenReporte"
+									value="../../resources/imagenes/r4.svg" />
+								<h:panelGrid columns="2" cellpadding="1">
+									<h:outputText value="FECHA INICIO:" />
+									<p:calendar value="#{facturacionReportes.fechaInicio}"
+										required="true" requiredMessage="INGRESE UNA FECHA INICIO" />
+									<h:outputText value="FECHA FIN:" />
+									<p:calendar value="#{facturacionReportes.fechaFin}"
+										required="true" requiredMessage="INGRESE UNA FECHA FIN" />
+									<p:outputLabel value="ESTADO DE VENTA:" />
+									<p:selectOneMenu value="#{facturacionReportes.estado}"
+										styleClass="w100">
+										<f:selectItem itemLabel="TODOS" />
+										<f:selectItems
+											value="#{facturacionReportes.listEstadoProductoFacturas}"
+											var="estado" itemValue="#{estado}"
+											itemLabel="#{estado.nombre}" />
+									</p:selectOneMenu>
+									<p:outputLabel value="ORDENAR POR:" />
+									<p:selectOneMenu value="#{facturacionReportes.ordenarId}"
+										styleClass="w100">
+										<f:selectItem itemValue="1" itemLabel="NOMBRE" />
+										<f:selectItem itemValue="2" itemLabel="CANTIDAD" />
+									</p:selectOneMenu>
+								</h:panelGrid>
+								<p:commandButton
+									actionListener="#{facturacionReportes.reporteVolumenVentaProducto}"
+									value="VOLUMEN DE VENTA POR PRODUCTO" ajax="false"
+									update="formReporteVolumenVenta" />
+							</h:panelGrid>
+						</h:form>
+					</div>
+					<div class="col-xs-12 col-sm-3 col-md-3 col-lg-3">
+						<h:form id="formReporteVolumenVentaProveedorProductoCliente">
+							<h:panelGrid columns="1" cellpadding="1"
+								style="text-align: center;">
+								<p:graphicImage styleClass="imagenReporte"
+									value="../../resources/imagenes/r4.svg" />
+								<h:panelGrid columns="2" cellpadding="1">
+									<h:outputText value="FECHA INICIO:" />
+									<p:calendar value="#{facturacionReportes.fechaInicioVVPPC}"
+										required="true" requiredMessage="INGRESE UNA FECHA INICIO">
+										<p:ajax event="dateSelect"
+											listener="#{facturacionReportes.onDateSelect}" />
+									</p:calendar>
+									<h:outputText value="FECHA FIN:" />
+									<p:calendar value="#{facturacionReportes.fechaFinVVPPC}"
+										required="true" requiredMessage="INGRESE UNA FECHA FIN">
+										<p:ajax event="dateSelect"
+											listener="#{facturacionReportes.onDateSelect1}" />
+									</p:calendar>
+									<p:outputLabel value="PROVEEDOR:" />
+									<p:selectOneMenu value="#{facturacionReportes.proveedorId}"
+										styleClass="w100" filter="true" filterMatchMode="contains">
+										<f:selectItem itemLabel="ESCOJA UN ITEM" itemValue="0" />
+										<f:selectItems value="#{facturacionReportes.listaProveedores}"
+											var="proveedor" itemValue="#{proveedor.proveedor.id}"
+											itemLabel="#{proveedor.proveedor.nombreComercial}" />
+										<p:ajax event="change"
+											listener="#{facturacionReportes.cargarClienteProveedorCiudadFechas}"
+											update="comboClientes" />
+									</p:selectOneMenu>
+									<p:outputLabel value="CIUDAD CLIENTE:" />
+									<p:selectOneMenu value="#{facturacionReportes.ciudadId}"
+										styleClass="w100" filter="true" filterMatchMode="contains">
+										<f:selectItem itemLabel="ESCOJA UN ITEM" itemValue="0" />
+										<f:selectItems
+											value="#{facturacionReportes.listaCiudadesVVPPC}"
+											var="ciudad" itemValue="#{ciudad.id}"
+											itemLabel="#{ciudad.nombre}" />
+										<p:ajax event="change"
+											listener="#{facturacionReportes.cargarClienteProveedorCiudadFechas}"
+											update="comboClientes" />
+									</p:selectOneMenu>
+									<p:outputLabel value="CLIENTE:" />
+									<p:selectOneMenu id="comboClientes" styleClass="w100"
+										value="#{facturacionReportes.clienteId}" filter="true"
+										filterMatchMode="contains">
+										<f:selectItem itemLabel="TODOS" itemValue="0" />
+										<f:selectItems
+											value="#{facturacionReportes.listaClientesVVPPC}"
+											var="cliente" itemValue="#{cliente.id}"
+											itemLabel="#{cliente.persona.apellido} #{cliente.persona.nombre}" />
+									</p:selectOneMenu>
+								</h:panelGrid>
+								<p:commandButton
+									actionListener="#{facturacionReportes.reporteVolumenVentaClienteProveedor}"
+									value="VOLUMEN DE VENTA POR PROVEEDOR-PRODUCTO-CLIENTE"
+									ajax="false"
+									update="formReporteVolumenVentaProveedorProductoCliente" />
+							</h:panelGrid>
+						</h:form>
+					</div>
+					<div class="col-xs-12 col-sm-3 col-md-3 col-lg-3">
+						<h:form id="formCierreCaja">
+							<h:panelGrid columns="1" cellpadding="1" styleClass="centrar">
+								<p:graphicImage styleClass="imagenReporte"
+									value="../../resources/imagenes/r4.svg" />
+								<h:panelGrid columns="2" cellpadding="1">
+									<h:outputText value="FECHA: " />
+									<p:calendar value="#{facturacionReportes.fechaCierreCaja}"
+										required="true" requiredMessage="INGRESE UNA FECHA" />
+									<p:outputLabel value="CAJERO:" />
+									<p:selectOneMenu value="#{facturacionReportes.vendedorId}"
+										styleClass="w100" filter="true" filterMatchMode="contains"
+										disabled="#{facturacionReportes.disabledCajero}">
+										<f:selectItem itemLabel="TODOS" itemValue="0" />
+										<f:selectItems value="#{facturacionReportes.listaCajeros}"
+											var="cajero" itemValue="#{cajero.id}"
+											itemLabel="#{cajero.cedula} - #{cajero.apellido} #{cajero.nombre}" />
+									</p:selectOneMenu>
+								</h:panelGrid>
+								<p:commandButton
+									actionListener="#{facturacionReportes.reporteCierreCaja}"
+									value="CIERRE CAJA" ajax="false" update="formCierreCaja" />
+							</h:panelGrid>
+						</h:form>
+					</div>
+					<div class="col-xs-12 col-sm-3 col-md-3 col-lg-3">
+						<h:form id="formReporteGananciaProducto">
+							<h:panelGrid columns="1" cellpadding="1"
+								style="text-align: center;">
+								<p:graphicImage styleClass="imagenReporte"
+									value="../../resources/imagenes/r4.svg" />
+								<h:panelGrid columns="2" cellpadding="1">
+									<h:outputText value="FECHA INICIO:" />
+									<p:calendar value="#{facturacionReportes.fechaInicio}"
+										required="true" requiredMessage="INGRESE UNA FECHA INICIO" />
+									<h:outputText value="FECHA FIN:" />
+									<p:calendar value="#{facturacionReportes.fechaFin}"
+										required="true" requiredMessage="INGRESE UNA FECHA FIN" />
+									<p:outputLabel value="PROVEEDOR:" />
+									<p:selectOneMenu value="#{facturacionReportes.proveedorId}"
+										styleClass="w100" filter="true" filterMatchMode="contains">
+										<f:selectItems value="#{facturacionReportes.listaProveedores}"
+											var="persona" itemValue="#{persona.proveedor.id}"
+											itemLabel="#{persona.proveedor.nombreComercial} - #{persona.apellido} #{persona.nombre}" />
+									</p:selectOneMenu>
+								</h:panelGrid>
+								<p:commandButton
+									actionListener="#{facturacionReportes.reporteGananciaPorProducto}"
+									value="VOLUMEN/VENTA/PRODUCTOxPROVEEDOR" ajax="false"
+									update="formReporteGananciaProducto" />
+							</h:panelGrid>
+						</h:form>
+					</div>
+				</div>
+			</div>
+		</p:panel>
+		<p:dialog header="PRODUCTOS A CARGAR"
+			widgetVar="productosCargarDialogo" resizable="false" modal="false"
+			showEffect="clip" hideEffect="fold" id="dialogoNuevo" width="60%">
+			<h:form id="formEgreso">
+				<h:panelGrid columns="3">
+					<h:outputText value="FECHA INICIO:" />
+					<p:calendar value="#{facturacionReportes.fechaInicio}" />
+					<h:outputText value="" />
+					<h:outputText value="FECHA FIN:" />
+					<p:calendar value="#{facturacionReportes.fechaFin}" />
+					<h:outputText value="" />
+					<p:outputLabel value="LOCAL:" />
+					<p:selectOneMenu id="comboLocal"
+						value="#{facturacionReportes.local.codigoEstablecimiento}">
+						<f:selectItems value="#{localBean.listaLocales}" var="local"
+							itemValue="#{local.codigoEstablecimiento}"
+							itemLabel="#{local.nombre}" />
+					</p:selectOneMenu>
+					<h:outputText value="" />
+					<h:outputText value="PROVINCIA:" />
+					<p:selectOneMenu id="comboProvincia" filter="true"
+						value="#{facturacionReportes.provincia}">
+						<f:selectItem itemLabel="ESCOJA UNA PROVINCIA" />
+						<f:selectItems value="#{facturacionReportes.listaProvincias}"
+							var="provincia" itemValue="#{provincia}"
+							itemLabel="#{provincia.nombre}" />
+						<p:ajax event="change"
+							listener="#{facturacionReportes.cargarCiudades}"
+							update="comboCiudad" />
+					</p:selectOneMenu>
+					<h:outputText value="" />
+					<h:outputText value="CIUDAD:" />
+					<p:selectOneMenu id="comboCiudad"
+						value="#{facturacionReportes.ciudad.id}">
+						<f:selectItem itemLabel="ESCOJA UNA CIUDAD" />
+						<f:selectItems value="#{facturacionReportes.listaCiudades}"
+							var="ciudad" itemValue="#{ciudad.id}"
+							itemLabel="#{ciudad.nombre}" />
+					</p:selectOneMenu>
+					<p:commandButton update=":formEgreso:tablaFacturas, :mensaje"
+						icon="#{msg['iconoBuscar']}"
+						actionListener="#{facturacionReportes.obtenerFacturas}" />
+				</h:panelGrid>
+				<p:dataTable id="tablaFacturas" var="egreso"
+					value="#{facturacionReportes.listaFacturas}" paginator="true"
+					rows="10" emptyMessage="#{msg['lbl.mensajeTabla']}"
+					paginatorPosition="bottom" rowKey="#{egreso.id}"
+					selection="#{facturacionReportes.listaFacturaSeleccionado}">
+					<p:column selectionMode="multiple"
+						style="width:2%;text-align:center" />
+					<p:column headerText="CÉDULA"
+						style="text-align:center;width: 30px;">  
+            					#{egreso.cliente.persona.cedula}
+        					</p:column>
+					<p:column headerText="CLIENTE"
+						style="text-align:center;width: 50px;">  
+            					#{egreso.cliente.persona.apellido} #{egreso.cliente.persona.nombre}
+        					</p:column>
+					<p:column headerText="# FACTURA"
+						style="text-align:center;width: 50px;">  
+            					#{egreso.establecimiento}-#{egreso.puntoEmision}-#{egreso.secuencia}  
+        					</p:column>
+					<p:column headerText="FECHA" style="text-align:center;width: 30px;">
+						<p:outputLabel value="#{egreso.fechaInicio}">
+							<f:convertDateTime pattern="dd/MM/yyyy"
+								timeZone="America/Guayaquil" />
+						</p:outputLabel>
+					</p:column>
+				</p:dataTable>
+				<h:panelGrid columns="2" cellpadding="1">
+					<p:commandButton value="ACEPTAR" ajax="false" id="btnNuevoAceptar"
+						icon="#{msg['iconoGuardar']}"
+						oncomplete="PF('productosCargarDialogo').hide()"
+						actionListener="#{facturacionReportes.reporteEntregaProducto}"
+						styleClass="centrarBotonesDialogos" />
+					<p:commandButton value="CANCELAR"
+						oncomplete="PF('productosCargarDialogo').hide()"
+						id="btnNuevolimpiar" icon="#{msg['iconoCancelar']}"
+						process="@this" styleClass="centrarBotonesDialogos" />
+				</h:panelGrid>
+			</h:form>
+		</p:dialog>
+	</ui:define>
+</ui:composition>
+</html>

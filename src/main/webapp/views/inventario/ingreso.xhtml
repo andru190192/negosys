@@ -1,0 +1,141 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:p="http://primefaces.org/ui">
+<ui:composition template="/templates/layout/masterLayout.xhtml">
+	<ui:define name="title">
+            ENTRADA DE INVENTARIO
+        </ui:define>
+	<ui:define name="content">
+		<p:growl id="mensaje" showDetail="true" showSummary="false"
+			life="7000" />
+		<p:panel id="panel" header="ENTRADA DE INVENTARIO">
+			<h:form id="formCabecera">
+				<div class="container w100">
+					<div class="row">
+						<div class="col-xs-12 col-sm-12 col-md-12 col-lg-12"><p:focus
+								for="formCabecera" /> <h:panelGrid columns="2">
+								<h:panelGrid columns="3">
+									<h:outputText value="PROVEEDOR" styleClass="negrita" />
+									<p:autoComplete id="autoCompletarProveedor" styleClass="w100"
+										scrollHeight="200" effect="drop"
+										placeholder="MINIMO 3 CARACTERES"
+										emptyMessage="NO HAY DATOS A MOSTRAR"
+										panelStyle="width:400px !important" minQueryLength="3"
+										maxResults="20" value="#{ingresoBean.proveedor}"
+										completeMethod="#{ingresoBean.obtenerProveedorPorBusqueda}">
+										<p:ajax event="itemSelect" id="prueba"
+											listener="#{ingresoBean.cargarProveedor}"
+											update="autoCompletarProveedor, :mensaje" />
+									</p:autoComplete>
+									<h:outputText value="" />
+									<h:outputText styleClass="negrita" value="FACTURA #" />
+									<p:inputText value="#{ingresoBean.ingreso.codigoDocumento}"
+										styleClass="w300" />
+									<h:outputText value="" />
+									<h:outputLabel styleClass="negrita" value="FECHA" />
+									<p:calendar value="#{ingresoBean.ingreso.fechaFactura}"
+										styleClass="calendarioCompra" navigator="true" />
+									<h:outputText value="" />
+									<p:outputLabel value="TOTAL" styleClass="negrita" />
+									<p:inputText value="#{ingresoBean.ingreso.total}"
+										styleClass="negrita w100" />
+									<h:outputText value="" />
+									<p:outputLabel value="PAGADO" styleClass="negrita" />
+									<p:selectBooleanButton value="#{ingresoBean.ingreso.pagado}"
+										onLabel="SI" offLabel="NO" onIcon="ui-icon-check"
+										offIcon="ui-icon-close" styleClass="w60" />
+									<h:outputText value="" />
+									<p:commandButton value="GUARDAR"
+										update=":formCabecera, :mensaje" id="btnGuardar"
+										icon="ui-icon-disk" actionListener="#{ingresoBean.insertar}" />
+									<p:commandButton value="NUEVO" update=":formCabecera"
+										id="btnlimpiar" icon="ui-icon-document"
+										actionListener="#{ingresoBean.limpiarIngreso}" process="@this" />
+								</h:panelGrid>
+								<h:panelGrid columns="1">
+									<h:panelGrid columns="3">
+										<p:outputLabel value="EAN/NOMBRE" styleClass="negrita" />
+										<p:inputText id="txtCriterioBusqueda"
+											onkeypress="if (event.keyCode == 13) { document.getElementById('formCabecera:btnBusquedaRapida').click(); return false; }"
+											value="#{ingresoBean.criterioBusquedaRapida}"
+											styleClass="w300" />
+										<p:commandButton id="btnBusquedaRapida"
+											update="formCabecera:tablaDetalleIngresos,formCabecera:txtCriterioBusqueda,formCabecera:tablaBusquedaProductos,:mensaje"
+											oncomplete="console.log(document.getElementById('formCabecera:j_idt38'))"
+											icon="ui-icon-search"
+											actionListener="#{ingresoBean.busquedaRapida}" />
+									</h:panelGrid>
+									<p:dataTable id="tablaBusquedaProductos" var="producto"
+										paginator="true" rows="5" scrollable="true"
+										styleClass="ui-datatable-scrollable-body"
+										value="#{ingresoBean.listaBusquedaRapida}" editable="true"
+										emptyMessage="#{msg['lbl.mensajeTabla']}"
+										paginatorPosition="bottom" selectionMode="single"
+										selection="#{ingresoBean.producto}" rowKey="#{producto.id}">
+										<p:ajax event="rowSelect"
+											listener="#{ingresoBean.insertarProductoRapido}"
+											update=":formCabecera:tablaDetalleIngresos,:mensaje" />
+										<p:column headerText="EAN" styleClass="w100px">
+									#{producto.ean}
+									</p:column>
+										<p:column headerText="NOMBRE" styleClass="w300">
+									#{producto.nombre}
+								</p:column>
+									</p:dataTable>
+								</h:panelGrid>
+							</h:panelGrid></div>
+				</div>
+				</div>
+				<p:dataTable id="tablaDetalleIngresos" var="detalleIngreso"
+					scrollable="true" styleClass="ui-datatable-scrollable-body"
+					value="#{ingresoBean.ingreso.detalleIngresos}" editable="true"
+					editMode="cell" emptyMessage="#{msg['lbl.mensajeTabla']}"
+					paginatorPosition="bottom">
+					<p:column headerText="COD - EAN">
+						<p:inputText styleClass="w100" id="idEan"
+							value="#{detalleIngreso.producto.id} - #{detalleIngreso.producto.ean}"
+							readonly="true" />
+					</p:column>
+					<p:column headerText="NOMBRE DEL PRODUCTO" width="40%"
+						filterBy="#{detalleIngreso.producto.nombre}">
+						<p:inputText styleClass="w100" id="nombre"
+							value="#{detalleIngreso.producto.nombre}" readonly="true" />
+					</p:column>
+					<p:column headerText="LOCAL">
+						<p:selectOneMenu value="#{detalleIngreso.local.id}"
+							styleClass="comboBodega w100">
+							<f:selectItems value="#{ingresoBean.listaLocal}" var="local"
+								itemValue="#{local.id}" itemLabel="#{local.nombre}" />
+						</p:selectOneMenu>
+					</p:column>
+					<p:column headerText="CANTIDAD">
+						<p:inputText id="txtCantidad" value="#{detalleIngreso.cantidad}"
+							onkeypress="teclaAbajoArriba(event.keyCode, this.id,'formCabecera:tablaDetalleIngresos_data');"
+							styleClass="w100" />
+					</p:column>
+					<p:column headerText="PRECIO COSTO ACTUAL">
+						#{detalleIngreso.producto.precio}
+					</p:column>
+					<p:column headerText="PRECIO COSTO NUEVO">
+						<p:inputText id="txtPrecioNuevo" styleClass="precioNuevo"
+							value="#{detalleIngreso.precio}"
+							onkeypress="teclaAbajoArriba(event.keyCode, this.id,'formCabecera:tablaDetalleIngresos_data');">
+							<p:ajax event="change"
+								listener="#{ingresoBean.comprobarPrecioNuevo(detalleIngreso)}"
+								update=":mensaje" />
+						</p:inputText>
+					</p:column>
+				</p:dataTable>
+			</h:form>
+		</p:panel>
+		<script type="text/javascript">
+			//<![CDATA[	
+			//]]>
+		</script>
+	</ui:define>
+</ui:composition>
+</html>

@@ -1,0 +1,165 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:p="http://primefaces.org/ui">
+<ui:composition template="/templates/layout/masterLayout.xhtml">
+	<ui:define name="title">
+			KARDEX
+	</ui:define>
+	<ui:define name="content">
+		<p:growl id="mensaje" showDetail="true" life="7000" />
+		<p:panel id="panel" header="KARDEX POR PRODUCTO"
+			style="margin-bottom:10px;">
+			<div class="row" style="width: 100%;">
+				<div class="col-xs-12 col-sm-12 col-md-4 col-lg-4">
+					<h:form id="formDatos">
+						<h:panelGrid columns="2" cellpadding="1">
+							<h:outputText value="EAN / CÓDIGOS / NOMBRE "
+								styleClass="negrita" />
+							<h:panelGrid columns="2">
+								<p:inputText value="#{kardexBean.criterioBusqueda}"
+									onblur="this.value=this.value.toUpperCase();" />
+								<p:commandButton update="formDatos, :formProducto, :mensaje"
+									icon="#{msg['iconoBuscar']}"
+									actionListener="#{kardexBean.obtenerProductos}" />
+							</h:panelGrid>
+							<h:outputText value="GRUPO " styleClass="negrita" />
+							<p:selectOneMenu filter="true" filterMatchMode="contains"
+								styleClass="w180" value="#{kardexBean.grupo.id}">
+								<f:selectItem itemLabel="ESCOJA UN GRUPO" />
+								<f:selectItems value="#{kardexBean.listaGrupos}" var="grupo"
+									itemValue="#{grupo.id}" itemLabel="#{grupo.nombre}" />
+							</p:selectOneMenu>
+							<p:outputLabel value="LOCAL:" styleClass="negrita" />
+							<p:selectOneMenu value="#{kardexBean.local.id}" styleClass="w180">
+								<f:selectItems value="#{kardexBean.listaLocales}" var="local"
+									itemValue="#{local.id}" itemLabel="#{local.nombre}" />
+							</p:selectOneMenu>
+							<h:outputText value="FECHA DE INICIO" styleClass="negrita" />
+							<p:calendar value="#{kardexBean.fechaInicio}" navigator="true"
+								id="fechaKardex" styleClass="w100" />
+							<p:outputLabel value="
+								FECHA DE FIN"
+								styleClass="negrita" />
+							<p:calendar value="#{kardexBean.fechaFinal}" navigator="true" styleClass="w100" />
+							<p:commandButton value="GENERAR"
+								update=":formProducto, :formDataTable , formDatos, :mensaje"
+								id="btnNuevoAceptar" icon="ui-icon-search"
+								actionListener="#{kardexBean.cargarKardex}" />
+							<p:commandButton value="IMPRIMIR" icon="ui-icon-print"
+								ajax="false" actionListener="#{kardexBean.imprimirKardex}" />
+						</h:panelGrid>
+					</h:form>
+				</div>
+				<div class="col-xs-12 col-s	m-12 col-md-8 col-lg-8">
+					<h:form id="formProducto">
+						<p:dataTable id="tablaProductos" var="producto"
+							value="#{kardexBean.listaProductos}" paginator="true" rows="5"
+							emptyMessage="#{msg['lbl.mensajeTabla']}"
+							paginatorPosition="bottom" rowKey="#{producto.id}"
+							selection="#{kardexBean.producto}" selectionMode="single"
+							style="width:100%;">
+							<p:ajax event="rowSelect"
+								update=":formDatos,:formProducto, :formDataTable , :mensaje"
+								listener="#{kardexBean.obtenerProducto}" />
+							<p:column headerText="EAN" style="text-align:center;" width="10%">
+							 	#{producto.ean}
+						</p:column>
+							<p:column headerText="NOMBRE" style="text-align:center;"
+								width="30%">
+							 	#{producto.nombre}
+						</p:column>
+						</p:dataTable>
+					</h:form>
+				</div>
+			</div>
+		</p:panel>
+		<h:form id="formDataTable">
+			<p:dataTable id="tablaMarcas" var="kardexReporte"
+				styleClass="estiloFilasPares"
+				value="#{kardexBean.listaKardexReporte}" paginator="true" rows="20"
+				emptyMessage="#{msg['lbl.mensajeTabla']}" paginatorPosition="bottom">
+				<f:facet name="header">
+				LISTADO DE KARDEX
+					<div class="hola">
+						<h:panelGrid columns="6">
+							<h:outputText value="EXISTENCIA " styleClass="negrita" />
+							<p:inputText value="#{kardexBean.kardexSaldo.cantidadSaldo}"
+								readonly="true" />
+							<h:outputText value="COST. UNIT " />
+							<p:inputText value="#{kardexBean.kardexSaldo.precioSaldo}"
+								readonly="true" />
+							<h:outputText value="TOTAL " />
+							<p:inputText value="#{kardexBean.kardexSaldo.totalSaldo}"
+								readonly="true" />
+						</h:panelGrid>
+					</div>
+				</f:facet>
+				<p:columnGroup type="header">
+					<p:row>
+						<p:column rowspan="2" width="13%" headerText="FECHA" />
+						<p:column rowspan="2" width="15%" headerText="DETALLE" />
+						<p:column rowspan="2" width="13%" headerText="BODEGA" />
+						<p:column colspan="3" headerText="ENTRADAS" />
+						<p:column colspan="3" headerText="SALIDAS" />
+						<p:column colspan="3" headerText="SALDOS" />
+					</p:row>
+					<p:row>
+						<p:column headerText="CANTIDAD" />
+						<p:column headerText="COST. UNIT" />
+						<p:column headerText="TOTAL" />
+						<p:column headerText="CANTIDAD" />
+						<p:column headerText="COST. UNIT" />
+						<p:column headerText="TOTAL" />
+						<p:column headerText="CANTIDAD" />
+						<p:column headerText="COST. UNIT" />
+						<p:column headerText="TOTAL" />
+					</p:row>
+				</p:columnGroup>
+				<p:column>
+					<h:outputText value="#{kardexReporte.fecha}">
+						<f:convertDateTime pattern="dd/MM/yyyy HH:mm"
+							timeZone="America/Guayaquil" />
+					</h:outputText>
+				</p:column>
+				<p:column>
+					#{kardexReporte.detalle}
+				</p:column>
+				<p:column>
+					#{kardexReporte.nombreBodega}
+				</p:column>
+				<p:column>
+					#{kardexReporte.cantidadEntrada}
+				</p:column>
+				<p:column>
+					#{kardexReporte.precioEntrada}
+				</p:column>
+				<p:column width="13%">
+					#{kardexReporte.totalEntrada}
+				</p:column>
+				<p:column>
+					#{kardexReporte.cantidadSalida}
+				</p:column>
+				<p:column>
+					#{kardexReporte.precioSalida}
+				</p:column>
+				<p:column>
+					#{kardexReporte.totalSalida}
+				</p:column>
+				<p:column>
+					#{kardexReporte.cantidadSaldo}
+				</p:column>
+				<p:column>
+					#{kardexReporte.precioSaldo}
+				</p:column>
+				<p:column>
+					#{kardexReporte.totalSaldo}
+				</p:column>
+			</p:dataTable>
+		</h:form>
+	</ui:define>
+</ui:composition>
+</html>

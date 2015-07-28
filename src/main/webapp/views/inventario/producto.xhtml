@@ -1,0 +1,1058 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:p="http://primefaces.org/ui">
+<ui:composition template="/templates/layout/masterLayout.xhtml">
+	<ui:define name="title">
+            PRODUCTO
+        </ui:define>
+	<ui:define name="content">
+		<p:growl id="mensaje" showDetail="true" showSummary="false"
+			life="7000" />
+		<p:tabView id="tabViewProducto" dynamic="true" cache="true">
+			<p:tab id="tabProducto" title="PRODUCTOS">
+				<h:form id="busquedaTabla">
+					<h:panelGrid columns="3">
+						<h:outputText value="GRUPO " />
+						<p:selectOneMenu filter="true" filterMatchMode="contains"
+							styleClass="w180"
+							value="#{productoBean.criterioBusquedaGrupo.id}">
+							<f:selectItem itemLabel="ESCOJA UN GRUPO" />
+							<f:selectItems value="#{grupoBean.listaGrupos}" var="grupo"
+								itemValue="#{grupo.id}" itemLabel="#{grupo.nombre}" />
+						</p:selectOneMenu>
+						<h:outputText />
+						<h:outputText value="CODIGO PRINCIPAL / CÓDIGO AUXILIAR / NOMBRE " />
+						<p:inputText value="#{productoBean.criterioBusqueda}"
+							styleClass="w100" onblur="this.value = this.value.toUpperCase();" />
+						<p:commandButton
+							update="busquedaTabla,:tabViewProducto:formDataTable, :mensaje"
+							icon="#{msg['iconoBuscar']}"
+							actionListener="#{productoBean.obtenerProductos}" />
+					</h:panelGrid>
+				</h:form>
+				<h:form id="formDataTable">
+					<p:dataTable id="tablaProductos" var="producto" scrollable="true"
+						styleClass="ui-datatable-scrollable-body estiloFilasPares"
+						value="#{productoBean.listaProductos}" paginatorPosition="bottom"
+						paginator="true" rows="10" rowsPerPageTemplate="5,10,15"
+						paginatorTemplate="{RowsPerPageDropdown} {FirstPageLink} {PreviousPageLink} {CurrentPageReport} {NextPageLink} {LastPageLink}"
+						emptyMessage="#{msg['lbl.mensajeTabla']}">
+						<f:facet name="header">
+							<h:form>
+								<p:tooltip for="btnNuevo" value="#{msg['lbl.insertar']}" />
+								<p:commandButton update=":tabViewProducto:formNuevo"
+									oncomplete="PF('productoDialogoNuevo').show()" id="btnNuevo"
+									icon="ui-icon-plus"
+									actionListener="#{productoBean.cargarInsertar}" />
+							</h:form>
+						</f:facet>
+						<p:column headerText="#{msg['lbl.gestionar']}"
+							styleClass="centrar" width="15%">
+							<p:tooltip for="btnMostrar" value="MOSTRAR" />
+							<p:tooltip for="btnEditar" value="EDITAR" />
+							<p:tooltip for="btnEliminar"
+								value="#{producto.activo eq true ? msg['lbl.desactivar']:msg['lbl.activar']}" />
+							<p:commandButton id="btnMostrar"
+								update=":tabViewProducto:formMostrar"
+								oncomplete="PF('productoDialogoMostrar').show()"
+								action="#{productoBean.cargaMostrar}" icon="ui-icon-newwin">
+								<f:setPropertyActionListener value="#{producto}"
+									target="#{productoBean.producto}" />
+							</p:commandButton>
+							<p:commandButton id="btnEditar"
+								update=":tabViewProducto:formEditar"
+								oncomplete="PF('productoDialogoEditar').show()"
+								icon="ui-icon-pencil" action="#{productoBean.cargaEditar}">
+								<f:setPropertyActionListener value="#{producto}"
+									target="#{productoBean.producto}" />
+							</p:commandButton>
+							<p:commandButton id="btnImagen"
+								update=":tabViewProducto:formImagen"
+								oncomplete="PF('productoDialogoImagen').show()"
+								icon="ui-icon-image">
+								<f:setPropertyActionListener value="#{producto}"
+									target="#{productoBean.producto}" />
+							</p:commandButton>
+							<p:commandButton title="CODIGO DE BARRA"
+								update=":tabViewProducto:formCodigoBarra"
+								oncomplete="PF('productoDialogoCodigoBarra').show()"
+								actionListener="#{productoBean.obtenerProducto(producto)}"
+								icon="fa fa-barcode">
+							</p:commandButton>
+							<p:commandButton id="btnEliminar"
+								update=":tabViewProducto:formEliminar"
+								oncomplete="PF('productoDialogoEliminar').show()"
+								icon="#{producto.activo eq true ? 'ui-icon-close':'ui-icon-check'}">
+								<f:setPropertyActionListener value="#{producto}"
+									target="#{productoBean.producto}" />
+							</p:commandButton>
+						</p:column>
+						<p:column headerText="COD" width="5%" styleClass="centrar">
+                            #{producto.id}
+                        </p:column>
+						<p:column headerText="CODIGO PRINCIPAL" width="10%">
+                            #{producto.ean}
+                        </p:column>
+						<p:column headerText="NOMBRE">
+							#{producto.nombre}
+                        </p:column>
+						<p:column headerText="GRUPO" width="10%">  
+                            #{producto.grupo.nombre}  
+                        </p:column>
+						<p:column headerText="PRECIO COSTO" width="10%">  
+                            #{producto.precio}  
+                        </p:column>
+						<p:column headerText="TIPO PRODUCTO" width="10%">  
+                            #{producto.tipoProducto.nombre}  
+                        </p:column>
+						<p:column headerText="INSERTAR FACTURA" width="5%"
+							styleClass="centrar">
+							<p:selectBooleanCheckbox value="#{producto.facturacion}"
+								disabled="true" />
+						</p:column>
+						<p:column headerText="KARDEX" width="5%" styleClass="centrar">
+							<p:selectBooleanCheckbox value="#{producto.kardex}"
+								disabled="true" />
+						</p:column>
+						<p:column headerText="ACTIVO" width="5%" styleClass="centrar">
+							<p:selectBooleanCheckbox value="#{producto.activo}"
+								disabled="true" />
+						</p:column>
+					</p:dataTable>
+				</h:form>
+				<p:dialog widgetVar="productoDialogoCodigoBarra"
+					header="CODIGO DE BARRAS" showEffect="clip" hideEffect="fold"
+					modal="false" resizable="false" width="auto" styleClass="centrar">
+					<h:form id="formCodigoBarra">
+						<h:panelGrid id="panelNuevo" columns="2" cellpadding="1">
+							<h:outputText value="CODIGO DE BARRAS:" styleClass="negrita" />
+							<p:graphicImage id="imgCodigo"
+								value="#{productoBean.codigoBarra}" cache="false" />
+							<h:outputText value="IMPRIMIR PVP: " />
+							<p:selectBooleanCheckbox value="#{productoBean.bnPrecio}" />
+						</h:panelGrid>
+						<p:tooltip for="btnNuevoAceptarSimple" value="SIMPLE" />
+						<p:commandButton id="btnNuevoAceptarSimple" value="SIMPLE"
+							ajax="false" icon="ui-icon-print"
+							actionListener="#{productoBean.reporteCodigoProductoSimple}" />
+						<p:tooltip for="btnNuevoAceptarPersonalizado"
+							value="PERSONALIZADO" />
+						<p:commandButton id="btnNuevoAceptarPersonalizado"
+							value="PERSONALIZADO" ajax="false" icon="ui-icon-print"
+							actionListener="#{productoBean.reporteCodigoProductoPersonalizado}" />
+					</h:form>
+				</p:dialog>
+				<p:dialog widgetVar="productoDialogoEliminar"
+					header="ACTIVAR/DESACTIVAR PRODUCTO" showEffect="clip"
+					hideEffect="fold" modal="false" resizable="false" width="255px"
+					styleClass="centrar">
+					<h:form id="formEliminar">
+						<h:inputHidden value="#{productoBean.producto.id}" />
+						<br />
+						<ui:param name="desactivar"
+							value="¿ DESEA DESACTIVAR EL PRODUCTO: #{productoBean.producto.nombre} ?" />
+						<ui:param name="activar"
+							value="¿ DESEA ACTIVAR EL PRODUCTO: #{productoBean.producto.nombre} ?" />
+						<h:outputText
+							value="#{productoBean.producto.activo eq true ? desactivar : activar}" />
+						<br />
+						<br />
+						<p:commandButton value="#{msg['btn.aceptar']}"
+							update=":tabViewProducto:formDataTable,:mensaje"
+							icon="#{msg['iconoAceptar']}"
+							oncomplete="PF('productoDialogoEliminar').hide()"
+							actionListener="#{productoBean.eliminar}" />
+						<p:commandButton value="#{msg['btn.cancelar']}" type="button"
+							onclick="PF('productoDialogoEliminar').hide()"
+							icon="ui-icon-close" />
+					</h:form>
+				</p:dialog>
+				<p:dialog header="INSERTAR PRODUCTO"
+					widgetVar="productoDialogoNuevo" resizable="false" modal="false"
+					showEffect="clip" hideEffect="fold" id="dialogoNuevo"
+					styleClass="dialogoInsertarProducto">
+					<h:form id="formNuevo">
+						<h:outputText value="Los campos marcados con" styleClass="negrita" />
+						<h:outputText value=" * " class="asterisco negrita" />
+						<h:outputText value="son requeridos" styleClass="negrita" />
+						<h:panelGrid id="panelNuevo" columns="1" cellpadding="1">
+							<h:panelGrid columns="3" cellpadding="1" styleClass="w100"
+								columnClasses="a,a">
+								<h:outputText value="*" class="asterisco" />
+								<h:outputText value="NOMBRE" styleClass="negrita" />
+								<p:inputText id="txtNombre"  onblur="this.value = this.value.toUpperCase();"
+									value="#{productoBean.producto.nombre}" styleClass="w100" />
+								<h:outputText value="*" class="asterisco" />
+								<h:outputText value="GRUPO:" styleClass="negrita" />
+								<p:selectOneMenu id="comboGrupo" filter="true"
+									filterMatchMode="contains"
+									value="#{productoBean.producto.grupo.id}" styleClass="w100">
+									<f:selectItem itemLabel="ESCOJA UN GRUPO" />
+									<f:selectItems value="#{productoBean.listaGrupos}" var="grupo"
+										itemValue="#{grupo.id}" itemLabel="#{grupo.nombre}" />
+										<p:ajax listener="#{productoBean.cargarGrupoProducto}"
+										event="change" />
+								</p:selectOneMenu>
+								<h:outputText value="" class="asterisco" />
+								<h:outputText value="CODIGO PRINCIPAL:" styleClass="negrita" />
+								<p:inputText id="txtEan" value="#{productoBean.producto.ean}"
+									styleClass="w100">
+									<p:ajax event="blur" listener="#{productoBean.copiar_Codigo1}"
+										update="txtEan, codigo1, :mensaje" />
+								</p:inputText>
+								<h:outputText value="" class="asterisco" />
+								<h:outputText value="CODIGO AUXILIAR:" styleClass="negrita" />
+								<p:inputText id="codigo1"
+									value="#{productoBean.producto.codigo1}" styleClass="w100" />
+								<h:outputText value="" class="asterisco" />
+								<h:outputText value="TIPO:" styleClass="negrita" />
+								<p:selectOneMenu id="comboTipo"
+									value="#{productoBean.producto.tipoProducto}" styleClass="w100">
+									<f:selectItems value="#{productoBean.listaTipoProducto}"
+										var="tipoProducto" itemValue="#{tipoProducto}"
+										itemLabel="#{tipoProducto.nombre}" />
+									<p:ajax event="change" listener="#{productoBean.adk}"
+										update="btnKardex,:mensaje" />
+								</p:selectOneMenu>
+								<h:outputText value="*" class="asterisco" />
+								<h:outputText value="PRECIO COSTO:" styleClass="negrita" />
+								<p:inputText id="precio" value="#{productoBean.producto.precio}"
+									styleClass="w100">
+									<p:ajax event="blur" process="precio, @this"
+										listener="#{productoBean.calcularTablaPrecios}"
+										update="tablaTipoPreciosInsertar" />
+								</p:inputText>
+								<h:outputText value="*" class="asterisco" />
+								<h:outputText value="CANTIDAD MINIMA:" styleClass="negrita" />
+								<p:inputText value="#{productoBean.producto.cantidadMinima}"
+									styleClass="w100" />
+								<h:outputText value="" />
+								<h:outputText value="KARDEX:" styleClass="negrita" />
+								<p:selectBooleanButton id="btnKardex"
+									disabled="#{productoBean.k}"
+									value="#{productoBean.producto.kardex}" onLabel="SI"
+									offLabel="NO" onIcon="ui-icon-check" offIcon="ui-icon-close"
+									styleClass="w60">
+								</p:selectBooleanButton>
+								<h:outputText value="" />
+								<h:outputText value="IMPORTADO:" styleClass="negrita" />
+								<h:panelGrid columns="4">
+									<h:outputText value="" />
+									<p:selectBooleanButton
+										value="#{productoBean.producto.importado}" onLabel="SI"
+										offLabel="NO" onIcon="ui-icon-check" offIcon="ui-icon-close"
+										styleClass="w60" />
+									<p:outputLabel value="INSERTAR A FACTURA:"
+										styleClass="m-l10px negrita" />
+									<p:selectBooleanButton
+										value="#{productoBean.producto.facturacion}" onLabel="SI"
+										offLabel="NO" onIcon="ui-icon-check" offIcon="ui-icon-close"
+										styleClass="w60" />
+								</h:panelGrid>
+							</h:panelGrid>
+							<h:panelGrid columns="1" cellpadding="1">
+								<p:commandLink value="IMPUESTOS"
+									update="tablaImpuestosInsertar,:tabViewProducto:formNuevo:tablaTipoPreciosInsertar,:mensaje"
+									actionListener="#{productoBean.insertarFilaImpuestoTarifa}"
+									styleClass="negrita" />
+								<p:dataTable id="tablaImpuestosInsertar" var="impuesto"
+									value="#{productoBean.producto.productosTarifas}"
+									emptyMessage="#{msg['lbl.mensajeTabla']}">
+									<p:column headerText="GESTIONAR" styleClass="centrar"
+										width="30%">
+										<p:commandButton id="btnEliminarImpuesto"
+											update="tablaImpuestosInsertar,:tabViewProducto:formNuevo:tablaTipoPreciosInsertar, :mensaje"
+											action="#{productoBean.eliminarImpuesto(impuesto)}"
+											icon="ui-icon-close" process="@this" />
+									</p:column>
+									<p:column headerText="NOMBRE" width="30%"> 
+			                            #{impuesto.tarifa.impuesto.nombre}		
+			                        </p:column>
+									<p:column headerText="TIPO/IMPUESTO" width="60%">
+										<p:selectOneMenu id="comboImpuesto" panelStyle="width: 700px;"
+											value="#{impuesto.tarifa.id}" styleClass="w100">
+											<f:selectItems value="#{productoBean.listaTarifas}"
+												var="tarifa" itemValue="#{tarifa.id}"
+												itemLabel="#{tarifa.impuesto.nombre}-#{tarifa.nombre}" />
+											<p:ajax event="change"
+												listener="#{productoBean.obtenerImpuestoTarifa(impuesto)}"
+												update="tablaImpuestosInsertar,:tabViewProducto:formNuevo:tablaTipoPreciosInsertar,:mensaje" />
+										</p:selectOneMenu>
+									</p:column>
+									<p:column headerText="TARIFA %" width="60%">
+			                            #{impuesto.tarifa.porcentaje}
+			                        </p:column>
+								</p:dataTable>
+								<h:outputText value="" />
+								<h:outputText value="INVENTARIO INICIAL:" />
+								<p:dataTable id="tablaInventario" var="inventario"
+									value="#{productoBean.listaBodegaProductos}" editable="true"
+									editMode="cell" emptyMessage="#{msg['lbl.mensajeTabla']}">
+									<p:column headerText="LOCAL" width="50%">
+                                    	#{inventario.local.nombre}		
+                                	</p:column>
+									<p:column headerText="CANTIDAD">
+										<p:inputText value="#{inventario.cantidad}" styleClass="w100"
+											onblur="this.value = this.value.toUpperCase();" />
+									</p:column>
+								</p:dataTable>
+								<h:outputText value="" />
+								<p:commandLink value="PRECIOS"
+									update="tablaTipoPreciosInsertar,:mensaje"
+									actionListener="#{productoBean.insertarFilaTipoPrecio}"
+									styleClass="negrita" />
+								<p:dataTable id="tablaTipoPreciosInsertar" var="tipoPrecio"
+									value="#{productoBean.listaTpp}"
+									rowStyleClass="#{tipoPrecio.tipoPrecioProducto.pvp eq true ? 'activo' : null}">
+									<p:column headerText="#{msg['lbl.gestionar']}" width="3%"
+										styleClass="centrar">
+										<p:commandButton id="btnEliminar" icon="ui-icon-close"
+											update="tablaTipoPreciosInsertar, :mensaje"
+											action="#{productoBean.eliminarTipoPrecioProducto(tipoPrecio)}"
+											process="@this" />
+									</p:column>
+									<p:column headerText="NOMBRE" width="4.5%" styleClass="centrar">
+										<p:inputText value="#{tipoPrecio.tipoPrecioProducto.nombre}"
+											styleClass="w100" label="NOMBRE">
+										</p:inputText>
+									</p:column>
+									<p:column headerText="% GAN" width="4%" styleClass="centrar">
+										<p:inputText value="#{tipoPrecio.porcentaje}"
+											styleClass="w100" label="PORCENTAJE">
+											<p:ajax
+												listener="#{productoBean.calcularPrecioPorPorcentaje(tipoPrecio)}"
+												event="change" update="tablaTipoPreciosInsertar, :mensaje" />
+										</p:inputText>
+									</p:column>
+									<p:column headerText="SIN IMP" width="4%" styleClass="centrar">
+										<p:inputText value="#{tipoPrecio.precio}" styleClass="w100"
+											label="PRECIO">
+											<p:ajax
+												listener="#{productoBean.calcularPrecioPorGanancia(tipoPrecio)}"
+												event="change" update="tablaTipoPreciosInsertar, :mensaje" />
+										</p:inputText>
+									</p:column>
+									<p:column headerText="CON IMP" width="4%" styleClass="centrar">
+										<p:inputText value="#{tipoPrecio.precioIva}" styleClass="w100"
+											label="PRECIO+IVA">
+											<p:ajax
+												listener="#{productoBean.calcularPrecioPorIva(tipoPrecio)}"
+												event="change" update="tablaTipoPreciosInsertar, :mensaje" />
+										</p:inputText>
+									</p:column>
+									<p:column headerText="%F-$F" width="3%" styleClass="centrar">
+										<p:selectBooleanButton
+											value="#{tipoPrecio.tipoPrecioProducto.porcentajePrecioFijo}"
+											onLabel="%F" offLabel="$F">
+											<p:ajax listener="#{productoBean.muestra}" />
+										</p:selectBooleanButton>
+									</p:column>
+									<p:column headerText="PVP" width="3%" styleClass="centrar">
+										<p:commandButton id="btn1" update="tablaTipoPreciosInsertar"
+											action="#{productoBean.pvp}" process="btn1"
+											icon="#{tipoPrecio.tipoPrecioProducto.pvp ? 'ui-icon-check' : 'ui-icon-close'}">
+											<f:setPropertyActionListener
+												target="#{productoBean.tablaPrecios}" value="#{tipoPrecio}" />
+										</p:commandButton>
+									</p:column>
+								</p:dataTable>
+							</h:panelGrid>
+							<p:commandLink value="UNIDADES" update="tablaUnidades, :mensaje"
+								actionListener="#{productoBean.insertarFilaUnidad}"
+								styleClass="negrita" />
+							<p:dataTable id="tablaUnidades" var="tablaProductoUnidad"
+								value="#{productoBean.producto.productoUnidads}"
+								emptyMessage="#{msg['lbl.mensajeTabla']}">
+								<p:column headerText="GESTIONAR" styleClass="centrar"
+									width="30%">
+									<p:commandButton id="btnEliminar"
+										update=":mensaje,tablaUnidades"
+										action="#{productoBean.eliminarUnidad(tablaProductoUnidad)}"
+										icon="ui-icon-close" process="@this" />
+								</p:column>
+								<p:column headerText="UNIDAD" styleClass="centrar">
+									<p:selectOneMenu id="comboUnidad" filter="true"
+										filterMatchMode="contains"
+										value="#{tablaProductoUnidad.unidad.id}" styleClass="w100">
+										<f:selectItem itemLabel="ESCOJA UNA UNIDAD" />
+										<f:selectItems value="#{unidadBean.listaUnidades}"
+											var="unidad" itemValue="#{unidad.id}"
+											itemLabel="#{unidad.nombre}" />
+										<p:ajax event="change"
+											listener="#{productoBean.insertarUnidad(tablaProductoUnidad)}"
+											update="tablaUnidades, comboUnidad, :mensaje" />
+									</p:selectOneMenu>
+								</p:column>
+								<p:column headerText="CANTIDAD" styleClass="centrar">
+									<p:inputText value="#{tablaProductoUnidad.cantidad}"
+										styleClass="w100">
+										
+									</p:inputText>
+								</p:column>
+							</p:dataTable>
+							<f:facet name="footer">
+								<br></br>
+								<p:separator />
+								<p:commandButton value="GUARDAR"
+									update=":tabViewProducto:formDataTable ,:mensaje, :tabViewProducto:formNuevo"
+									oncomplete="comprobarProducto(xhr, status, args)"
+									id="btnNuevoAceptar" icon="ui-icon-disk"
+									actionListener="#{productoBean.insertar}" />
+								<p:commandButton value="CANCELAR"
+									oncomplete="PF('productoDialogoNuevo').hide()"
+									id="btnNuevolimpiar" icon="ui-icon-close" process="@this" />
+							</f:facet>
+						</h:panelGrid>
+					</h:form>
+				</p:dialog>
+				<h:form id="formMostrar">
+					<p:dialog header="PRODUCTO: #{productoBean.producto.id} - #{productoBean.producto.nombre}"
+						widgetVar="productoDialogoMostrar" resizable="false" modal="false"
+						showEffect="clip" hideEffect="fold" id="dialogoMostrar"
+						styleClass="dialogoMostrarProducto">
+						<h:panelGrid columns="2" cellpadding="1" width="100%">
+							<h:panelGrid columns="2" cellpadding="1">
+								<h:outputText value="CODIGO PRINCIPAL:" styleClass="negrita" />
+								<h:outputText value="#{productoBean.producto.ean}" />
+								<h:outputText value="CODIGO AUXILIAR:" styleClass="negrita" />
+								<h:outputText value="#{productoBean.producto.codigo1}" />
+								<h:outputText value="GRUPO:" styleClass="negrita" />
+								<h:outputText value="#{productoBean.producto.grupo.nombre}" />
+								<h:outputText value="PRECIO COSTO:" styleClass="negrita" />
+								<h:outputText value="#{productoBean.producto.precio}" />
+								<h:outputText value="TIPO DE PRODUCTO:" styleClass="negrita" />
+								<h:outputText
+									value="#{productoBean.producto.tipoProducto.nombre}" />
+							</h:panelGrid>
+							<h:panelGrid columns="2" cellpadding="1" styleClass="w100">
+								<h:outputText value="CANTIDAD MINIMA:" styleClass="negrita" />
+								<h:outputText value="#{productoBean.producto.cantidadMinima}" />
+								<h:outputText value="KARDEX:" styleClass="negrita" />
+								<p:selectBooleanCheckbox value="#{productoBean.producto.kardex}"
+									disabled="true" />
+								<h:outputText value="IMPORTADO:" styleClass="negrita" />
+								<p:selectBooleanCheckbox
+									value="#{productoBean.producto.importado}" disabled="true" />
+								<h:outputText value="ACTIVO:" styleClass="negrita" />
+								<p:selectBooleanCheckbox value="#{productoBean.producto.activo}"
+									disabled="true" />
+								<h:outputText value="INSERTAR A FACTURA:" styleClass="negrita" />
+								<p:selectBooleanCheckbox
+									value="#{productoBean.producto.facturacion}" disabled="true" />
+							</h:panelGrid>
+						</h:panelGrid>
+						<h:outputText value="IMPUESTOS:" styleClass="negrita" />
+						<p:dataTable var="impuesto"
+							value="#{productoBean.producto.productosTarifas}"
+							emptyMessage="#{msg['lbl.mensajeTabla']}">
+							<p:column headerText="NOMBRE" width="30%"> 
+                            #{impuesto.tarifa.impuesto.nombre}		
+                        </p:column>
+							<p:column headerText="TIPO/IMPUESTO" width="60%">
+                            #{impuesto.tarifa.nombre}
+                        </p:column>
+							<p:column headerText="TARIFA" width="60%">
+                            #{impuesto.tarifa.porcentaje}
+                        </p:column>
+						</p:dataTable>
+						<h:outputText value="PRECIOS:" styleClass="negrita" />
+						<p:dataTable id="tablaPreciosProducto" var="tablaPrecios"
+							value="#{productoBean.listaTpp}"
+							emptyMessage="#{msg['lbl.mensajeTabla']}"
+							rowStyleClass="#{tablaPrecios.tipoPrecioProducto.pvp eq true ? 'activo' : null}">
+							<p:column headerText="NOMBRE" width="30%">
+                            #{tablaPrecios.tipoPrecioProducto.nombre}		
+                        </p:column>
+							<p:column headerText="% GAN" width="30%">
+                            #{tablaPrecios.porcentaje}
+                        </p:column>
+							<p:column headerText="SIN IMP" width="30%">
+                            #{tablaPrecios.precio}		
+                        </p:column>
+							<p:column headerText="CON IMP." width="30%">
+                            #{tablaPrecios.precioIva}		
+                        </p:column>
+							<p:column headerText="%F-$F" styleClass="centrar w30P">
+								<p:selectBooleanButton
+									value="#{tablaPrecios.tipoPrecioProducto.porcentajePrecioFijo}"
+									onLabel="%F" offLabel="$F" disabled="true" />
+							</p:column>
+						</p:dataTable>
+						<h:outputText value="LOCAL:" styleClass="negrita" />
+						<p:dataTable var="tablaBodegaProducto"
+							value="#{productoBean.listaBodegaProductos}"
+							emptyMessage="#{msg['lbl.mensajeTabla']}">
+							<p:column headerText="NOMBRE">
+                            #{tablaBodegaProducto.local.nombre}		
+                        </p:column>
+							<p:column headerText="CANTIDAD">
+                            #{tablaBodegaProducto.cantidad}
+                        </p:column>
+						</p:dataTable>
+						<h:outputText value="UNIDADES" styleClass="negrita" />
+						<p:dataTable var="tablaProductoUnidad"
+							value="#{productoBean.producto.productoUnidads}"
+							emptyMessage="#{msg['lbl.mensajeTabla']}">
+							<p:column headerText="ORDEN">
+                            #{tablaProductoUnidad.orden}		
+                        </p:column>
+							<p:column headerText="UNIDAD">
+                            #{tablaProductoUnidad.unidad.nombre}		
+                        </p:column>
+							<p:column headerText="CANTIDAD">
+                            #{tablaProductoUnidad.cantidad}
+                        </p:column>
+						</p:dataTable>
+					</p:dialog>
+				</h:form>
+				<p:dialog header="EDITAR PRODUCTO" widgetVar="productoDialogoEditar"
+					resizable="false" modal="false" showEffect="clip" hideEffect="fold"
+					id="dialogoEditar" styleClass="dialogoInsertarProducto">
+					<h:form id="formEditar">
+						<p:focus context="formEditar" />
+						<h:outputText value="Los campos marcados con" styleClass="negrita" />
+						<h:outputText value=" * " class="asterisco negrita" />
+						<h:outputText value="son requeridos" styleClass="negrita" />
+						<h:panelGrid columns="1" cellpadding="1">
+							<h:panelGrid columns="3" cellpadding="1" styleClass="w100"
+								columnClasses="a,a">
+								<h:outputText value="*" class="asterisco" />
+								<h:outputText value="NOMBRE:" styleClass="negrita" />
+								<p:inputText styleClass="w100"
+									onblur="this.value = this.value.toUpperCase();"
+									value="#{productoBean.producto.nombre}" />
+								<h:outputText value="*" class="asterisco" />
+								<h:outputText value="GRUPO:" styleClass="negrita" />
+								<p:selectOneMenu id="comboGrupo"
+									value="#{productoBean.producto.grupo.id}" styleClass="w100">
+									<f:selectItem itemLabel="ESCOJA UN GRUPO" />
+									<f:selectItems value="#{grupoBean.listaGrupos}" var="grupo"
+										itemValue="#{grupo.id}" itemLabel="#{grupo.nombre}" />
+								</p:selectOneMenu>
+								<h:outputText value="*" class="asterisco" />
+								<h:outputText value="CODIGO PRINCIPAL:" styleClass="negrita" />
+								<p:inputText value="#{productoBean.producto.ean}"
+									styleClass="w100"
+									onblur="this.value = this.value.toUpperCase();" />
+								<h:outputText value="*" class="asterisco" />
+								<h:outputText value="CODIGO AUXILIAR:" styleClass="negrita" />
+								<p:inputText value="#{productoBean.producto.codigo1}"
+									styleClass="w100"
+									onblur="this.value = this.value.toUpperCase();" />
+								<h:outputText value="" class="asterisco" />
+								<h:outputText value="TIPO:" styleClass="negrita" />
+								<p:selectOneMenu id="comboTipo"
+									value="#{productoBean.producto.tipoProducto}" styleClass="w100">
+									<f:selectItems value="#{productoBean.listaTipoProducto}"
+										var="tipoProducto" itemValue="#{tipoProducto}"
+										itemLabel="#{tipoProducto.nombre}" />
+									<p:ajax event="change" listener="#{productoBean.adk}"
+										update="btnKardex,:mensaje" />
+								</p:selectOneMenu>
+								<h:outputText />
+								<h:outputText value="PRECIO COSTO:" styleClass="negrita" />
+								<p:inputText id="precioEditar"
+									value="#{productoBean.producto.precio}" styleClass="w100"
+									readonly="#{productoBean.readOnlyPrecio}">
+									<p:ajax event="blur" process="precioEditar, @this"
+										listener="#{productoBean.calcularTablaPrecios}"
+										update="tablaTipoPreciosEditar" />
+								</p:inputText>
+								<h:outputText value="*" class="asterisco" />
+								<h:outputText value="CANTIDAD MINIMA:" styleClass="negrita" />
+								<p:inputText value="#{productoBean.producto.cantidadMinima}"
+									styleClass="w100" />
+								<h:outputText value="" />
+								<h:outputText value="KARDEX:" styleClass="negrita" />
+								<p:selectBooleanButton id="btnKardex"
+									disabled="#{productoBean.k}"
+									value="#{productoBean.producto.kardex}" onLabel="SI"
+									offLabel="NO" onIcon="ui-icon-check" offIcon="ui-icon-close"
+									styleClass="w60">
+								</p:selectBooleanButton>
+								<h:outputText value="" />
+								<h:outputText value="IMPORTADO:" styleClass="negrita" />
+								<h:panelGrid columns="4">
+									<h:outputText value="" />
+									<p:selectBooleanButton
+										value="#{productoBean.producto.importado}" onLabel="SI"
+										offLabel="NO" onIcon="ui-icon-check" offIcon="ui-icon-close"
+										styleClass="w60" />
+									<p:outputLabel value="INSERTAR A FACTURA:"
+										styleClass="m-l10px negrita" />
+									<p:selectBooleanButton
+										value="#{productoBean.producto.facturacion}" onLabel="SI"
+										offLabel="NO" onIcon="ui-icon-check" offIcon="ui-icon-close"
+										styleClass="w60" />
+								</h:panelGrid>
+							</h:panelGrid>
+							<h:panelGrid columns="1" cellpadding="1">
+								<p:commandLink value="IMPUESTOS"
+									update="tablaImpuestos,:mensaje"
+									actionListener="#{productoBean.insertarFilaImpuestoTarifa}"
+									styleClass="negrita" />
+								<p:dataTable id="tablaImpuestos" var="impuesto"
+									value="#{productoBean.producto.productosTarifas}"
+									emptyMessage="#{msg['lbl.mensajeTabla']}">
+									<p:column headerText="GESTIONAR" styleClass="centrar"
+										width="30%">
+										<p:commandButton id="btnEliminarImpuesto"
+											update="tablaImpuestos,:tabViewProducto:formEditar:tablaTipoPreciosEditar, :mensaje"
+											action="#{productoBean.eliminarImpuesto(impuesto)}"
+											icon="ui-icon-close" process="@this" />
+									</p:column>
+									<p:column headerText="NOMBRE" width="30%"> 
+			                            #{impuesto.tarifa.impuesto.nombre}		
+			                        </p:column>
+									<p:column headerText="TIPO/IMPUESTO" width="70%">
+										<p:selectOneMenu filter="true" filterMatchMode="contains"
+											panelStyle="width: 700px;" value="#{impuesto.tarifa.id}"
+											styleClass="w100">
+											<f:selectItems value="#{productoBean.listaTarifas}"
+												var="tarifa" itemValue="#{tarifa.id}"
+												itemLabel="#{tarifa.impuesto.nombre}-#{tarifa.nombre}" />
+											<p:ajax event="change"
+												listener="#{productoBean.obtenerImpuestoTarifa(impuesto)}"
+												update="tablaImpuestos,:tabViewProducto:formEditar:tablaTipoPreciosEditar,:mensaje" />
+										</p:selectOneMenu>
+									</p:column>
+									<p:column headerText="TARIFA %" width="60%">
+			                            #{impuesto.tarifa.porcentaje}
+			                        </p:column>
+								</p:dataTable>
+								<h:outputText value="" />
+								<p:commandLink value="PRECIOS"
+									update="tablaTipoPreciosEditar,:mensaje"
+									actionListener="#{productoBean.insertarFilaTipoPrecio}"
+									styleClass="negrita" />
+								<p:dataTable id="tablaTipoPreciosEditar" var="tipoPrecio"
+									value="#{productoBean.listaTpp}" editable="true"
+									editMode="cell"
+									rowStyleClass="#{tipoPrecio.tipoPrecioProducto.pvp eq true ? 'activo' : null}">
+									<p:column headerText="#{msg['lbl.gestionar']}"
+										styleClass="centrar" width="3%">
+										<p:commandButton id="btnEliminar" icon="ui-icon-close"
+											update="tablaTipoPreciosEditar, :mensaje"
+											action="#{productoBean.eliminarTipoPrecioProducto(tipoPrecio)}"
+											process="@this" />
+									</p:column>
+									<p:column headerText="NOMBRE" width="4.5%">
+										<p:inputText value="#{tipoPrecio.tipoPrecioProducto.nombre}"
+											styleClass="w100" />
+									</p:column>
+									<p:column headerText="% GAN" width="4%">
+										<p:inputText value="#{tipoPrecio.porcentaje}"
+											styleClass="w100">
+											<p:ajax
+												listener="#{productoBean.calcularPrecioPorPorcentaje(tipoPrecio)}"
+												process="@this" event="change"
+												update="tablaTipoPreciosEditar, :mensaje" />
+										</p:inputText>
+									</p:column>
+									<p:column headerText="SIN IMP" width="4%">
+										<p:inputText value="#{tipoPrecio.precio}" styleClass="w100">
+											<p:ajax
+												listener="#{productoBean.calcularPrecioPorGanancia(tipoPrecio)}"
+												event="change" update="tablaTipoPreciosEditar, :mensaje" />
+										</p:inputText>
+									</p:column>
+									<p:column headerText="CON IMP" width="4%">
+										<p:inputText value="#{tipoPrecio.precioIva}" styleClass="w100"
+											label="PRECIO+IVA">
+											<p:ajax
+												listener="#{productoBean.calcularPrecioPorIva(tipoPrecio)}"
+												event="change" update="tablaTipoPreciosEditar, :mensaje" />
+										</p:inputText>
+									</p:column>
+									<p:column headerText="%F-$F" width="3%">
+										<p:selectBooleanButton
+											value="#{tipoPrecio.tipoPrecioProducto.porcentajePrecioFijo}"
+											onLabel="%F" offLabel="$F" />
+									</p:column>
+									<p:column headerText="PVP" width="3%" styleClass="centrar">
+										<p:commandButton id="btn1" update="tablaTipoPreciosEditar"
+											action="#{productoBean.pvp}" process="btn1"
+											icon="#{tipoPrecio.tipoPrecioProducto.pvp ? 'ui-icon-check' : 'ui-icon-close'}">
+											<f:setPropertyActionListener
+												target="#{productoBean.tablaPrecios}" value="#{tipoPrecio}" />
+										</p:commandButton>
+									</p:column>
+								</p:dataTable>
+								<p:commandLink value="UNIDADES" update="tablaUnidades, :mensaje"
+									actionListener="#{productoBean.insertarFilaUnidad}"
+									styleClass="centrar w3P negrita" />
+								<p:dataTable id="tablaUnidades" var="tablaProductoUnidad"
+									value="#{productoBean.producto.productoUnidads}"
+									editable="true" editMode="cell"
+									emptyMessage="#{msg['lbl.mensajeTabla']}">
+									<p:column headerText="GESTIONAR" styleClass="centrar"
+										width="3%">
+										<p:commandButton id="btnEliminar" update="tablaUnidades"
+											action="#{productoBean.eliminarUnidad(tablaProductoUnidad)}"
+											icon="ui-icon-close" process="@this" />
+									</p:column>
+									<p:column headerText="UNIDAD" styleClass="centrar" width="3%">
+										<p:selectOneMenu id="comboUnidad" filter="true"
+											filterMatchMode="contains"
+											value="#{tablaProductoUnidad.unidad.id}" styleClass="w150px">
+											<f:selectItem itemLabel="ESCOJA UNA UNIDAD" />
+											<f:selectItems value="#{unidadBean.listaUnidades}"
+												var="unidad" itemValue="#{unidad.id}"
+												itemLabel="#{unidad.nombre}" />
+											<p:ajax event="change"
+												listener="#{productoBean.comprobarUnidad(tablaProductoUnidad)}"
+												update="tablaUnidades, :mensaje" />
+										</p:selectOneMenu>
+									</p:column>
+									<p:column headerText="CANTIDAD" styleClass="centrar" width="3%">
+										<p:inputText value="#{tablaProductoUnidad.cantidad}"
+											styleClass="w100">
+											<p:ajax listener="#{productoBean.insertarProductoUnidad}"
+												event="change" update="tablaUnidades" />
+										</p:inputText>
+									</p:column>
+								</p:dataTable>
+							</h:panelGrid>
+							<f:facet name="footer">
+								<p:separator />
+								<p:commandButton value="GUARDAR"
+									update=":tabViewProducto:formDataTable,:mensaje, formEditar"
+									oncomplete="comprobarProducto(xhr, status, args)"
+									id="btnModificarAceptar"
+									actionListener="#{productoBean.actualizar}" icon="ui-icon-disk" />
+								<p:commandButton value="CANCELAR"
+									oncomplete="PF('productoDialogoEditar').hide()"
+									id="btnModificarlimpiar" icon="ui-icon-close" />
+							</f:facet>
+						</h:panelGrid>
+					</h:form>
+				</p:dialog>
+				<p:dialog header="IMAGEN PRODUCTO" widgetVar="productoDialogoImagen"
+					resizable="false" modal="false" showEffect="clip" hideEffect="fold"
+					id="dialogoImagen">
+					<h:form id="formImagen">
+						<h:panelGrid columns="1" cellpadding="1">
+							<p:graphicImage id="imgProducto" value="#{productoBean.logo}"
+								cache="false" />
+							<h:outputText value="LOGO:" styleClass="negrita" />
+							<p:fileUpload fileUploadListener="#{productoBean.subirImagen}"
+								mode="advanced" dragDropSupport="true" multiple="true"
+								update="imgProducto, formImagen:imgProducto, :mensaje, @this"
+								fileLimit="1" allowTypes="/(\.|\/)(gif|jpe?g|png)$/" />
+						</h:panelGrid>
+					</h:form>
+				</p:dialog>
+			</p:tab>
+			<p:tab id="tabGrupo" title="GRUPOS">
+				<h:form id="formDataTableGrupos">
+					<p:dataTable id="tablaGrupos" var="grupo" scrollable="true"
+						styleClass="ui-datatable-scrollable-body estiloFilasPares"
+						value="#{grupoBean.listaGrupos}" paginator="true" rows="10"
+						emptyMessage="#{msg['lbl.mensajeTabla']}"
+						rowsPerPageTemplate="5,10,15"
+						paginatorTemplate="{RowsPerPageDropdown} {FirstPageLink} {PreviousPageLink} {CurrentPageReport} {NextPageLink} {LastPageLink}"
+						paginatorPosition="bottom">
+						<f:facet name="header">
+							<h:form styleClass="FormBotonNuevo">
+								<p:tooltip for="btnNuevo" value="#{msg['lbl.insertar']}" />
+								<p:commandButton id="btnNuevo" icon="#{msg['iconoInsertar']}"
+									update=":tabViewProducto:dialogoNuevoGrupo"
+									oncomplete="PF('grupoDialogoInsertar').show()"
+									actionListener="#{grupoBean.limpiarObjetos}" />
+							</h:form>
+						</f:facet>
+						<p:column headerText="#{msg['lbl.gestionar']}"
+							styleClass="centrar" width="20%">
+							<p:tooltip for="btnEditar" value="EDITAR" />
+							<p:tooltip for="btnEliminar"
+								value="#{grupo.activo eq true ? msg['lbl.desactivar']:msg['lbl.activar']}" />
+							<p:commandButton id="btnEditar"
+								update=":tabViewProducto:dialogoEditarGrupo"
+								oncomplete="PF('grupoDialogoEditar').show()"
+								icon="#{msg['iconoEditar']}">
+								<f:setPropertyActionListener value="#{grupo}"
+									target="#{grupoBean.grupo}" />
+							</p:commandButton>
+							<p:commandButton id="btnEliminar"
+								update=":tabViewProducto:formEliminarGrupo"
+								oncomplete="PF('grupoDialogoEliminar').show()"
+								icon="#{grupo.activo eq true ? 'ui-icon-close':'ui-icon-check'}">
+								<f:setPropertyActionListener value="#{grupo}"
+									target="#{grupoBean.grupo}" />
+							</p:commandButton>
+						</p:column>
+						<p:column headerText="NOMBRE">  
+                            #{grupo.nombre}  
+                        </p:column>
+						<p:column headerText="ACTIVO" width="10%" styleClass="centrar">
+							<p:selectBooleanCheckbox value="#{grupo.activo}" />
+						</p:column>
+					</p:dataTable>
+				</h:form>
+				<p:dialog header="INSERTAR GRUPO" widgetVar="grupoDialogoInsertar"
+					resizable="false" modal="false" showEffect="clip" hideEffect="fold"
+					id="dialogoNuevoGrupo" width="30%">
+					<h:form id="formInsertar">
+						<h:panelGrid columns="2" cellpadding="1">
+							<h:outputText value="NOMBRE:" />
+							<p:inputText id="txt" styleClass="w100"
+								value="#{grupoBean.grupo.nombre}"
+								onblur="this.value = this.value.toUpperCase();" />
+						</h:panelGrid>
+						<h:panelGrid columns="1" cellpadding="1" styleClass="w100">
+							<f:facet name="footer">
+								<p:separator />
+								<p:commandButton id="btnNuevoAceptar"
+									icon="#{msg['iconoGuardar']}" value="#{msg['btn.guardar']}"
+									oncomplete="comprobarGrupo(xhr, status, args)"
+									update=":tabViewProducto:formDataTableGrupos,:mensaje"
+									actionListener="#{grupoBean.insertar}" />
+								<p:commandButton value="#{msg['btn.cancelar']}"
+									oncomplete="PF('grupoDialogoInsertar').hide()"
+									id="btnNuevolimpiar" icon="#{msg['iconoCancelar']}"
+									actionListener="#{grupoBean.limpiarObjetos}" process="@this" />
+							</f:facet>
+						</h:panelGrid>
+					</h:form>
+				</p:dialog>
+				<p:dialog header="EDITAR GRUPO" widgetVar="grupoDialogoEditar"
+					resizable="false" modal="false" showEffect="clip" hideEffect="fold"
+					id="dialogoEditarGrupo" width="30%">
+					<h:form id="formEditarGrupo">
+						<h:panelGrid columns="2">
+							<h:outputText value="NOMBRE:" />
+							<p:inputText id="nombreGrupoEditar" styleClass="w100"
+								value="#{grupoBean.grupo.nombre}"
+								onblur="this.value = this.value.toUpperCase();" />
+						</h:panelGrid>
+						<h:panelGrid columns="1" styleClass="w100">
+							<f:facet name="footer">
+								<p:separator />
+								<p:commandButton id="btnModificarAceptar"
+									icon="#{msg['iconoGuardar']}" value="#{msg['btn.guardar']}"
+									oncomplete="comprobarGrupo(xhr, status, args)"
+									update=":tabViewProducto:formDataTableGrupos,:mensaje"
+									actionListener="#{grupoBean.actualizar}" />
+								<p:commandButton id="btnModificarlimpiar"
+									icon="#{msg['iconoCancelar']}" value="#{msg['btn.cancelar']}"
+									oncomplete="PF('grupoDialogoEditar').hide()" />
+							</f:facet>
+						</h:panelGrid>
+					</h:form>
+				</p:dialog>
+				<p:dialog widgetVar="grupoDialogoEliminar" header="ELIMINAR GRUPO"
+					showEffect="clip" hideEffect="fold" modal="false" resizable="false"
+					width="230px" styleClass="centrar">
+					<h:form id="formEliminarGrupo">
+						<h:inputHidden value="#{grupoBean.grupo.id}" />
+						<br />
+						<ui:param name="appreciated"
+							value="¿ DESEA DESACTIVAR EL GRUPO: #{grupoBean.grupo.nombre} ?" />
+						<ui:param name="notAppreciated"
+							value="¿ DESEA ACTIVAR EL GRUPO: #{grupoBean.grupo.nombre} ?" />
+						<h:outputText
+							value="#{grupoBean.grupo.activo eq true ? appreciated : notAppreciated}" />
+						<br />
+						<br />
+						<p:commandButton value="#{msg['btn.aceptar']}"
+							update=":tabViewProducto:formDataTableGrupos,:mensaje"
+							icon="#{msg['iconoAceptar']}"
+							oncomplete="PF('grupoDialogoEliminar').hide()"
+							actionListener="#{grupoBean.eliminar}" />
+						<p:commandButton value="#{msg['btn.cancelar']}" type="button"
+							onclick="PF('grupoDialogoEliminar').hide()"
+							icon="#{msg['iconoCancelar']}" />
+					</h:form>
+				</p:dialog>
+			</p:tab>
+			<p:tab id="tabUnidades" title="UNIDADES">
+				<p:panel id="panel" header="LISTADO DE UNIDADES"
+					styleClass="m-b10px;">
+					<h:form id="formDataTableUnidades">
+						<p:focus context="formDataTableUnidades" />
+						<p:dataTable id="tablaUnidades" var="unidad" scrollable="true"
+							styleClass="ui-datatable-scrollable-body estiloFilasPares"
+							value="#{unidadBean.listaUnidades}" paginator="true" rows="10"
+							emptyMessage="#{msg['lbl.mensajeTabla']}"
+							paginatorPosition="bottom">
+							<f:facet name="header">
+								<h:form>
+									<p:tooltip for="btnNuevoUnidad" value="#{msg['lbl.insertar']}" />
+									<p:commandButton update=":tabViewProducto:formNuevoUnidad"
+										oncomplete="PF('unidadDialogoNuevo').show()"
+										id="btnNuevoUnidad" icon="ui-icon-plus"
+										styleClass="botonNuevo" actionListener="#{unidadBean.limpiar}" />
+								</h:form>
+							</f:facet>
+							<p:column headerText="#{msg['lbl.gestionar']}"
+								styleClass="centrar" width="30%">
+								<p:tooltip for="btnEditarUnidad" value="EDITAR" />
+								<p:tooltip for="btnEliminarUnidad"
+									value="#{unidad.activo eq true ? msg['lbl.desactivar']:msg['lbl.activar']}" />
+								<p:commandButton id="btnEditarUnidad"
+									update=":tabViewProducto:formEditarUnidad"
+									oncomplete="PF('unidadDialogoEditar').show()"
+									icon="ui-icon-pencil"
+									disabled="#{unidad.pordefecto eq true ? true:false}">
+									<f:setPropertyActionListener value="#{unidad}"
+										target="#{unidadBean.unidad}" />
+								</p:commandButton>
+								<p:commandButton id="btnEliminarUnidad"
+									update=":tabViewProducto:formEliminarUnidad"
+									oncomplete="PF('unidadDialogoEliminar').show()"
+									icon="#{unidad.activo eq true ? 'ui-icon-close':'ui-icon-check'}"
+									disabled="#{unidad.pordefecto eq true ? true:false}">
+									<f:setPropertyActionListener value="#{unidad}"
+										target="#{unidadBean.unidad}" />
+								</p:commandButton>
+							</p:column>
+							<p:column headerText="NOMBRE">  
+                            #{unidad.nombre}  
+                        </p:column>
+							<p:column headerText="ABREVIATURA">  
+                            #{unidad.abreviatura}  
+                        </p:column>
+							<p:column headerText="ACTIVO" width="10%" styleClass="centrar">
+								<p:selectBooleanCheckbox value="#{unidad.activo}" />
+							</p:column>
+						</p:dataTable>
+					</h:form>
+				</p:panel>
+				<p:dialog widgetVar="unidadDialogoEliminar"
+					header="ACTIVAR / DESACTIVAR UNIDAD" showEffect="explode"
+					hideEffect="fold" modal="false" resizable="false" width="235px"
+					styleClass="centrar">
+					<h:form id="formEliminarUnidad">
+						<h:inputHidden value="#{unidadBean.unidad.id}" />
+						<br />
+						<ui:param name="appreciated"
+							value="¿ DESEA DESACTIVAR LA UNIDAD: #{unidadBean.unidad.nombre} ?" />
+						<ui:param name="notAppreciated"
+							value="¿ DESEA ACTIVAR LA UNIDAD: #{unidadBean.unidad.nombre} ?" />
+						<h:outputText
+							value="#{unidadBean.unidad.activo eq true ? appreciated : notAppreciated}" />
+						<br />
+						<br />
+						<p:commandButton value="#{msg['btn.aceptar']}"
+							update=":tabViewProducto:formDataTableUnidades,:mensaje"
+							icon="#{msg['iconoAceptar']}"
+							oncomplete="PF('unidadDialogoEliminar').hide()"
+							actionListener="#{unidadBean.eliminar}" />
+						<p:commandButton value="CANCELAR" type="button"
+							onclick="PF('unidadDialogoEliminar').hide()"
+							icon="#{msg['iconoCancelar']}" />
+					</h:form>
+				</p:dialog>
+				<p:dialog header="INSERTAR UNIDAD" widgetVar="unidadDialogoNuevo"
+					resizable="false" modal="false" showEffect="clip" hideEffect="fold"
+					id="dialogoNuevoUnidad" width="auto">
+					<h:form id="formNuevoUnidad">
+						<p:focus context="formNuevoUnidad" />
+						<h:panelGrid columns="2" cellpadding="1">
+							<h:outputText value="NOMBRE:" />
+							<p:inputText id="nombre" value="#{unidadBean.unidad.nombre}"
+								required="true" requiredMessage="INGRESE UN UNIDAD"
+								label="nombre" onblur="this.value = this.value.toUpperCase();"
+								styleClass="w100" />
+							<h:outputText value="ABREVIATURA:" />
+							<p:inputText id="abreviatura"
+								validatorMessage="MÁXIMO 2 CARACTERES" styleClass="w100"
+								value="#{unidadBean.unidad.abreviatura}" required="true"
+								requiredMessage="INGRESE UNA ABREVIATURA" label="nombre"
+								onblur="this.value = this.value.toUpperCase();">
+								<f:validateLength maximum="2" />
+							</p:inputText>
+							<f:facet name="footer">
+								<p:separator />
+								<p:commandButton value="#{msg['btn.guardar']}"
+									oncomplete="comprobarUnidad(xhr, status, args)"
+									update=":tabViewProducto:formDataTableUnidades, :mensaje, :tabViewProducto:formNuevoUnidad"
+									id="btnNuevoAceptar" icon="#{msg['iconoGuardar']}"
+									actionListener="#{unidadBean.insertar}" />
+								<p:commandButton value="#{msg['btn.cancelar']}"
+									oncomplete="PF('unidadDialogoNuevo').hide()"
+									id="btnNuevolimpiar" icon="#{msg['iconoCancelar']}"
+									actionListener="#{unidadBean.limpiar}" process="@this" />
+							</f:facet>
+						</h:panelGrid>
+					</h:form>
+				</p:dialog>
+				<p:dialog header="EDITAR UNIDAD" widgetVar="unidadDialogoEditar"
+					resizable="false" modal="false" showEffect="clip" hideEffect="fold"
+					id="dialogoEditarUnidad" width="auto">
+					<h:form id="formEditarUnidad">
+						<p:focus context="formEditarUnidad" />
+						<h:panelGrid id="panelEditarUnidad" columns="2" cellpadding="1">
+							<h:outputText value="NOMBRE:" />
+							<p:inputText value="#{unidadBean.unidad.nombre}" required="true"
+								styleClass="w100" requiredMessage="INGRESE UN UNIDAD"
+								onblur="this.value = this.value.toUpperCase();" />
+							<h:outputText value="ABREVIATURA:" />
+							<p:inputText id="abreviatura" styleClass="w100"
+								value="#{unidadBean.unidad.abreviatura}"
+								validatorMessage="MÁXIMO 2 CARACTERES" required="true"
+								requiredMessage="INGRESE UNA ABREVIATURA"
+								onblur="this.value = this.value.toUpperCase();">
+								<f:validateLength maximum="2" />
+							</p:inputText>
+							<f:facet name="footer">
+								<p:separator />
+								<p:commandButton value="#{msg['btn.guardar']}"
+									update=":tabViewProducto:formDataTableUnidades, :mensaje, :tabViewProducto:formEditarUnidad"
+									oncomplete="comprobarUnidad(xhr, status, args)"
+									id="btnModificarAceptar"
+									actionListener="#{unidadBean.actualizar}" icon="ui-icon-disk" />
+								<p:commandButton value="#{msg['btn.cancelar']}"
+									oncomplete="PF('unidadDialogoEditar').hide()"
+									id="btnModificarlimpiar" icon="ui-icon-close" />
+							</f:facet>
+						</h:panelGrid>
+					</h:form>
+				</p:dialog>
+			</p:tab>
+		</p:tabView>
+		<script type="text/javascript">
+			//<![CDATA[	
+			function comprobarProducto(xhr, status, args) {
+				if (!args.validationFailed && args.error) {
+					PF('productoDialogoNuevo').hide();
+					PF('productoDialogoEditar').hide();
+				}
+			}
+
+			function pvp() {
+				if (!args.validationFailed) {
+					PF('productoDialogoNuevo').hide();
+					PF('productoDialogoEditar').hide();
+				}
+			}
+
+			function comprobarGrupo(xhr, status, args) {
+				if (!args.validationFailed && args.error) {
+					PF('grupoDialogoInsertar').hide();
+					PF('grupoDialogoEditar').hide();
+				}
+			}
+
+			function comprobarCaracteristica(xhr, status, args) {
+				if (!args.validationFailed && args.error) {
+					PF('caracteristicaDialogoNuevo').hide();
+					PF('caracteristicaDialogoEditar').hide();
+				}
+			}
+
+			function comprobarUnidad(xhr, status, args) {
+				if (!args.validationFailed && args.error) {
+					PF('unidadDialogoNuevo').hide();
+					PF('unidadDialogoEditar').hide();
+				}
+			}
+			//]]>
+		</script>
+	</ui:define>
+</ui:composition>
+</html>

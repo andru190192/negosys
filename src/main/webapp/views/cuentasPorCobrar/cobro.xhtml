@@ -1,0 +1,282 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:p="http://primefaces.org/ui">
+<ui:composition template="/templates/layout/masterLayout.xhtml">
+	<ui:define name="title">COBRANZA</ui:define>
+	<ui:define name="content">
+		<p:growl id="mensaje" showDetail="true" life="7000" />
+		<p:panel id="panel" header="COBRANZA DE FACTURAS">
+			<h:form id="formCliente">
+				<h:panelGrid columns="2" cellpadding="10" cellspacing="10">
+					<p:outputLabel value="CÉDULA/NOMBRE:" styleClass="negrita" />
+					<h:panelGrid columns="2">
+						<p:inputText readonly="true"
+							value="#{cobroBean.criterioBusquedaCliente.cedula} - #{cobroBean.criterioBusquedaCliente.apellido} #{cobroBean.criterioBusquedaCliente.nombre}"
+							styleClass="w445px" />
+						<p:commandButton update=":formBusquedaCliente, :formNuevoCliente"
+							oncomplete="PF('buscarCliente').show()"
+							action="#{cobroBean.limpiarObjetosBusquedaCliente}"
+							icon="#{msg['iconoBuscar']}" />
+					</h:panelGrid>
+					<p:outputLabel value="DIRECCIÓN:" styleClass="negrita" />
+					<p:inputText styleClass="w445px" readonly="true"
+						value="#{cobroBean.criterioBusquedaCliente.direccion} - #{cobroBean.criterioBusquedaCliente.referencia}" />
+					<h:outputText value="FECHA INICIO:" styleClass="negrita" />
+					<p:calendar value="#{cobroBean.criterioBusquedafechaInicio}"
+						styleClass="fechaFinCobro" />
+					<h:outputText value="FECHA FIN:" styleClass="negrita" />
+					<p:calendar value="#{cobroBean.criterioBusquedafechaFin}"
+						styleClass="fechaFinCobro" />
+					<h:outputText value="# DOCUMENTO" styleClass="negrita" />
+					<h:panelGrid columns="2">
+						<p:inputText value="#{cobroBean.criterioBusquedaDocumento}"
+							styleClass="w445px"
+							onkeypress="if (event.keyCode == 13) { document.getElementById('formCliente:btnBuscarCobro').click(); return false; }"
+							onblur="this.value=this.value.toUpperCase();" />
+						<p:commandButton id="btnBuscarCobro"
+							update="formCliente, :formDataTable:tablaEgresos, :mensaje"
+							icon="#{msg['iconoBuscar']}"
+							actionListener="#{cobroBean.obtenerFacturasPendientes}" />
+					</h:panelGrid>
+				</h:panelGrid>
+			</h:form>
+		</p:panel>
+		<p:dialog header="BUSCAR CLIENTE" widgetVar="buscarCliente"
+			resizable="false" modal="false" showEffect="clip" hideEffect="fold"
+			id="dialogoCliente" width="50%">
+			<h:form id="formBusquedaCliente">
+				<p:outputLabel value="CEDULA/RUC/NOMBRE/APELLIDO:"
+					styleClass="negrita" />
+				<p:inputText id="comboCedula"
+					value="#{cobroBean.criterioClienteBusqueda}"
+					onblur="this.value=this.value.toUpperCase();" />
+				<p:commandButton
+					update="comboCedula, :formNuevoCliente:tablaClientes, :mensaje"
+					icon="#{msg['iconoBuscar']}"
+					actionListener="#{cobroBean.obtenerClientesPorBusqueda}" />
+			</h:form>
+			<h:form id="formNuevoCliente">
+				<p:dataTable id="tablaClientes" var="cliente"
+					value="#{cobroBean.listaClienteBusqueda}" paginator="true"
+					rows="10" emptyMessage="#{msg['lbl.mensajeTabla']}"
+					paginatorPosition="bottom" rowKey="#{cliente.id}"
+					selection="#{cobroBean.criterioBusquedaCliente}"
+					selectionMode="single">
+					<p:ajax event="rowSelect" update=":formCliente"
+						listener="#{cobroBean.cargarCliente}"
+						oncomplete="PF('buscarCliente').hide()" />
+					<p:column headerText="CEDULA" styleClass="centrar">
+							 	#{cliente.cedula}
+						</p:column>
+					<p:column headerText="APELLIDO" styleClass="centrar">
+							 	#{cliente.apellido}
+						</p:column>
+					<p:column headerText="NOMBRE" styleClass="centrar">
+							 	#{cliente.nombre}
+						</p:column>
+				</p:dataTable>
+			</h:form>
+		</p:dialog>
+		<h:form id="formDataTable">
+			<p:dataTable id="tablaEgresos" var="factura" rows="10"
+				paginator="true" paginatorPosition="bottom"
+				emptyMessage="#{msg['lbl.mensajeTabla']}"
+				value="#{cobroBean.listaFacturas}" selectionMode="multiple"
+				selection="#{cobroBean.listaFacturasSeleccionados}"
+				rowKey="#{factura.id}">
+				<p:ajax event="rowSelect" listener="#{cobroBean.onRowSelect}"
+					update=":formDataTable:tablaEgresos, :mensaje" />
+				<p:ajax event="rowUnselect" listener="#{cobroBean.onRowUnselect}"
+					update=":formDataTable:tablaEgresos" />
+				<p:column headerText="■" styleClass="centrar">
+					<p:selectBooleanCheckbox disabled="true"
+						value="#{factura.escogido}" />
+				</p:column>
+				<p:column headerText="ORDEN" styleClass="centrar">
+				 	#{factura.orden eq 0 ? "" : factura.orden}
+				</p:column>
+				<p:column headerText="# FACTURA" styleClass="centrar">
+				 	#{factura.codigoDocumento}
+				</p:column>
+				<p:column headerText="FECHA EMISION" styleClass="centrar">
+					<p:outputLabel value="#{factura.fechaEmision}">
+						<f:convertDateTime pattern="dd/MM/yyyy"
+							timeZone="America/Guayaquil" />
+					</p:outputLabel>
+				</p:column>
+				<p:column headerText="CLIENTE" styleClass="centrar">
+				 	#{factura.nombre}
+				</p:column>
+				<p:column headerText="TOTAL" styleClass="centrar">
+					#{factura.total}
+				</p:column>
+				<p:column headerText="ABONOS" styleClass="centrar">
+					#{factura.abono}
+				</p:column>
+				<p:column headerText="SALDO" styleClass="centrar">
+					#{factura.saldo}
+				</p:column>
+				<p:columnGroup type="footer">
+					<p:row>
+						<p:column colspan="5" footerText="TOTALES: "
+							styleClass="centrarDerecha" />
+						<p:column footerText="$ #{cobroBean.totalTotal}" />
+						<p:column footerText="$ #{cobroBean.totalAbonos}" />
+						<p:column footerText="$ #{cobroBean.totalSaldo}" />
+					</p:row>
+				</p:columnGroup>
+				<f:facet name="footer">
+					<p:commandButton process="tablaEgresos" value="ABONAR"
+						oncomplete="comprobarFacturasSeleccionadosAbono(xhr, status, args)"
+						update=":formTablaPagosCredito, :formPagarCredito, :mensaje" />
+					<p:tooltip for="btnPagarTodo" value="PAGO RAPIDO" />
+					<p:commandButton id="btnPagarTodo" update=":mensaje"
+						value="PAGO RAPIDO"
+						actionListener="#{cobroBean.comprobarFacturasSeleccionados}"
+						oncomplete="comprobarFacturasSeleccionadosLote(xhr, status, args)">
+					</p:commandButton>
+				</f:facet>
+			</p:dataTable>
+		</h:form>
+		<p:dialog header="COBRO DEUDAS" widgetVar="dialogoPagarCredito"
+			resizable="false" modal="false" showEffect="clip" hideEffect="fold"
+			id="dialogoPagarCredito" width="50%">
+			<h:form id="formPagarCredito">
+				<p:focus context="formPagarCredito" />
+				<h:panelGrid columns="2" cellpadding="5">
+					<p:outputLabel value="TIPO DE PAGO" />
+					<p:selectOneMenu styleClass="comboCedula"
+						value="#{cobroBean.pagoEntrada.tipoPago}" filter="true"
+						filterMatchMode="contains">
+						<f:selectItem itemLabel="ESCOJA UN TIPO DE PAGO" />
+						<f:selectItems value="#{cobroBean.listaTiposPago}" var="tipoPago"
+							itemValue="#{tipoPago}" itemLabel="#{tipoPago.nombre}" />
+						<p:ajax event="change" update="formPagarCredito"
+							listener="#{cobroBean.tipoPago}" />
+					</p:selectOneMenu>
+					<p:outputLabel value="MONTO" />
+					<p:inputText value="#{cobroBean.pagoEntrada.cuota}" />
+					<p:outputLabel value="FECHA PAGO" />
+					<p:calendar value="#{cobroBean.fechapago}" navigator="true" />
+					<p:outputLabel value="BANCO" rendered="#{cobroBean.bnBanco}" />
+					<p:selectOneMenu styleClass="comboCedula"
+						rendered="#{cobroBean.bnBanco}"
+						value="#{cobroBean.pagoEntrada.banco}" filter="true"
+						filterMatchMode="contains">
+						<f:selectItem itemLabel="ESCOJA UN BANCO" itemValue="" />
+						<f:selectItems value="#{bancoBean.listaBancos}" var="banco"
+							itemValue="#{banco.nombre}" itemLabel="#{banco.nombre}" />
+					</p:selectOneMenu>
+					<p:outputLabel value="FECHA GIRO" rendered="#{cobroBean.bnBanco}" />
+					<p:calendar value="#{cobroBean.pagoEntrada.fechaGiro}"
+						navigator="true" rendered="#{cobroBean.bnBanco}" required="true"
+						requiredMessage="ESCOJA UNA FECHA GIRO" />
+					<p:outputLabel value="FECHA DE COBRO"
+						rendered="#{cobroBean.bnBanco}" />
+					<p:calendar value="#{cobroBean.pagoEntrada.fechaCheque}"
+						navigator="true" rendered="#{cobroBean.bnBanco}" required="true"
+						requiredMessage="ESCOJA UNA FECHA COBRO" />
+					<p:outputLabel value="#{cobroBean.chequeTarjetaVaucher}"
+						rendered="#{cobroBean.bnTarjeta}" />
+					<p:inputText value="#{cobroBean.pagoEntrada.chequeVaucher}"
+						rendered="#{cobroBean.bnTarjeta}" required="true"
+						requiredMessage="INGRESE NUMERO CHEQUE/VAUCHER" />
+					<p:outputLabel value="#{cobroBean.chequeTarjetaCuenta}"
+						rendered="#{cobroBean.bnTarjeta}" />
+					<p:inputText value="#{cobroBean.pagoEntrada.cuentaTarjeta}"
+						rendered="#{cobroBean.bnTarjeta}" required="true"
+						requiredMessage="INGRESE NUMERO CUENTA/TARJETA" />
+					<p:commandButton value="AGREGAR PAGO"
+						actionListener="#{cobroBean.insertarPagoEntrada}"
+						update="formPagarCredito, :formTablaPagosCredito :mensaje" />
+				</h:panelGrid>
+			</h:form>
+			<h:form id="formTablaPagosCredito">
+				<p:dataTable id="tablaPagosCredito" var="pagoEntrada"
+					value="#{cobroBean.listaPagoEntrada}">
+					<p:column headerText="GESTIONAR" styleClass="centrar">
+						<p:commandButton id="btnMostrar" icon="ui-icon-trash"
+							action="#{cobroBean.eliminarPagoEntrada}"
+							update="tablaPagosCredito">
+							<f:setPropertyActionListener value="#{pagoEntrada}"
+								target="#{cobroBean.pagoEntrada}" />
+						</p:commandButton>
+					</p:column>
+					<p:column headerText="FECHA DE PAGO">
+						<p:outputLabel value="#{pagoEntrada.fechaPago}">
+							<f:convertDateTime pattern="dd/MM/yyyy"
+								timeZone="America/Guayaquil" />
+						</p:outputLabel>
+					</p:column>
+					<p:column headerText="TIPO DE PAGO">
+							#{pagoEntrada.tipoPago.nombre}		
+						</p:column>
+					<p:column headerText="CUOTA">
+							#{pagoEntrada.cuota}		
+						</p:column>
+					<p:columnGroup type="footer">
+						<p:row>
+							<p:column colspan="3" footerText="TOTAL: "
+								styleClass="centrarDerecha" />
+							<p:column footerText="$ #{cobroBean.totalCuota}" />
+						</p:row>
+					</p:columnGroup>
+				</p:dataTable>
+			</h:form>
+			<br />
+			<p:commandButton value="GUARDAR" icon="ui-icon-disk"
+				update=":formCliente, :formDataTable:tablaEgresos, :mensaje"
+				actionListener="#{cobroBean.insertarCobro}"
+				oncomplete="comprobarDialogoPago(xhr, status, args)" />
+			<p:commandButton value="CANCELAR" icon="ui-icon-close"
+				update="formPagarCredito"
+				oncomplete="PF('dialogoPagarCredito').hide()" process="@this"
+				actionListener="#{cobroBean.limpiar}" />
+		</p:dialog>
+		<p:dialog header="PAGO TOTAL EN EFECTIVO"
+			widgetVar="dialogoClientePagoTotal" resizable="false" modal="false"
+			showEffect="clip" hideEffect="fold" width="340px">
+			<h:form id="formPagoRapido">
+				<h:panelGrid rowClasses="1,fila" columns="1" width="100%">
+					<p:outputLabel styleClass="negrita m-b10px"
+						value="¿DESEA PAGAR TODAS LAS FACTURAS EN EFECTIVO?" />
+					<p:calendar styleClass="calendarioCobro" navigator="true"
+						value="#{cobroBean.fechaPagoRapido}" showOn="button" />
+					<f:facet name="footer">
+						<p:commandButton value="PAGAR"
+							update=":formDataTable:tablaEgresos"
+							oncomplete="PF('dialogoClientePagoTotal').hide()"
+							actionListener="#{cobroBean.pagoLote}" icon="ui-icon-disk" />
+						<p:commandButton value="CANCELAR"
+							oncomplete="PF('dialogoClientePagoTotal').hide()"
+							icon="ui-icon-close" />
+					</f:facet>
+				</h:panelGrid>
+			</h:form>
+		</p:dialog>
+		<script type="text/javascript">
+			//<![CDATA[
+			function comprobarDialogoPago(xhr, status, args) {
+				if (!args.error) {
+					PF('dialogoPagarCredito').hide()
+				}
+			}
+			function comprobarFacturasSeleccionadosAbono(xhr, status, args) {
+				if (!args.error1) {
+					PF('dialogoPagarCredito').show()
+				}
+			}
+			function comprobarFacturasSeleccionadosLote(xhr, status, args) {
+				if (!args.error1) {
+					PF('dialogoClientePagoTotal').show()
+				}
+			}
+			//]]>
+		</script>
+	</ui:define>
+</ui:composition>
+</html>

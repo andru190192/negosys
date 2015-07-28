@@ -1,0 +1,346 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Created with Jaspersoft Studio version last-->
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="DATOS" pageWidth="1984" pageHeight="25511" orientation="Landscape" columnWidth="1984" leftMargin="0" rightMargin="0" topMargin="0" bottomMargin="0" uuid="162f49b4-7ed4-4226-8bf6-365c56ea66f3">
+	<property name="ireport.zoom" value="4.0"/>
+	<property name="ireport.x" value="3167"/>
+	<property name="ireport.y" value="0"/>
+	<style name="Title" forecolor="#FFFFFF" fontName="Arial" fontSize="26" isBold="true" pdfFontName="Helvetica-Bold"/>
+	<style name="SubTitle" forecolor="#666666" fontName="Arial" fontSize="18"/>
+	<style name="Column header" forecolor="#666666" fontName="Arial" fontSize="12" isBold="true"/>
+	<style name="Detail" fontName="Arial" fontSize="12"/>
+	<queryString language="SQL">
+		<![CDATA[]]>
+	</queryString>
+	<field name="COD_TIPO_ID" class="java.lang.String">
+		<fieldDescription><![CDATA[COD_TIPO_ID]]></fieldDescription>
+	</field>
+	<field name="COD_ID_SUJETO" class="java.lang.String">
+		<fieldDescription><![CDATA[COD_ID_SUJETO]]></fieldDescription>
+	</field>
+	<field name="NOM_SUJETO" class="java.lang.String">
+		<fieldDescription><![CDATA[NOM_SUJETO]]></fieldDescription>
+	</field>
+	<field name="DIRECCION" class="java.lang.String">
+		<fieldDescription><![CDATA[DIRECCION]]></fieldDescription>
+	</field>
+	<field name="CIUDAD" class="java.lang.String">
+		<fieldDescription><![CDATA[CIUDAD]]></fieldDescription>
+	</field>
+	<field name="TELEFONO" class="java.lang.String">
+		<fieldDescription><![CDATA[TELEFONO]]></fieldDescription>
+	</field>
+	<field name="ACREEDOR" class="java.lang.String">
+		<fieldDescription><![CDATA[ACREEDOR]]></fieldDescription>
+	</field>
+	<field name="FEC_CORTE_SALDO" class="java.lang.String">
+		<fieldDescription><![CDATA[FEC_CORTE_SALDO]]></fieldDescription>
+	</field>
+	<field name="TIPO_DEUDOR" class="java.lang.String">
+		<fieldDescription><![CDATA[TIPO_DEUDOR]]></fieldDescription>
+	</field>
+	<field name="NUM_OPERACION" class="java.lang.String">
+		<fieldDescription><![CDATA[NUM_OPERACION]]></fieldDescription>
+	</field>
+	<field name="FEC_CONCESION" class="java.lang.String">
+		<fieldDescription><![CDATA[FEC_CONCESION]]></fieldDescription>
+	</field>
+	<field name="VAL_OPERACION" class="java.lang.String">
+		<fieldDescription><![CDATA[VAL_OPERACION]]></fieldDescription>
+	</field>
+	<field name="VAL_TOTAL" class="java.lang.String">
+		<fieldDescription><![CDATA[VAL_TOTAL]]></fieldDescription>
+	</field>
+	<field name="VAL_XVENCER" class="java.lang.String">
+		<fieldDescription><![CDATA[VAL_XVENCER]]></fieldDescription>
+	</field>
+	<field name="VAL_VENCIDO" class="java.lang.String">
+		<fieldDescription><![CDATA[VAL_VENCIDO]]></fieldDescription>
+	</field>
+	<field name="VAL_DEM_JUDICIAL" class="java.lang.String">
+		<fieldDescription><![CDATA[VAL_DEM_JUDICIAL]]></fieldDescription>
+	</field>
+	<field name="VAL_CART_CASTIGADA" class="java.lang.String">
+		<fieldDescription><![CDATA[VAL_CART_CASTIGADA]]></fieldDescription>
+	</field>
+	<field name="NUM_DIAS_VENCIDO" class="java.lang.Integer">
+		<fieldDescription><![CDATA[NUM_DIAS_VENCIDO]]></fieldDescription>
+	</field>
+	<background>
+		<band splitType="Stretch"/>
+	</background>
+	<title>
+		<band height="20" splitType="Stretch">
+			<staticText>
+				<reportElement x="0" y="0" width="100" height="20" uuid="86e7e26d-7c35-4f9f-8f7d-2b66b5aaf8f2"/>
+				<textElement>
+					<font size="3"/>
+				</textElement>
+				<text><![CDATA[COD_TIPO_ID]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="100" y="0" width="100" height="20" uuid="0548c9db-599a-4398-9870-f903b37e5c2b"/>
+				<textElement>
+					<font size="3"/>
+				</textElement>
+				<text><![CDATA[COD_ID_SUJETO]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="200" y="0" width="100" height="20" uuid="bf2e01ce-c61a-4141-97a8-7cd2b36b6c0f"/>
+				<textElement>
+					<font size="3"/>
+				</textElement>
+				<text><![CDATA[NOM_SUJETO]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="300" y="0" width="100" height="20" uuid="f5901613-a752-414e-8045-a610a91ebcd7"/>
+				<textElement>
+					<font size="3"/>
+				</textElement>
+				<text><![CDATA[DIRECCION]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="400" y="0" width="100" height="20" uuid="f762f9b2-a5c8-4b8c-a363-a40f9aa5e1fd"/>
+				<textElement>
+					<font size="3"/>
+				</textElement>
+				<text><![CDATA[CIUDAD]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="500" y="0" width="100" height="20" uuid="a670d265-a3e7-4fc6-875c-94731d9455a7"/>
+				<textElement>
+					<font size="3"/>
+				</textElement>
+				<text><![CDATA[TELEFONO]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="600" y="0" width="100" height="20" uuid="77db4917-8e23-4355-82c5-970db0f3e9b3"/>
+				<textElement>
+					<font size="3"/>
+				</textElement>
+				<text><![CDATA[ACREEDOR]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="700" y="0" width="100" height="20" uuid="f7bc9658-c9ed-4b4b-afaa-2446370c5a1c"/>
+				<textElement>
+					<font size="3"/>
+				</textElement>
+				<text><![CDATA[FEC_CORTE_SALDO]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="800" y="0" width="100" height="20" uuid="ee9c3414-0d56-45a3-a6ab-3c58962ece15"/>
+				<textElement>
+					<font size="3"/>
+				</textElement>
+				<text><![CDATA[TIPO_DEUDOR]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="900" y="0" width="100" height="20" uuid="911acc72-738d-47d3-ab2f-5417a73ddcad"/>
+				<textElement>
+					<font size="3"/>
+				</textElement>
+				<text><![CDATA[NUM_OPERACION]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="1000" y="0" width="100" height="20" uuid="d7f6a6a5-4cc9-434b-a447-e66d3da650c0"/>
+				<textElement>
+					<font size="3"/>
+				</textElement>
+				<text><![CDATA[FEC_CONCESION]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="1100" y="0" width="100" height="20" uuid="54e34d1f-7873-4874-afe8-8740fb0eac38"/>
+				<textElement>
+					<font size="3"/>
+				</textElement>
+				<text><![CDATA[VAL_OPERACION]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="1200" y="0" width="100" height="20" uuid="9926a916-2141-49a7-ad34-c7570d18c4f2"/>
+				<textElement>
+					<font size="3"/>
+				</textElement>
+				<text><![CDATA[VAL_TOTAL]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="1300" y="0" width="100" height="20" uuid="ec550b69-8b0d-4511-a4c2-1bfcbdb2dd1d"/>
+				<textElement>
+					<font size="3"/>
+				</textElement>
+				<text><![CDATA[VAL_XVENCER]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="1400" y="0" width="100" height="20" uuid="fb85681b-37ad-46be-8ef1-aa16e187f917"/>
+				<textElement>
+					<font size="3"/>
+				</textElement>
+				<text><![CDATA[VAL_VENCIDO]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="1500" y="0" width="100" height="20" uuid="85996855-4d9a-4724-ba33-e4476638a411"/>
+				<textElement>
+					<font size="3"/>
+				</textElement>
+				<text><![CDATA[VAL_DEM_JUDICIAL]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="1600" y="0" width="100" height="20" uuid="9ca3559c-3677-4d3d-b30d-baa551fc9b96"/>
+				<textElement>
+					<font size="3"/>
+				</textElement>
+				<text><![CDATA[VAL_CART_CASTIGADA]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="1700" y="0" width="100" height="20" uuid="0242ded1-d67d-4950-9b7a-f3ad76ef8f57"/>
+				<textElement>
+					<font size="3"/>
+				</textElement>
+				<text><![CDATA[NUM_DIAS_VENCIDO]]></text>
+			</staticText>
+		</band>
+	</title>
+	<pageHeader>
+		<band splitType="Stretch"/>
+	</pageHeader>
+	<columnHeader>
+		<band splitType="Stretch"/>
+	</columnHeader>
+	<detail>
+		<band height="20" splitType="Stretch">
+			<textField>
+				<reportElement x="0" y="0" width="100" height="20" uuid="c4233d51-8033-420f-b56c-3a85d7083023"/>
+				<textElement>
+					<font size="3"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{COD_TIPO_ID}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="100" y="0" width="100" height="20" uuid="f9149497-a09a-4fdb-a1f8-7ac45a64b2c5"/>
+				<textElement>
+					<font size="3"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{COD_ID_SUJETO}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="200" y="0" width="100" height="20" uuid="841c2f43-9d2f-4451-af35-0ea5181201f3"/>
+				<textElement>
+					<font size="3"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{NOM_SUJETO}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="300" y="0" width="100" height="20" uuid="0d8910f8-9578-421a-a111-eefa5acc6690"/>
+				<textElement>
+					<font size="3"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{DIRECCION}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="400" y="0" width="100" height="20" uuid="13300089-ff76-41d9-83b9-67b51b5e61db"/>
+				<textElement>
+					<font size="3"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{CIUDAD}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="500" y="0" width="100" height="20" uuid="5d54d459-8fd4-46cd-90c1-3f295366a1e9"/>
+				<textElement>
+					<font size="3"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{TELEFONO}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="600" y="0" width="100" height="20" uuid="eb84a269-0886-4df1-833f-5c8bcea3cc9e"/>
+				<textElement>
+					<font size="3"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{ACREEDOR}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="700" y="0" width="100" height="20" uuid="c8f999c1-587b-4983-ba17-1697e3e68806"/>
+				<textElement>
+					<font size="3"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{FEC_CORTE_SALDO}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="800" y="0" width="100" height="20" uuid="8a7e243d-9916-4720-881a-b5f50e2abf86"/>
+				<textElement>
+					<font size="3"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{TIPO_DEUDOR}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="900" y="0" width="100" height="20" uuid="8558af63-fd69-491a-9da9-f472acc0f627"/>
+				<textElement>
+					<font size="3"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{NUM_OPERACION}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="1000" y="0" width="100" height="20" uuid="6d4e0d6b-30a8-4abc-8e8f-79c0799ed218"/>
+				<textElement>
+					<font size="3"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{FEC_CONCESION}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="1100" y="0" width="100" height="20" uuid="51a1f314-367c-4fa1-9e79-06f6cf6a9be5"/>
+				<textElement>
+					<font size="3"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{VAL_OPERACION}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="1200" y="0" width="100" height="20" uuid="e5ad7b27-1ecd-4b03-a919-54f6f97d457b"/>
+				<textElement>
+					<font size="3"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{VAL_TOTAL}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="1300" y="0" width="100" height="20" uuid="b61988a2-d101-45f1-b829-48e093ee8495"/>
+				<textElement>
+					<font size="3"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{VAL_XVENCER}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="1400" y="0" width="100" height="20" uuid="4537aa50-936d-4cf6-96f8-95232677916a"/>
+				<textElement>
+					<font size="3"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{VAL_VENCIDO}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="1500" y="0" width="100" height="20" uuid="fbe05434-a7cc-40b4-97b3-2bac280ab8b9"/>
+				<textElement>
+					<font size="3"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{VAL_DEM_JUDICIAL}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="1600" y="0" width="100" height="20" uuid="ee8610df-ea70-42a3-9153-a0140d492b9c"/>
+				<textElement>
+					<font size="3"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{VAL_CART_CASTIGADA}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="1700" y="0" width="100" height="20" uuid="5c3c4d96-0bc3-4490-ae27-0d9af5289082"/>
+				<textElement>
+					<font size="3"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{NUM_DIAS_VENCIDO}]]></textFieldExpression>
+			</textField>
+		</band>
+	</detail>
+	<columnFooter>
+		<band splitType="Stretch"/>
+	</columnFooter>
+	<pageFooter>
+		<band splitType="Stretch"/>
+	</pageFooter>
+	<summary>
+		<band splitType="Stretch"/>
+	</summary>
+</jasperReport>

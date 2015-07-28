@@ -1,0 +1,195 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:p="http://primefaces.org/ui">
+<ui:composition template="/templates/layout/masterLayout.xhtml">
+	<ui:define name="title">
+			LISTADO DE PEDIDOS
+		</ui:define>
+	<ui:define name="content">
+		<p:growl id="mensaje" showDetail="true" life="7000" />
+		<p:panel id="panel" header="LISTADO DE PEDIDOS">
+			<h:form id="busquedaTabla">
+				<h:panelGrid columns="3">
+					<h:outputText value="CÉDULA / APELLIDOS / NOMBRES " />
+					<p:inputText value="#{listadoPedidoBean.criterioBusquedaCliente}"
+						onblur="this.value=this.value.toUpperCase();" />
+					<h:outputText />
+					<h:outputText value="# PEDIDO Ó # COD. " />
+					<p:inputText value="#{listadoPedidoBean.criterioBusquedaCodigo}"
+						onblur="this.value=this.value.toUpperCase();" />
+					<h:outputText />
+					<h:outputText value="EAN / CODIGO1 / CODIGO2 / NOMBRE " />
+					<p:inputText value="#{listadoPedidoBean.criterioBusquedaDetalle}"
+						onblur="this.value=this.value.toUpperCase();" />
+					<h:outputText />
+					<p:outputLabel value="FECHA INGRESO" />
+					<p:calendar
+						value="#{listadoPedidoBean.criterioBusquedaFechaDocumento}"
+						navigator="true" />
+					<p:commandButton update="busquedaTabla, :formDataTable, :mensaje"
+						icon="#{msg['iconoBuscar']}"
+						actionListener="#{listadoPedidoBean.obtener}" />
+				</h:panelGrid>
+			</h:form>
+			<h:form id="formDataTable">
+				<p:dataTable id="tablaListadoEgresos" var="pedido"
+					value="#{listadoPedidoBean.listaPedidos}" paginator="true"
+					rows="10" rowsPerPageTemplate="5,10,15"
+					paginatorTemplate="{RowsPerPageDropdown} {FirstPageLink} {PreviousPageLink} {CurrentPageReport} {NextPageLink} {LastPageLink}"
+					paginatorPosition="bottom"
+					emptyMessage="#{msg['lbl.mensajeTabla']}">
+					<f:facet name="header">
+						<p:tooltip for="btnNuevo" value="#{msg['lbl.insertar']}" />
+						<p:commandButton id="btnNuevo"
+							action="#{listadoPedidoBean.redirecionar}" icon="ui-icon-plus" />
+					</f:facet>
+					<p:column headerText="GESTIONAR" styleClass="centrar" width="10%">
+						<p:tooltip value="MOSTRAR" for="btnMostrar" />
+						<p:commandButton id="btnMostrar" update=":formMostrar"
+							oncomplete="PF('pedidoDialogoMostrar').show()"
+							icon="ui-icon-newwin"
+							action="#{listadoPedidoBean.generarListaDetalle}">
+							<f:setPropertyActionListener value="#{pedido}"
+								target="#{listadoPedidoBean.pedido}" />
+						</p:commandButton>
+						<p:tooltip value="CONVERTIR" for="btnConvertir" />
+						<p:commandButton id="btnConvertir"
+							action="#{listadoPedidoBean.convertirFactura}"
+							icon="ui-icon-extlink">
+							<f:setPropertyActionListener value="#{pedido}"
+								target="#{listadoPedidoBean.pedido}" />
+						</p:commandButton>
+					</p:column>
+					<p:column headerText="# COD." width="5%" styleClass="centrar">  
+            			#{pedido.id}  
+        			</p:column>
+					<p:column headerText="# PEDIDO " styleClass="centrar" width="15%">  
+            			#{pedido.establecimiento}-#{pedido.puntoEmision}-#{pedido.secuencia}
+        			</p:column>
+					<p:column headerText="CÉDULA" styleClass="centrar" width="15%">  
+            			#{pedido.cliente.persona.cedula}
+        			</p:column>
+					<p:column headerText="CLIENTE" styleClass="centrar">  
+            			#{pedido.cliente.persona.apellido} #{pedido.cliente.persona.nombre}
+        			</p:column>
+					<p:column headerText="FECHA" styleClass="centrar" width="15%">
+						<p:outputLabel value="#{pedido.fecha}">
+							<f:convertDateTime pattern="dd/MM/yyyy"
+								timeZone="America/Guayaquil" />
+						</p:outputLabel>
+					</p:column>
+				</p:dataTable>
+			</h:form>
+		</p:panel>
+		<p:dialog header="MOSTRAR PEDIDO" widgetVar="pedidoDialogoMostrar"
+			resizable="false" modal="false" showEffect="clip" hideEffect="fold"
+			id="dialogoMostrar" width="50%">
+			<h:form id="formMostrar">
+				<h:panelGrid id="panelMostrar" columns="3" width="100%"
+					columnClasses="x,b">
+					<h:panelGrid columns="2">
+						<h:outputText value="# PEDIDO" styleClass="colorLetraAzul negrita" />
+						<h:outputText
+							value="#{listadoPedidoBean.pedido.establecimiento}-#{listadoPedidoBean.pedido.puntoEmision}-#{listadoPedidoBean.pedido.secuencia}" />
+						<h:outputText value="FECHA" styleClass="colorLetraAzul negrita" />
+						<h:outputText value="#{listadoPedidoBean.pedido.fecha}">
+							<f:convertDateTime pattern="dd/MM/yyyy"
+								timeZone="America/Guayaquil" />
+						</h:outputText>
+						<h:outputText value="CLIENTE" styleClass="colorLetraAzul negrita" />
+						<h:outputText
+							value="#{listadoPedidoBean.pedido.cliente.persona.cedula} - #{listadoPedidoBean.pedido.cliente.persona.apellido} #{listadoPedidoBean.pedido.cliente.persona.nombre}" />
+					</h:panelGrid>
+					<h:panelGrid columns="2">
+						<h:panelGrid columns="2" cellpadding="0" styleClass="m-r10px">
+							<h:outputText styleClass="negrita letrasAzules"
+								value="SUBTOTAL SIN IMPUESTO (1=2+3+4+5):" />
+							<p:outputLabel
+								value="#{listadoPedidoBean.cantidadFactura.stSinImpuesto}" />
+							<h:outputText styleClass="negrita letrasAzules"
+								value="SUBTOTAL 12% (2):" />
+							<p:outputLabel value="#{listadoPedidoBean.cantidadFactura.st12}" />
+							<h:outputText styleClass="negrita letrasAzules"
+								value="SUBTOTAL 0% (3):" />
+							<p:outputLabel value="#{listadoPedidoBean.cantidadFactura.st0}" />
+							<h:outputText styleClass="negrita letrasAzules"
+								value="SUBTOTAL NO OBJETO DE IVA (4):" />
+							<p:outputLabel
+								value="#{listadoPedidoBean.cantidadFactura.stNoObjetoIva}" />
+							<h:outputText styleClass="negrita letrasAzules"
+								value="SUBTOTAL EXENTO DE IVA (5):" />
+							<p:outputLabel
+								value="#{listadoPedidoBean.cantidadFactura.stExentoIva}" />
+						</h:panelGrid>
+						<h:panelGrid columns="2" cellpadding="0">
+							<h:outputText styleClass="negrita letrasAzules"
+								value="TOTAL DESCUENTO (6):" />
+							<p:outputLabel
+								value="#{listadoPedidoBean.cantidadFactura.tDescuentoProducto}" />
+							<h:outputText styleClass="negrita letrasAzules"
+								value="VALOR ICE (7):" />
+							<p:outputLabel
+								value="#{listadoPedidoBean.cantidadFactura.valorIce}" />
+							<h:outputText styleClass="negrita letrasAzules"
+								value="VALOR IRBPNR(8):" />
+							<p:outputLabel
+								value="#{listadoPedidoBean.cantidadFactura.valorIRBPNR}" />
+							<h:outputText styleClass="negrita letrasAzules"
+								value="IVA 12% (9=(2+7)*12%):" />
+							<p:outputLabel value="#{listadoPedidoBean.cantidadFactura.iva12}" />
+							<h:outputText styleClass="negrita letrasAzules"
+								value="PROPINA (10):" />
+							<p:outputLabel
+								value="#{listadoPedidoBean.cantidadFactura.propina}" />
+						</h:panelGrid>
+					</h:panelGrid>
+				</h:panelGrid>
+				<p:dataTable id="tablaDetalleEgresos" var="detalleEgreso"
+					value="#{listadoPedidoBean.listaPedidosDetalle}" paginator="true"
+					rows="8" emptyMessage="No hay informacion disponible."
+					paginatorPosition="bottom">
+					<p:column headerText="IMPUESTO" styleClass="centrar" width="75">
+						<h:outputLabel id="impuesto" value="#{detallecotizacion.impuesto}" />
+					</p:column>
+					<p:column headerText="CÓDIGO" styleClass="centrar" width="15%">
+							 	#{detalleEgreso.codigo}
+						</p:column>
+					<p:column headerText="DESCRIPCION"
+						styleClass="centrar"
+						width="200">
+						#{detalleEgreso.descripcion}
+					</p:column>
+					<p:column headerText="CANTIDAD" styleClass="centrar">  
+            				#{detalleEgreso.cantidad}  
+        				</p:column>
+					<p:column headerText="P. UNIT." styleClass="centrar">  
+            				#{detalleEgreso.precioUnitVenta}
+        				</p:column>
+					<p:column headerText="DESC $" styleClass="centrar">  
+            				#{detalleEgreso.descuentoDolares}  
+        				</p:column>
+					<p:column headerText="DESC %" styleClass="centrar">  
+            				#{detalleEgreso.descuentoPorcentaje}  
+        				</p:column>
+					<p:column headerText="IMPORTE" styleClass="centrar">  
+            				#{detalleEgreso.importe}  
+        				</p:column>
+					<p:columnGroup type="footer">
+						<p:row>
+							<p:column colspan="7" styleClass="centrarDerecha f-z15px negrita"
+								footerText="TOTAL" />
+							<p:column
+								footerText="#{listadoPedidoBean.cantidadFactura.valorTotal}"
+								styleClass="f-z15px negrita" />
+						</p:row>
+					</p:columnGroup>
+				</p:dataTable>
+			</h:form>
+		</p:dialog>
+	</ui:define>
+</ui:composition>
+</html>

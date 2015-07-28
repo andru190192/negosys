@@ -1,0 +1,195 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:p="http://primefaces.org/ui">
+<ui:composition template="/templates/layout/masterLayout.xhtml">
+	<ui:define name="title">CREDITO</ui:define>
+	<ui:define name="content">
+		<p:growl id="mensaje" showDetail="true" life="7000" />
+		<p:panel id="panel" header="CREDITO">
+			<p:commandButton id="btnBuscarFactura" value="BUSCAR FACTURA"
+				oncomplete="PF('buscarFactura').show()" icon="#{msg['iconoBuscar']}"
+				update=":busquedaTabla"
+				actionListener="#{creditoBean.limpiarObjetosBusqueda}" />
+			<p:dialog header="BUSCAR FACTURA" widgetVar="buscarFactura"
+				resizable="false" modal="false" showEffect="clip" hideEffect="fold"
+				id="dialogoFactura" width="65%">
+				<h:form id="busquedaTabla">
+					<h:panelGrid columns="3">
+						<h:outputText value="CÉDULA / APELLIDOS / NOMBRES " />
+						<p:inputText value="#{creditoBean.criterioBusquedaCliente}"
+							onblur="this.value=this.value.toUpperCase();" />
+						<h:outputText />
+						<h:outputText value="# FACTURA Ó # INTERNO " />
+						<p:inputText value="#{creditoBean.criterioBusquedaCodigo}" />
+						<p:commandButton update="busquedaTabla, :mensaje"
+							icon="#{msg['iconoBuscar']}"
+							actionListener="#{creditoBean.obtener}" />
+					</h:panelGrid>
+					<p:dataTable id="tablaListadoEgresos" var="factura"
+						value="#{creditoBean.listaFacturas}" paginator="true" rows="10"
+						paginatorPosition="bottom"
+						emptyMessage="#{msg['lbl.mensajeTabla']}" rowKey="#{factura.id}"
+						selection="#{creditoBean.factura}" selectionMode="single">
+						<p:ajax event="rowSelect"
+							update=":formCalcularCuotas, :datosFactura, :formGarantes, :formGuardar"
+							listener="#{creditoBean.cargarFactura}"
+							oncomplete="PF('buscarFactura').hide()" />
+						<p:column headerText="CÉDULA" styleClass="centrar">  
+            			#{factura.cliente.persona.cedula}
+        			</p:column>
+						<p:column headerText="CLIENTE" styleClass="centrar">   
+            			#{factura.cliente.persona.apellido} #{factura.cliente.persona.nombre}
+        			</p:column>
+						<p:column headerText="# FACTURA" styleClass="centrar">    
+            			#{factura.establecimiento}-#{factura.puntoEmision}-#{factura.secuencia}  
+        			</p:column>
+						<p:column headerText="FECHA" styleClass="centrar">
+							<p:outputLabel value="#{factura.fechaInicio}">
+								<f:convertDateTime pattern="dd/MM/yyyy"
+									timeZone="America/Guayaquil" />
+							</p:outputLabel>
+						</p:column>
+					</p:dataTable>
+				</h:form>
+			</p:dialog>
+			<h:form id="datosFactura">
+				<p:separator />
+				<h:panelGrid columns="4">
+					<h:outputText value="# INTERNO / # FACTURA: " styleClass="negrita" />
+					<h:outputText
+						value="#{creditoBean.factura.id} / #{creditoBean.factura.establecimiento} - #{creditoBean.factura.puntoEmision} - #{creditoBean.factura.secuencia}" />
+					<h:outputText value="CLIENTE: " styleClass="negrita" />
+					<h:outputText
+						value="#{creditoBean.factura.cliente.persona.cedula} - #{creditoBean.factura.cliente.persona.apellido} #{creditoBean.factura.cliente.persona.nombre}" />
+					<h:outputText value="FECHA: " styleClass="negrita" />
+					<h:outputText value="#{creditoBean.factura.fechaInicio}">
+						<f:convertDateTime pattern="dd/MM/yyyy"
+							timeZone="America/Guayaquil" />
+					</h:outputText>
+					<h:outputText value="FACTURA A NOMBRE DE: " styleClass="negrita" />
+					<h:outputText
+						value="#{creditoBean.factura.clienteFactura.persona.cedula} - #{creditoBean.factura.clienteFactura.persona.apellido} #{creditoBean.factura.clienteFactura.persona.nombre}" />
+				</h:panelGrid>
+			</h:form>
+			<h:form id="formCalcularCuotas">
+				<p:separator />
+				<p:focus context="formCalcularCuotas" />
+				<h:panelGrid columns="4">
+					<p:outputLabel value="MONTO" />
+					<p:inputText value="#{creditoBean.montoCredito}" readonly="true" />
+					<p:outputLabel value="INTERES" />
+					<p:inputText value="#{creditoBean.credito.interes}" />
+					<p:outputLabel value="FECHA DE COMIENZO" />
+					<p:calendar value="#{creditoBean.fechaInicio}" navigator="true" />
+					<p:outputLabel value="MESES" />
+					<p:inputText value="#{creditoBean.credito.meses}" />
+				</h:panelGrid>
+				<p:commandButton value="CALCULAR" icon="ui-icon-disk"
+					actionListener="#{creditoBean.calcularCredito}"
+					update="formCalcularCuotas, :formGuardar, :formGarantes, :mensaje"
+					disabled="#{creditoBean.bnCredito eq true ? true:false}" />
+				<p:commandButton value="CANCELAR" icon="ui-icon-close"
+					update="formCalcularCuotas, :formGuardar, :formGarantes "
+					actionListener="#{creditoBean.cancelarCredito}" />
+				<p:dataTable id="tablaCuotas" var="detalleCredito"
+					value="#{creditoBean.credito.detalleCreditos}" paginator="true"
+					rows="10" emptyMessage="No hay informacion disponible."
+					paginatorPosition="bottom">
+					<p:column headerText="ORDEN">
+								#{detalleCredito.orden}
+					</p:column>
+					<p:column headerText="FECHA">
+						<p:outputLabel value="#{detalleCredito.fechaLimite}">
+							<f:convertDateTime pattern="dd/MM/yyyy"
+								timeZone="America/Guayaquil" />
+						</p:outputLabel>
+					</p:column>
+					<p:column headerText="CUOTA">
+								#{detalleCredito.cuota}
+					</p:column>
+					<p:columnGroup type="footer">
+						<p:row>
+							<p:column colspan="2" footerText="TOTAL: "
+								styleClass="centrarDerecha" />
+							<p:column footerText="$ #{creditoBean.credito.monto}" />
+						</p:row>
+					</p:columnGroup>
+				</p:dataTable>
+			</h:form>
+			<h:form id="formGarantes">
+				<p:separator rendered="#{!creditoBean.bnGuardar}" />
+				<h:outputText value="GARANTES" styleClass="negrita" />  
+					rendered="#{!creditoBean.bnGuardar}" />
+				<p:dataTable var="garante" value="#{creditoBean.listaGarantes}"
+					rendered="#{!creditoBean.bnGuardar}" paginator="true" rows="5"
+					emptyMessage="#{msg['lbl.mensajeTabla']}"
+					paginatorPosition="bottom">
+					<f:facet name="header">
+						<p:commandButton oncomplete="PF('buscarGarante').show()"
+							update=":formGaranteBusqueda"
+							actionListener="#{creditoBean.limpiarObjetosBusquedaGarante}"
+							value="AGREGAR GARANTES" icon="ui-icon-plus" />
+					</f:facet>
+					<p:column headerText="CEDULA" width="20%" styleClass="centrar">  
+							 	#{garante.cedula}
+						</p:column>
+					<p:column headerText="APELLIDO" styleClass="centrar">
+							 	#{garante.apellido}
+						</p:column>
+					<p:column headerText="NOMBRE" styleClass="centrar">
+							 	#{garante.nombre}
+						</p:column>
+				</p:dataTable>
+			</h:form>
+			<h:form id="formGuardar">
+				<p:separator />
+				<p:commandButton value="GUARDAR"
+					update="formGuardar, :datosFactura, :formCalcularCuotas, :formGarantes, :mensaje "
+					actionListener="#{creditoBean.actualizar}" id="btnPagoAceptar"
+					icon="ui-icon-disk"
+					disabled="#{creditoBean.bnGuardar eq true ? true:false}" />
+				<p:commandButton value="CANCELAR" id="btnPagoLimpiar"
+					icon="ui-icon-close" actionListener="#{creditoBean.limpiarObjetos}"
+					update="formGuardar, :datosFactura, :formCalcularCuotas, :formGarantes" />
+			</h:form>
+			<p:dialog header="BUSCAR GARANTE" widgetVar="buscarGarante"
+				resizable="false" modal="false" showEffect="clip" hideEffect="fold"
+				id="dialogoGarante" width="50%">
+				<h:form id="formGaranteBusqueda">
+					<p:outputLabel value="CEDULA/RUC/NOMBRE/APELLIDO:"
+						styleClass="negrita" />
+					<p:inputText id="comboCedula"
+						value="#{creditoBean.criterioBusqueda}"
+						onblur="this.value=this.value.toUpperCase();" required="true" />
+					<p:commandButton update="formGaranteBusqueda"
+						icon="#{msg['iconoBuscar']}"
+						actionListener="#{creditoBean.obtenerGarantesProBusqueda}" />
+					<p:dataTable id="tablaClientesGarante" var="cliente"
+						value="#{creditoBean.listaGarantesBusqueda}" paginator="true"
+						rows="10" emptyMessage="#{msg['lbl.mensajeTabla']}"
+						paginatorPosition="bottom" rowKey="#{cliente.id}"
+						selection="#{creditoBean.garante}" selectionMode="single">
+						<p:ajax event="rowSelect"
+							update=":formGarantes, :formGaranteBusqueda"
+							listener="#{creditoBean.obtenerGarante}"
+							oncomplete="PF('buscarGarante').hide()" />
+						<p:column headerText="CEDULA" width="20%" styleClass="centrar">
+							 	#{cliente.cedula}
+						</p:column>
+						<p:column headerText="APELLIDO" styleClass="centrar">
+							 	#{cliente.apellido}
+						</p:column>
+						<p:column headerText="NOMBRE" styleClass="centrar">
+							 	#{cliente.nombre}
+						</p:column>
+					</p:dataTable>
+				</h:form>
+			</p:dialog>
+		</p:panel>
+	</ui:define>
+</ui:composition>
+</html>

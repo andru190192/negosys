@@ -1,0 +1,698 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:p="http://primefaces.org/ui">
+<ui:composition template="/templates/layout/masterLayout.xhtml">
+	<ui:define name="title">NUEVA FACTURA</ui:define>
+	<ui:define name="content">
+		<p:growl widgetVar="mensaje" id="mensaje" showDetail="true"
+			life="3000" />
+		<p:panel id="panel" header="NUEVA FACTURA">
+			<p:hotkey bind="ctrl+shift+m" handler="nuevaFactura()" />
+			<p:hotkey bind="ctrl+shift+p"
+				handler="PF('obtenerProductoWV').show()" />
+			<p:hotkey bind="ctrl+shift+b"
+				handler="document.getElementById('formBusquedaProducto:txtCriterioProducto').focus()" />
+			<p:hotkey bind="ctrl+shift+g" handler="comprobarDatosFactura()" />
+			<p:hotkey bind="esc"
+				handler="console.log(document.activeElement);PF('obtenerProductoWV').hide();PF('dialogoPagoWV').hide();PF('dialogoCantidadProducto').hide()" />
+			<h:panelGrid columns="3" styleClass="w100">
+				<h:form id="formCabeceraFactura">
+					<p:remoteCommand name="nuevaFacturaRC"
+						actionListener="#{facturaBean.nuevaFactura}"
+						update="formCabeceraFactura, :formItems, :formTotales, :formTotal,  :formTotal, :mensaje" />
+					<h:panelGrid columns="2" cellpadding="1">
+						<p:outputLabel value="CLIENTE:" styleClass="negrita" />
+						<p:inputText id="txtCliente" readonly="true" styleClass="w300"
+							value="#{facturaBean.cliente}" />
+						<p:outputLabel value="FACTURA A NOMBRE DE:" styleClass="negrita" />
+						<p:inputText readonly="true" styleClass="w300"
+							value="#{facturaBean.clienteFactura}" />
+						<p:outputLabel value="ESTABLECIMIENTO:" styleClass="negrita" />
+						<p:inputText id="txtEstablecimiento" readonly="true"
+							styleClass="w300" value="#{facturaBean.establecimiento}" />
+						<h:outputText value="VENDEDOR:" styleClass="negrita" />
+						<p:inputText id="txtVendedor" readonly="true" styleClass="w300"
+							value="#{facturaBean.vendedor}" />
+					</h:panelGrid>
+				</h:form>
+				<h:form id="formTotal" styleClass="m-t-35px centrarDerecha">
+					<h:outputText styleClass="letrasGrandes p-l8px f-z25px"
+						value="VALOR TOTAL (11=1+7+8+9+10)" />
+					<p:outputLabel value="#{facturaBean.cantidadFactura.valorTotal}"
+						style="font-size: 45px !important;"
+						styleClass="colorLetras txtFactura centrarDerecha" />
+				</h:form>
+				<h:form id="formTotales" styleClass="height0px">
+					<h:panelGrid columns="2" cellpadding="0"
+						styleClass="totales moverDerecha">
+						<h:panelGrid columns="2" cellpadding="0">
+							<h:outputText styleClass="letrasGrandes p-l14px"
+								value="SUBTOTAL SIN IMPUESTO (1=2+3+4+5):" />
+							<p:outputLabel
+								value="#{facturaBean.cantidadFactura.stSinImpuesto}"
+								styleClass="colorLetras txtFactura f-z20px" />
+							<h:outputText styleClass="letrasGrandes p-l5px"
+								value="SUBTOTAL 12% (2):" />
+							<p:outputLabel value="#{facturaBean.cantidadFactura.st12}"
+								styleClass="colorLetras txtFactura f-z20px" />
+							<h:outputText styleClass="letrasGrandes p-l5px"
+								value="SUBTOTAL 0% (3):" />
+							<p:outputLabel value="#{facturaBean.cantidadFactura.st0}"
+								styleClass="colorLetras txtFactura p-l5px f-z20px" />
+							<h:outputText styleClass="letrasGrandes p-l5px"
+								value="SUBTOTAL NO OBJETO DE IVA (4):" />
+							<p:outputLabel
+								value="#{facturaBean.cantidadFactura.stNoObjetoIva}"
+								styleClass="colorLetras txtFactura f-z20px" />
+							<h:outputText styleClass="letrasGrandes p-l5px"
+								value="SUBTOTAL EXENTO DE IVA (5):" />
+							<p:outputLabel value="#{facturaBean.cantidadFactura.stExentoIva}"
+								styleClass="colorLetras txtFactura f-z20px" />
+						</h:panelGrid>
+						<h:panelGrid columns="2" cellpadding="0">
+							<h:outputText styleClass="letrasGrandes p-l5px"
+								value="TOTAL DESCUENTO (6):" />
+							<p:outputLabel
+								value="#{facturaBean.cantidadFactura.tDescuentoProducto}"
+								styleClass="colorLetras txtFactura f-z20px" />
+							<h:outputText styleClass="letrasGrandes p-l5px"
+								value="VALOR ICE (7):" />
+							<p:outputLabel value="#{facturaBean.cantidadFactura.valorIce}"
+								styleClass="colorLetras txtFactura f-z20px" />
+							<h:outputText styleClass="letrasGrandes p-l5px"
+								value="VALOR IRBPNR(8):" />
+							<p:outputLabel value="#{facturaBean.cantidadFactura.valorIRBPNR}"
+								styleClass="colorLetras txtFactura f-z20px" />
+							<h:outputText styleClass="letrasGrandes p-l8px"
+								value="IVA 12% (9=(2+7)*12%):" />
+							<p:outputLabel value="#{facturaBean.cantidadFactura.iva12}"
+								styleClass="colorLetras txtFactura f-z20px" />
+							<h:outputText styleClass="letrasGrandes p-l8px"
+								value="PROPINA (10):" />
+							<p:outputLabel value="#{facturaBean.cantidadFactura.propina}"
+								styleClass="colorLetras txtFactura f-z20px" />
+						</h:panelGrid>
+					</h:panelGrid>
+				</h:form>
+			</h:panelGrid>
+			<h:form id="formItems" styleClass="m-t15px">
+				<p:dataTable id="tablaDetalleEgresos" var="facturaReporte"
+					value="#{facturaBean.listaFacturaReporte}"
+					emptyMessage="#{msg['lbl.mensajeTabla']}" scrollable="true"
+					styleClass="ui-datatable-scrollable-body estiloFilasPares w100">
+					<p:column headerText="ESTADO" width="10%">
+						<p:selectOneMenu id="estado" styleClass="comboPrecio w100"
+							value="#{facturaReporte.estado}">
+							<f:selectItems value="#{facturaBean.listaEstadoProductoVenta}"
+								var="estado" itemValue="#{estado}" itemLabel="#{estado.nombre}" />
+							<p:ajax event="change"
+								update="estado, impuesto, descripcion, precioUnitario, precioUnitarioImpuesto, descDol, descPorc, importe, importeImpuesto, :formTotal, :formTotales, :mensaje"
+								listener="#{facturaBean.cambiarEstado(facturaReporte)}" />
+						</p:selectOneMenu>
+					</p:column>
+					<p:column headerText="IMPUESTO" width="6%" styleClass="centrar">
+						<h:outputLabel id="impuesto" value="#{facturaReporte.impuesto}"
+							styleClass="w100" />
+					</p:column>
+					<p:column headerText="CODIGO" width="10%">
+						<h:outputLabel id="txtEan" value="#{facturaReporte.codigo}"
+							styleClass="w100" />
+					</p:column>
+					<p:column headerText="DESCRIPCION" width="30%">
+						<p:outputLabel id="descripcion" styleClass="w100" readonly="true"
+							value="#{facturaReporte.descripcion}" />
+						<p:tooltip for="descripcion" value="#{facturaReporte.descripcion}" />
+					</p:column>
+					<p:column headerText="CANTIDAD" width="8%">
+						<p:inputText id="cantidad" value="#{facturaReporte.cantidad}"
+							styleClass="w100"
+							onkeypress="teclaAbajoArriba(event.keyCode, this.id);">
+							<p:ajax event="change"
+								listener="#{facturaBean.cambiarCantidad(facturaReporte)}"
+								update="tablaDetalleEgresos, cantidad, importe, importeImpuesto, unidades, :formTotal, :formTotales, :mensaje" />
+						</p:inputText>
+					</p:column>
+					<p:column headerText="UNIDADES" width="10%">
+						<h:outputText id="unidades"
+							value="#{facturaReporte.nombreCantidad}" />
+					</p:column>
+					<p:column headerText="TIPO PRECIO" width="15%">
+						<p:selectOneMenu id="comboTipoPrecio"
+							styleClass="comboPrecio w100" value="#{facturaReporte.precioId}">
+							<f:selectItems
+								value="#{facturaReporte.producto.tipoPrecioProductos}"
+								var="precio" itemValue="#{precio.id}"
+								itemLabel="#{precio.nombre}" />
+							<p:ajax event="change"
+								update="precioUnitario, precioUnitarioImpuesto, importe, importeImpuesto, :formTotal, :formTotales, :mensaje"
+								listener="#{facturaBean.cambiarTipoPrecio(facturaReporte)}" />
+						</p:selectOneMenu>
+					</p:column>
+					<p:column headerText="P. UNIT." width="10%">
+						<p:inputText id="precioUnitario"
+							value="#{facturaReporte.precioUnitVenta}"
+							styleClass="w100 centrarDerecha">
+							<p:ajax event="change"
+								listener="#{facturaBean.cambiarPrecio(facturaReporte)}"
+								update="precioUnitario, precioUnitarioImpuesto, importe, importeImpuesto, :formTotal, :formTotales, :mensaje" />
+						</p:inputText>
+					</p:column>
+					<p:column headerText="P. UNIT. IMPUESTO" width="10%">
+						<p:outputLabel id="precioUnitarioImpuesto" readonly="true"
+							value="#{facturaReporte.precioUnitVentaImpuesto}"
+							styleClass="w100 centrarDerecha" />
+					</p:column>
+					<p:column headerText="DESC $" width="10%">
+						<p:inputText id="descDol"
+							value="#{facturaReporte.descuentoDolares}"
+							styleClass="w100 centrarDerecha">
+							<p:ajax event="change"
+								listener="#{facturaBean.cambiarDescDol(facturaReporte)}"
+								update="descDol, descPorc, importe, importeImpuesto, estado, :formTotal, :formTotales, :mensaje" />
+						</p:inputText>
+					</p:column>
+					<p:column headerText="DESC %" width="10%">
+						<p:inputText id="descPorc"
+							value="#{facturaReporte.descuentoPorcentaje}"
+							styleClass="w100 centrarDerecha">
+							<p:ajax event="change"
+								listener="#{facturaBean.cambiarDescPor(facturaReporte)}"
+								update="descPorc, descDol, importe, importeImpuesto, estado, :formTotal, :formTotales, :mensaje" />
+						</p:inputText>
+					</p:column>
+					<p:column headerText="IMPORTE" width="10%">
+						<p:outputLabel id="importe" value="#{facturaReporte.importe}"
+							styleClass="centrarDerecha" />
+					</p:column>
+					<p:column headerText="IMPORTE IMPUESTO" width="10%">
+						<p:outputLabel id="importeImpuesto" styleClass="centrarDerecha"
+							value="#{facturaReporte.importeImpuesto}" />
+					</p:column>
+					<f:facet name="footer">
+						<p:outputLabel
+							value="PRODUCTOS A FACTURAR : #{facturaBean.registrosActivos}"
+							style="font-size: 15px !important;" styleClass="negrita" />
+					</f:facet>
+				</p:dataTable>
+			</h:form>
+		</p:panel>
+		<p:dialog header="PAGO DE FACTURA" widgetVar="dialogoPagoWV"
+			resizable="false" modal="true" closable="false" appendTo="@(body)"
+			width="50%">
+			<h:form id="formPago">
+				<p:remoteCommand name="guardarFacturaRC"
+					oncomplete="comprobarConsumidorFinal(xhr, status, args);"
+					actionListener="#{facturaBean.insertarFactura}"
+					update=":formCabeceraFactura, :formItems, :formTotales, :formTotal, :mensaje, :formPago" />
+				<h:panelGrid columns="2" styleClass="w100">
+					<p:outputLabel value="TIPO DE PAGO: " styleClass="negrita"
+						style="font-size: 20px !important;" />
+					<p:inputText id="txtTipoPago" styleClass="moverDerecha w100"
+						onkeypress="if (event.keyCode == 13) { abrirDialogoPago(); return false; }" />
+					<p:outputLabel value="FACTURA A :" styleClass="negrita"
+						style="font-size: 20px !important;" />
+					<p:autoComplete id="autoCompletarClienteFactura" styleClass="w100"
+						scrollHeight="200" effect="drop" placeholder="MINIMO 3 CARACTERES"
+						emptyMessage="NO HAY DATOS A MOSTRAR"
+						panelStyle="width:400px !important" minQueryLength="3"
+						maxResults="20" value="#{facturaBean.clienteFactura}"
+						completeMethod="#{facturaBean.obtenerClienteFacturaPorBusqueda}">
+						<p:ajax event="itemSelect" id="prueba"
+							listener="#{facturaBean.cargarClienteFactura}"
+							update="autoCompletarClienteFactura, :mensaje" />
+					</p:autoComplete>
+				</h:panelGrid>
+				<p:dataTable id="tablaEntrada" var="tablaEntrada"
+					value="#{facturaBean.factura.entradas}"
+					emptyMessage="#{msg['lbl.mensajeTabla']}">
+					<p:column headerText="TIPO DE PAGO">
+								#{tablaEntrada.pagoEntradas[0].tipoPago.nombre}
+							</p:column>
+					<p:column headerText="VALOR">
+								#{tablaEntrada.cuota}
+							</p:column>
+					<p:columnGroup type="footer">
+						<p:row>
+							<p:column colspan="1" footerText="TOTAL: "
+								styleClass="centrarDerecha" />
+							<p:column footerText="$ #{facturaBean.totalMonto}" />
+						</p:row>
+					</p:columnGroup>
+				</p:dataTable>
+			</h:form>
+		</p:dialog>
+		<p:dialog header="ENTRADA EFECTIVO" widgetVar="entradaEfectivoWV"
+			appendTo="@(body)" closeOnEscape="true" resizable="false"
+			closable="false" modal="true" id="dialogoEntradaEfectivo">
+			<h:form id="formEntradaEfectivo">
+				<p:remoteCommand name="agregarPagoEfectivoRC"
+					actionListener="#{facturaBean.agregarEntrada(1)}"
+					update=":formPago, :mensaje"
+					oncomplete="PF('entradaEfectivoWV').hide(); document.getElementById('formPago:txtTipoPago').focus()" />
+				<h:panelGrid columns="2">
+					<p:outputLabel value="VALOR:" />
+					<p:inputText id="txtCuotaEfectivo"
+						value="#{facturaBean.entrada.pagoEntradas[0].cuota}"
+						onkeypress="if (event.keyCode == 13) { agregarPagoEfectivoRC(); return false; }" />
+				</h:panelGrid>
+			</h:form>
+		</p:dialog>
+		<p:dialog header="ENTRADA TARJETA CRÉDITO"
+			widgetVar="entradaCreditoWV" appendTo="@(body)" closeOnEscape="true"
+			resizable="false" closable="false" modal="true"
+			id="dialogoEntradaCredito">
+			<h:form id="formEntradaCredito">
+				<p:remoteCommand name="agregarPagoCreditoRC"
+					actionListener="#{facturaBean.agregarEntrada(2)}"
+					update=":formPago, :mensaje"
+					oncomplete="PF('entradaCreditoWV').hide(); document.getElementById('formPago:txtTipoPago').focus()" />
+				<h:panelGrid columns="2">
+					<p:outputLabel value="BANCO" />
+					<p:selectOneMenu widgetVar="somBancoCreditoWV"
+						styleClass="comboCedula"
+						value="#{facturaBean.entrada.pagoEntradas[0].banco}" filter="true"
+						filterMatchMode="contains">
+						<f:selectItem itemLabel="ESCOJA UN BANCO" itemValue="0" />
+						<f:selectItems value="#{facturaBean.listaBancos}" var="banco"
+							itemValue="#{banco.nombre}" itemLabel="#{banco.nombre}" />
+					</p:selectOneMenu>
+					<p:outputLabel value="NÚMERO TARJETA" />
+					<p:inputText id="txtTarjetaCredito"
+						value="#{facturaBean.entrada.pagoEntradas[0].cuentaTarjeta}" />
+					<p:outputLabel value="NÚMERO VAUCHER" />
+					<p:inputText id="txtVaucherCredito"
+						value="#{facturaBean.entrada.pagoEntradas[0].chequeVaucher}" />
+					<p:outputLabel value="VALOR:" />
+					<p:inputText id="txtCuotaCredito"
+						value="#{facturaBean.entrada.pagoEntradas[0].cuota}"
+						onkeypress="if (event.keyCode == 13) { agregarPagoCreditoRC(); return false; }" />
+				</h:panelGrid>
+			</h:form>
+		</p:dialog>
+		<p:dialog header="ENTRADA CHEQUE" widgetVar="entradaChequeWV"
+			appendTo="@(body)" closeOnEscape="true" resizable="false"
+			closable="false" modal="true" id="dialogoEntradaCheque">
+			<h:form id="formEntradaCheque">
+				<p:remoteCommand name="agregarPagoChequeRC"
+					actionListener="#{facturaBean.agregarEntrada(3)}"
+					update=":formPago, :mensaje"
+					oncomplete="PF('entradaChequeWV').hide(); document.getElementById('formPago:txtTipoPago').focus()" />
+				<h:panelGrid columns="2">
+					<p:outputLabel value="BANCO" />
+					<p:selectOneMenu widgetVar="somBancoChequeWV"
+						styleClass="comboCedula"
+						value="#{facturaBean.entrada.pagoEntradas[0].banco}" filter="true"
+						filterMatchMode="contains">
+						<f:selectItem itemLabel="ESCOJA UN BANCO" itemValue="0" />
+						<f:selectItems value="#{facturaBean.listaBancos}" var="banco"
+							itemValue="#{banco.nombre}" itemLabel="#{banco.nombre}" />
+					</p:selectOneMenu>
+					<p:outputLabel value="FECHA DE COBRO" />
+					<p:calendar id="txtFechaCheque"
+						value="#{facturaBean.entrada.pagoEntradas[0].fechaCheque}"
+						navigator="true" />
+					<p:outputLabel value="CUENTA BANCARIA" />
+					<p:inputText id="txtCuentaCheque"
+						value="#{facturaBean.entrada.pagoEntradas[0].cuentaTarjeta}" />
+					<p:outputLabel value="NÚMERO CHEQUE" />
+					<p:inputText id="txtNumeroCheque"
+						value="#{facturaBean.entrada.pagoEntradas[0].chequeVaucher}" />
+					<p:outputLabel value="VALOR:" />
+					<p:inputText id="txtCuotaCheque"
+						value="#{facturaBean.entrada.pagoEntradas[0].cuota}"
+						onkeypress="if (event.keyCode == 13) { agregarPagoChequeRC(); return false; }" />
+				</h:panelGrid>
+			</h:form>
+		</p:dialog>
+		<p:dialog widgetVar="buscarCliente" header="BUSCAR CLIENTE COMPRA"
+			closable="false" resizable="false" modal="true" appendTo="@(body)"
+			width="50%">
+			<h:form id="formCliente">
+				<p:outputLabel value="ID/CEDULA/RUC/NOMBRE/APELLIDO:"
+					styleClass="negrita" />
+				<p:remoteCommand name="obtenerClientesRC"
+					actionListener="#{facturaBean.obtenerClientes}"
+					update=":formCabeceraFactura, txtCriterioCliente, tablaClientes, :mensaje" />
+				<p:inputText id="txtCriterioCliente" styleClass="w94 m-b5px m-r5px"
+					value="#{facturaBean.criterioCliente}"
+					onkeypress="if (event.keyCode == 13) { obtenerClientesRC(); return false; }" />
+				<p:dataTable id="tablaClientes" var="cliente" styleClass="w100"
+					value="#{facturaBean.listaClientes}" scrollable="true"
+					scrollHeight="200" emptyMessage="#{msg['lbl.mensajeTabla']}">
+					<p:column headerText="SELECCIONAR" styleClass="centrar w100px">
+						<p:commandButton id="btnClienteAgregar"
+							onfocus="estiloFila(this.id,2,'formCliente:tablaClientes',2)"
+							onblur="sinEstiloFila(this.id,2,'formCliente:tablaClientes',2)"
+							update=":formCabeceraFactura"
+							actionListener="#{facturaBean.cargarCliente(cliente)}"
+							icon="ui-icon-play" oncomplete="PF('buscarCliente').hide()">
+						</p:commandButton>
+					</p:column>
+					<p:column headerText="COD. INTERNO" width="20%"
+						styleClass="centrar">
+							 	#{cliente.cliente.id}
+						</p:column>
+					<p:column headerText="CEDULA" width="20%" styleClass="centrar">
+							 	#{cliente.cedula}
+						</p:column>
+					<p:column headerText="APELLIDO" styleClass="centrar">
+							 	#{cliente.apellido}
+						</p:column>
+					<p:column headerText="NOMBRE" styleClass="centrar">
+							 	#{cliente.nombre}
+						</p:column>
+					<p:column headerText="CIUDAD" styleClass="centrar">
+							 	#{cliente.ciudad.nombre}
+						</p:column>
+				</p:dataTable>
+			</h:form>
+		</p:dialog>
+		<p:dialog widgetVar="buscarClienteFactura"
+			header="BUSCAR CLIENTE FACTURA" modal="true" appendTo="@(body)"
+			closeOnEscape="true" closable="false" resizable="false" width="50%">
+			<h:form id="formClienteFactura">
+				<p:outputLabel value="ID/CEDULA/RUC/NOMBRE/APELLIDO:"
+					styleClass="negrita" />
+				<p:remoteCommand name="obtenerClientesFacturaRC"
+					actionListener="#{facturaBean.obtenerClientesFactura}"
+					update="txtCriterioClienteFactura, tablaClientesFactura, :formCabeceraFactura, :mensaje" />
+				<p:inputText id="txtCriterioClienteFactura"
+					styleClass="w94 m-r5px m-b5px"
+					value="#{facturaBean.criterioCliente}"
+					onkeypress="if (event.keyCode == 13) { obtenerClientesFacturaRC(); return false; }" />
+				<p:dataTable id="tablaClientesFactura" styleClass="w100"
+					var="clienteNombreFactura" value="#{facturaBean.listaClientes}"
+					emptyMessage="#{msg['lbl.mensajeTabla']}" scrollable="true"
+					scrollHeight="200">
+					<p:column headerText="SELECCIONAR" styleClass="centrar w100px">
+						<p:commandButton id="btnClienteFacturaAgregar"
+							onfocus="estiloFila(this.id,2,'formClienteFactura:tablaClientesFactura')"
+							onblur="sinEstiloFila(this.id,2,'formClienteFactura:tablaClientesFactura')"
+							update=":formCabeceraFactura"
+							action="#{facturaBean.cargarClienteFactura}" icon="ui-icon-play"
+							oncomplete="PF('buscarClienteNombreFactura').hide()">
+							<f:setPropertyActionListener value="#{clienteNombreFactura}"
+								target="#{facturaBean.factura.clienteFactura.persona}" />
+						</p:commandButton>
+					</p:column>
+					<p:column headerText="COD. INTERNO" width="20%" styleClass="w100px">
+							 	#{clienteNombreFactura.cliente.id}
+						</p:column>
+					<p:column headerText="CEDULA" width="20%" styleClass="centrar">
+							 	#{clienteNombreFactura.cedula}
+						</p:column>
+					<p:column headerText="APELLIDO" styleClass="centrar">
+							 	#{clienteNombreFactura.apellido}
+						</p:column>
+					<p:column headerText="NOMBRE" styleClass="centrar">
+							 	#{clienteNombreFactura.nombre}
+						</p:column>
+					<p:column headerText="CIUDAD" styleClass="centrar">
+							 	#{clienteNombreFactura.ciudad.nombre}
+						</p:column>
+				</p:dataTable>
+			</h:form>
+		</p:dialog>
+		<p:dialog header="BUSCAR PRODUCTO" widgetVar="obtenerProductoWV"
+			modal="true" appendTo="@(body)" closeOnEscape="true"
+			resizable="false" closable="false" width="50%">
+			<h:form id="formBusquedaProducto">
+				<h:panelGrid columns="1">
+					<h:panelGrid columns="3">
+						<p:remoteCommand name="obtenerProductoRC"
+							actionListener="#{facturaBean.obtenerProducto}"
+							update=":formBusquedaProducto:tablaBusquedaProductos, :mensaje" />
+						<p:inputText id="txtCriterioProducto"
+							onfocus="document.getElementById('formBusquedaProducto:txtCriterioProducto').select()"
+							value="#{facturaBean.criterioProducto}" styleClass="w300"
+							onkeypress="if (event.keyCode == 13) { obtenerProductoRC(); return false; }" />
+					</h:panelGrid>
+					<p:dataTable id="tablaBusquedaProductos" var="producto"
+						scrollable="true" styleClass="ui-datatable-scrollable-body"
+						value="#{facturaBean.listaProductos}"
+						emptyMessage="#{msg['lbl.mensajeTabla']}" scrollHeight="250">
+						<p:column headerText="SELECCIONAR" styleClass="centrar w100px">
+							<p:commandButton id="btnAgregarProductoBoton"
+								onfocus="estiloFila(this.id,2,'formBusquedaProducto:tablaBusquedaProductos',2)"
+								onblur="sinEstiloFila(this.id,2,'formBusquedaProducto:tablaBusquedaProductos',2)"
+								onclick="obtenerFilaProducto(this.id)"
+								actionListener="#{facturaBean.cargarListaPrecios(producto)}"
+								update=":dialogoCantidadProducto, :formCantidadProducto"
+								oncomplete="PF('dialogoCantidadProducto').show()"
+								icon="ui-icon-play">
+							</p:commandButton>
+						</p:column>
+						<p:column headerText="EAN" styleClass="w100px">
+									#{producto.ean}
+									</p:column>
+						<p:column headerText="NOMBRE" styleClass="w300">
+									#{producto.nombre}
+								</p:column>
+					</p:dataTable>
+				</h:panelGrid>
+			</h:form>
+		</p:dialog>
+		<p:dialog header="CANTIDAD/PRODUCTO #{facturaBean.producto.nombre}"
+			onHide="focusProducto()" widgetVar="dialogoCantidadProducto"
+			id="dialogoCantidadProducto" closable="false" resizable="false"
+			modal="true" appendTo="@(body)" width="30%">
+			<h:form id="formCantidadProducto">
+				<p:remoteCommand name="ingresarDetalleProductoRC"
+					update="txtCantidadProducto, :formItems:tablaDetalleEgresos, :formTotales, :formTotal,  :mensaje"
+					actionListener="#{facturaBean.ingresarDetalleProducto}" />
+				<p:inputText id="txtCantidadProducto" styleClass="m-b5px m-r5px w54"
+					value="#{facturaBean.cantidadProducto}"
+					onkeypress="if (event.keyCode == 13) { ingresarDetalleProductoRC(); return false; }" />
+				<p:dataTable id="tablaPreciosProducto" var="precio"
+					styleClass="ui-datatable-scrollable-body"
+					value="#{facturaBean.listaPrecios}">
+					<p:column headerText="SELECCIONAR" styleClass="centrar w100px">
+						<p:commandButton id="btnAgregarPrecioProducto"
+							onfocus="estiloFila(this.id,2,'formCantidadProducto:tablaPreciosProducto',1)"
+							onblur="sinEstiloFila(this.id,2,'formCantidadProducto:tablaPreciosProducto',1)"
+							update=":formCantidadProducto:txtCantidadProducto, :formItems:tablaDetalleEgresos, :formTotales, :formTotal,  :mensaje"
+							actionListener="#{facturaBean.ingresarDetalleProducto(precio)}"
+							icon="ui-icon-play">
+						</p:commandButton>
+					</p:column>
+					<p:column headerText="PRECIO" styleClass="w100px">
+									#{precio.nombre}
+									</p:column>
+					<p:column headerText="VALOR PVP" styleClass="w100">
+									#{precio.precioConImpuestos}
+								</p:column>
+					<p:column headerText="PVP SUGERIDO" styleClass="w100">
+						<p:selectBooleanCheckbox value="#{precio.pvp}" disabled="true" />
+					</p:column>
+				</p:dataTable>
+			</h:form>
+		</p:dialog>
+		<p:dialog header="VENDEDOR" widgetVar="dialogoVendedorWV"
+			id="dialogoVendedor" closable="false" resizable="false" modal="true"
+			appendTo="@(body)" width="30%">
+			<h:form id="formVendedor">
+				<p:dataTable id="tablaVendedores" var="vendedor"
+					styleClass="ui-datatable-scrollable-body"
+					value="#{facturaBean.listaVendedores}" scrollHeight="100">
+					<p:column headerText="SELECCIONAR" styleClass="centrar w80px">
+						<p:commandButton id="btnAgregarVendedor"
+							onfocus="estiloFila(this.id,2,'formVendedor:tablaVendedores',1)"
+							onblur="sinEstiloFila(this.id,2,'formVendedor:tablaVendedores',1)"
+							update=":formCabeceraFactura" icon="ui-icon-play"
+							oncomplete="PF('dialogoVendedorWV').hide(); PF('obtenerProductoWV').show()"
+							actionListener="#{facturaBean.agregarVendedor(vendedor)}" />
+					</p:column>
+					<p:column headerText="ID" styleClass="w50px">
+						#{vendedor.id}
+					</p:column>
+					<p:column headerText="NOMBRES" styleClass="w200px">
+						#{vendedor.nombre} #{vendedor.apellido}
+					</p:column>
+				</p:dataTable>
+			</h:form>
+		</p:dialog>
+		<p:dialog header="PUNTOS DE EMISIÓN" widgetVar="dialogoPuntoEmisionWV"
+			id="dialogoPuntoEmision" closable="false" resizable="false"
+			modal="true" appendTo="@(body)" width="30%">
+			<h:form id="formPuntoEmision">
+				<p:dataTable id="tablaPuntoEmision" var="puntoEmision"
+					styleClass="ui-datatable-scrollable-body"
+					value="#{facturaBean.listaLocales}" scrollHeight="100">
+					<p:column headerText="SELECCIONAR" styleClass="centrar w80px">
+						<p:commandButton id="btnAgregarPuntoEmision"
+							onfocus="estiloFila(this.id,2,'tablaPuntoEmision')"
+							onblur="sinEstiloFila(this.id,2,'tablaPuntoEmision')"
+							update=":formCabeceraFactura" icon="ui-icon-play"
+							actionListener="#{facturaBean.agregarPuntoEmision(puntoEmision)}">
+						</p:commandButton>
+					</p:column>
+					<p:column headerText="PUNTOS EMISIÓN" styleClass="w50px">
+						#{puntoEmision.nombre}(#{puntoEmision.codigoEstablecimiento}) - PUNTO EMISIÓN(#{puntoEmision.puntoEmisionFactura}) 
+					</p:column>
+				</p:dataTable>
+			</h:form>
+		</p:dialog>
+		<script type="text/javascript">
+			//<![CDATA[			
+			var producto;
+
+			function focusProducto() {
+				producto.focus();
+			}
+
+			function obtenerFilaProducto(registroProducto) {
+				producto = document.getElementById(registroProducto);
+			}
+
+			function nuevaFactura() {
+				nuevaFacturaRC();
+			}
+
+			function abrirDialogoPago() {
+				var tipoPagoVar = document
+						.getElementById('formPago:txtTipoPago').value;
+				if (tipoPagoVar == 1) {
+					PF('entradaEfectivoWV').show();
+					document
+							.getElementById('formEntradaEfectivo:txtCuotaEfectivo').value = "";
+				} else if (tipoPagoVar == 2) {
+					PF('entradaCreditoWV').show();
+					document
+							.getElementById('formEntradaCredito:txtTarjetaCredito').value = "";
+					document
+							.getElementById('formEntradaCredito:txtVaucherCredito').value = "";
+					document
+							.getElementById('formEntradaCredito:txtCuotaCredito').value = "";
+					PF('somBancoCreditoWV').selectValue(0);
+				} else if (tipoPagoVar == 3) {
+					PF('entradaChequeWV').show();
+					document
+							.getElementById('formEntradaCheque:txtCuentaCheque').value = "";
+					document
+							.getElementById('formEntradaCheque:txtNumeroCheque').value = "";
+					document.getElementById('formEntradaCheque:txtCuotaCheque').value = "";
+					PF('somBancoChequeWV').selectValue(0);
+				} else if (tipoPagoVar.toUpperCase() == "PP") {
+					guardarFacturaRC();
+				}
+			}
+
+			function comprobarDatosFactura() {
+				if (document.getElementById('formCabeceraFactura:txtCliente').value == "") {
+					PF('mensaje').renderMessage({
+						"summary" : "MENSAJE DEL SISTEMA",
+						"detail" : "ESCOJA UN CLIENTE",
+						"severity" : "info"
+					});
+				} else if (document
+						.getElementById('formCabeceraFactura:txtEstablecimiento').value == 0) {
+					PF('mensaje').renderMessage({
+						"summary" : "MENSAJE DEL SISTEMA",
+						"detail" : "ESCOJA UN ESTABLECIMIENTO",
+						"severity" : "info"
+					});
+				} else if (document
+						.getElementById('formCabeceraFactura:txtVendedor').value == 0) {
+					PF('mensaje').renderMessage({
+						"summary" : "MENSAJE DEL SISTEMA",
+						"detail" : "ESCOJA UN VENDEDOR",
+						"severity" : "info"
+					});
+				} else if (document.getElementById(
+						'formItems:tablaDetalleEgresos_data')
+						.getElementsByTagName('tr')[0].getAttribute("role") == null) {
+					console.log("item");
+					PF('mensaje').renderMessage({
+						"summary" : "MENSAJE DEL SISTEMA",
+						"detail" : "NO HAY ITEMS A FACTURAR",
+						"severity" : "info"
+					});
+				} else {
+					var sw = false;
+					var t = document
+							.getElementById('formItems:tablaDetalleEgresos_data').rows.length;
+					for (var c = 0; c < t; c++) {
+						if (document
+								.getElementById('formItems:tablaDetalleEgresos:'
+										+ c + ':cantidad').value > 0) {
+							sw = true;
+							break;
+						}
+					}
+					if (sw) {
+						document.getElementById('formPago:txtTipoPago').value = "";
+						PF('dialogoPagoWV').show();
+					} else {
+						PF('mensaje').renderMessage({
+							"summary" : "MENSAJE DEL SISTEMA",
+							"detail" : "NO HAY CANTIDADES A FACTURAR",
+							"severity" : "info"
+						});
+					}
+
+				}
+			}
+
+			function comprobar(xhr, status, args) {
+				if (!args.validationFailed && args.cerrar) {
+					PF('personaDialogoNuevo').hide();
+					PF('personaDialogoEditar').hide();
+				}
+			}
+
+			function concatenarNuevo() {
+				var apellidos = jQuery('#formNuevo\\:apellidos').val();
+				var nombres = jQuery('#formNuevo\\:nombres').val();
+				jQuery('#formNuevo\\:nombreComercial').val(
+						apellidos + " " + nombres);
+			}
+
+			function concatenarEditar() {
+				var apellidos = jQuery('#formEditar\\:apellidos').val();
+				var nombres = jQuery('#formEditar\\:nombres').val();
+				jQuery('#formEditar\\:nombreComercial').val(
+						apellidos + " " + nombres);
+			}
+
+			function comprobarConsumidorFinal(xhr, status, args) {
+				if (args.consumidorFinal) {
+					PF('dialogoPagoWV').show();
+				} else {
+					PF('dialogoPagoWV').hide();
+				}
+			}
+
+			function teclaAbajoArriba(keyCode, id) {
+				var posSplit = id.split(":");
+				var p = parseInt(posSplit[2]);
+				var n = document
+						.getElementById('formItems:tablaDetalleEgresos_data').childNodes.length;
+				if (keyCode == 38) {
+					if (p == 0)
+						p = n - 1;
+					else
+						p = p - 1;
+					document.getElementById(
+							'formItems:tablaDetalleEgresos:' + p + ':cantidad')
+							.focus();
+					return false;
+				} else if (keyCode == 40) {
+					if ((p + 1) == n)
+						p = 0;
+					else
+						p = p + 1;
+					document.getElementById(
+							'formItems:tablaDetalleEgresos:' + p + ':cantidad')
+							.focus();
+					return false;
+				}
+			}
+			//]]>
+		</script>
+	</ui:define>
+</ui:composition>
+</html>

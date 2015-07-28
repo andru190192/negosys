@@ -1,0 +1,54 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:p="http://primefaces.org/ui">
+
+<ui:composition template="/templates/layout/masterLayout.xhtml">
+
+	<ui:define name="title">
+			CAMBIAR CONTRASEÑA
+	</ui:define>
+
+	<ui:define name="content">
+
+		<p:growl id="mensaje" showDetail="true" life="7000" />
+
+		<h:form id="form">
+
+			<p:panel id="panel" header="CAMBIO
+			DE CONTRASEÑA"
+				style="margin-bottom:10px;">
+
+				<h:panelGrid columns="2">
+					<h:outputLabel for="contraseñaActual" value="CONTRASEÑA ACTUAL:" />
+					<p:password id="contraseñaActual"
+						value="#{cambiarClaveBean.claveActual}" label="CONTRASEÑA ACTUAL:">
+					</p:password>
+
+					<h:outputLabel for="contraseñaNueva" value="CONTRASEÑA NUEVA:" />
+					<p:password id="contraseñaNueva" value="#{cambiarClaveBean.claveNueva1}"
+						label="CONTRASEÑA NUEVA" feedback="true" inline="true"
+						promptLabel="NIVEL BAJO" weakLabel="NIVEL MEDIO"
+						goodLabel="NIVEL ALTO" strongLabel="OPTIMO">
+					</p:password>
+
+					<h:outputLabel for="repitaContraseña" value="REPITA CONTRASEÑA:" />
+					<p:password id="repitaContraseña"
+						value="#{cambiarClaveBean.claveNueva2}" label="REPITA CONTRASEÑA"
+						feedback="true" inline="true" promptLabel="NIVEL BAJO" weakLabel="NIVEL MEDIO"
+						goodLabel="NIVEL ALTO" strongLabel="OPTIMO">
+					</p:password>
+				</h:panelGrid>
+				<p:commandButton value="ACTUALIZAR" update=":mensaje" id="ajax"
+				styleClass="ui-priority-primary"
+				action="#{cambiarClaveBean.cambiarClave}" />
+			</p:panel>
+		</h:form>
+	</ui:define>
+
+</ui:composition>
+</html>

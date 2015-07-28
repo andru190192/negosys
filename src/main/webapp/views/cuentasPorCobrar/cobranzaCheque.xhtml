@@ -1,0 +1,426 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:p="http://primefaces.org/ui">
+
+    <ui:composition template="/templates/layout/masterLayout.xhtml">
+
+        <ui:define name="title">COBRANZA</ui:define>
+        <ui:define name="content">
+
+            <p:growl id="mensaje" showDetail="true" life="7000" />
+
+            <p:panel id="panel" header="COBRANZA DE CHEQUES"
+                     style="margin-bottom:10px;">
+
+                <h:form id="formDataTable">
+
+                    <p:dataTable id="tablaEgresos" var="cheque"
+                                 value="#{cobranzaChequeBean.listaCheques}" paginator="true"
+                                 rows="10" emptyMessage="#{msg['lbl.mensajeTabla']}"
+                                 paginatorPosition="bottom" editable="true" editMode="cell"
+                                 rowStyleClass="#{cheque.anulado eq true ? 'desactivo' : 'normal'}">
+
+                        <f:facet name="header">
+                            <p:outputLabel value="LISTADO DE CHEQUES" />
+                        </f:facet>
+
+                        <p:column headerText="GESTIONAR FACTURA"
+                                  style="text-align:center;width: 50px;">
+
+                            <p:commandButton id="btnPagar" update=":formPago"
+                                             action="#{cobranzaBean.calcularNumeroCuotasEntradasCreditos}"
+                                             oncomplete="PF('dialogoPago').show()" icon="ui-icon-check">
+                                <f:setPropertyActionListener value="#{cheque}"
+                                                             target="#{cobranzaChequeBean.cheque}" />
+                            </p:commandButton>
+
+                            <p:commandButton id="btnCancelar" update=":formCancelar"
+                                             oncomplete="PF('dialogoCancelar').show()" icon="ui-icon-close">
+                                <f:setPropertyActionListener value="#{egreso}"
+                                                             target="#{cobranzaBean.egreso}" />
+                            </p:commandButton>
+
+                            <p:commandButton id="btnMostrar" update=""
+                                             oncomplete="PF('dialogoMostrar').show()" icon="ui-icon-newwin">
+                                <f:setPropertyActionListener value="#{egreso}"
+                                                             target="#{cobranzaBean.egreso}" />
+                            </p:commandButton>
+
+                        </p:column>
+
+                        <p:column headerText="BANCO" filterBy="#{cheque.banco}"
+                                  style="text-align:center;width: 50px;">
+                            #{cheque.banco}
+                        </p:column>
+
+                        <p:column headerText="CUENTA" filterBy="#{cheque.numeroCuenta}"
+                                  style="text-align:center;width: 50px;">
+                            #{cheque.numeroCuenta}
+                        </p:column>
+
+                        <p:column headerText="# CHEQUE" filterBy="#{cheque.numeroCheque}"
+                                  style="text-align:center;width: 50px;">
+                            #{cheque.numeroCheque}
+                        </p:column>
+
+                        <p:column headerText="FECHA GIRO" filterBy="#{cheque.fechaGiro}"
+                                  style="text-align:center;width: 50px;">
+                            <p:outputLabel value="#{cheque.fechaGiro}">
+                                <f:convertDateTime pattern="dd/MM/yyyy"
+                                                   timeZone="America/Guayaquil" />
+                            </p:outputLabel>
+                        </p:column>
+
+                        <p:column headerText="FECHA COBRO" filterBy="#{cheque.fechaCobro}"
+                                  style="text-align:center;width: 50px;">
+                            <p:outputLabel value="#{cheque.fechaCobro}">
+                                <f:convertDateTime pattern="dd/MM/yyyy"
+                                                   timeZone="America/Guayaquil" />
+                            </p:outputLabel>
+                        </p:column>
+
+                        <p:column headerText="MONTO" filterBy="#{cheque.cuota}"
+                                  style="text-align:center;width: 50px;">
+                            #{cheque.cuota}
+                        </p:column>
+
+                    </p:dataTable>
+                </h:form>
+            </p:panel>
+
+            <p:dialog header="PAGO DE CHEQUE" widgetVar="dialogoPago"
+                      resizable="false" modal="false" showEffect="clip" hideEffect="fold">
+
+                <h:form id="formPago">
+                    <h:panelGrid columns="2" cellpadding="2">
+                        <p:outputLabel value="Fecha Pago:"></p:outputLabel>
+                        <p:calendar navigator="true"
+                                    value="#{cobranzaChequeBean.fechaCobro}"></p:calendar>
+                    </h:panelGrid>
+
+                    <p:separator />
+                    <p:commandButton value="GUARDAR" update=":formDataTable, :mensaje"
+                                     actionListener="#{cobranzaChequeBean.cobroCheque}"
+                                     oncomplete="PF('dialogoPago').hide()" id="btnPagoAceptar"
+                                     icon="ui-icon-disk" />
+
+                    <p:commandButton value="CERRAR"
+                                     oncomplete="PF('dialogoPago').hide()" id="btnPagoLimpiar"
+                                     icon="ui-icon-close" />
+                </h:form>
+            </p:dialog>
+
+            <p:dialog header="CANCELACION DE CHEQUE" widgetVar="dialogoCancelar"
+                      resizable="false" modal="false" showEffect="clip" hideEffect="fold"
+                      style="width: 600PX !important">
+
+                <h:form id="formCancelar">
+                    <h:panelGrid columns="2" cellpadding="2">
+                        <p:outputLabel value="Motivo:"></p:outputLabel>
+                        <p:inputTextarea value=""></p:inputTextarea>
+                    </h:panelGrid>
+                </h:form>
+
+                <p:separator />
+                <p:commandButton value="GUARDAR" update=":formDataTable, :mensaje"
+                                 actionListener="#{cobranzaChequeBean.actualizar}"
+                                 oncomplete="PF('dialogoGarante').hide()" id="btnGaranteAceptar"
+                                 icon="ui-icon-disk" />
+
+                <p:commandButton value="CERRAR"
+                                 oncomplete="PF('dialogoGarante').hide()" id="btnGaranteCerrar"
+                                 icon="ui-icon-close" />
+
+            </p:dialog>
+
+            <p:dialog header="PAGAR ENTRADA" widgetVar="dialogoPagarEntrada"
+                      resizable="false" modal="false" showEffect="clip" hideEffect="fold"
+                      id="dialogoPagarEntrada">
+
+                <h:form id="formPagarEntrada">
+
+                    <p:focus context="formPagarEntrada" />
+
+                    <h:panelGrid columns="2" cellpadding="5">
+
+                        <p:outputLabel value="TIPO DE PAGO" />
+                        <p:selectOneMenu styleClass="comboCedula"
+                                         value="#{cobranzaBean.tiposPago.tipopagoid}" filter="true"
+                                         filterMatchMode="contains">
+                            <f:selectItem itemLabel="Escoja un Tipo de Pago" />
+                            <f:selectItems value="#{cobranzaBean.listTiposPago}"
+                                           var="tipoPago" itemValue="#{tipoPago.tipopagoid}"
+                                           itemLabel="#{tipoPago.nombre}" />
+                        </p:selectOneMenu>
+
+                        <p:outputLabel value="MONTO" />
+                        <p:inputText value="#{cobranzaBean.pagosEntrada.cuota}"
+                                     required="true" requiredMessage="ESCRIBA EL MONTO" />
+
+                        <p:outputLabel value="BANCO" />
+                        <p:selectOneMenu styleClass="comboCedula"
+                                         value="#{cobranzaBean.banco.bancoid}"
+                                         style="top: 5px;width:129px !important" filter="true"
+                                         filterMatchMode="contains">
+                            <f:selectItem itemLabel="Select One" itemValue="" />
+                            <f:selectItems value="#{bancoBean.listaBancos}" var="banco"
+                                           itemValue="#{banco.bancoid}" itemLabel="#{banco.nombre}" />
+                        </p:selectOneMenu>
+
+                        <p:outputLabel value="# CHEQUE/VAUCHER" />
+                        <p:inputText value="#{cobranzaBean.pagosEntrada.chequevaucher}" />
+
+                        <p:outputLabel value="# CUENTA/TARJETA" />
+                        <p:inputText value="#{cobranzaBean.pagosEntrada.cuentatarjeta}" />
+
+                        <f:facet name="footer">
+                            <p:commandButton value="GUARDAR" icon="ui-icon-disk"
+                                             update="formPagarEntrada"
+                                             actionListener="#{cobranzaBean.pagarEntrada}"
+                                             oncomplete="PF('dialogoPagarEntrada').hide()" />
+                            <p:commandButton value="CANCELAR" icon="ui-icon-close"
+                                             oncomplete="PF('dialogoPagarEntrada').hide()" process="@this"
+                                             actionListener="#{cobranzaBean.cancelarEntrada}" />
+                        </f:facet>
+                    </h:panelGrid>
+
+                </h:form>
+            </p:dialog>
+
+            <p:dialog header="PAGAR CREDITO" widgetVar="dialogoPagarCredito"
+                      resizable="false" modal="false" showEffect="clip" hideEffect="fold"
+                      id="dialogoPagarCredito">
+
+                <h:form id="formPagarCredito">
+
+                    <p:focus context="formPagarCredito" />
+
+                    <h:panelGrid columns="2" cellpadding="5">
+
+                        <p:outputLabel value="TIPO DE PAGO" />
+                        <p:selectOneMenu styleClass="comboCedula"
+                                         value="#{cobranzaBean.tiposPago.tipopagoid}" filter="true"
+                                         filterMatchMode="contains">
+                            <f:selectItem itemLabel="ESCOJA UN TIPO DE PAGO" />
+                            <f:selectItems value="#{cobranzaBean.listTiposPago}"
+                                           var="tipoPago" itemValue="#{tipoPago.tipopagoid}"
+                                           itemLabel="#{tipoPago.nombre}" />
+                        </p:selectOneMenu>
+
+                        <p:outputLabel value="MONTO" />
+                        <p:inputText value="#{cobranzaBean.pagosCredito.cuota}"
+                                     required="true" requiredMessage="ESCRIBA EL MONTO" />
+
+                        <p:outputLabel value="BANCO" />
+                        <p:selectOneMenu styleClass="comboCedula"
+                                         value="#{cobranzaBean.banco.bancoid}" filter="true"
+                                         filterMatchMode="contains">
+                            <f:selectItem itemLabel="ESCOJA UN BANCO" itemValue="" />
+                            <f:selectItems value="#{bancoBean.listaBancos}" var="banco"
+                                           itemValue="#{banco.bancoid}" itemLabel="#{banco.nombre}" />
+                        </p:selectOneMenu>
+
+                        <p:outputLabel value="# CHEQUE/VAUCHER" />
+                        <p:inputText value="#{cobranzaBean.pagosCredito.chequevaucher}" />
+
+                        <p:outputLabel value="# CUENTA/TARJETA" />
+                        <p:inputText value="#{cobranzaBean.pagosCredito.cuentatarjeta}" />
+
+                        <f:facet name="footer">
+                            <p:commandButton value="GUARDAR" icon="ui-icon-disk"
+                                             update="formPagarCredito"
+                                             actionListener="#{cobranzaBean.pagarCredito}"
+                                             oncomplete="PF('dialogoPagarCredito').hide()" />
+                            <p:commandButton value="CANCELAR" icon="ui-icon-close"
+                                             update="formPagarCredito"
+                                             oncomplete="PF('dialogoPagarCredito').hide()" process="@this"
+                                             actionListener="#{cobranzaBean.cancelarCredito}" />
+                        </f:facet>
+                    </h:panelGrid>
+
+                </h:form>
+            </p:dialog>
+
+            <p:dialog header="INSERTAR GARANTE" widgetVar="dialogoGaranteInsertar"
+                      resizable="false" modal="false" showEffect="clip" hideEffect="fold"
+                      id="dialogoNuevoGarante">
+
+                <h:form>
+                    <h:outputText value="NOMBRE DEL CLIENTE" />
+                    <p:inputText value="#{cobranzaBean.nombreCliente}"
+                                 onblur="this.value = this.value.toUpperCase();" required="true"
+                                 requiredMessage="ESCRIBA EL CODIGO DE UN PRODUCTO" />
+
+                    <p:commandButton update=":formNuevoGarante:tablaClientes"
+                                     icon="#{msg['iconoGuardar']}"
+                                     actionListener="#{cobranzaBean.obtenerClientes}" />
+                </h:form>
+
+                <h:form id="formNuevoGarante">
+
+                    <p:dataTable id="tablaClientes" var="garante"
+                                 value="#{cobranzaBean.listaGarantes}" paginator="true" rows="5"
+                                 emptyMessage="#{msg['lbl.mensajeTabla']}"
+                                 paginatorPosition="bottom" rowKey="#{garante.personaid}"
+                                 selection="#{cobranzaBean.garante}" selectionMode="single">
+
+                        <p:column headerText="CÉDULA"
+                                  style="text-align:center;width: 50px;">
+                            #{garante.cedula}
+                        </p:column>
+
+                        <p:column headerText="APELLIDOS"
+                                  style="text-align:center;width: 200px;">
+                            #{garante.apellido}
+                        </p:column>
+
+                        <p:column headerText="NOMBRES"
+                                  style="text-align:center;width: 200px;">
+                            #{garante.nombre}
+                        </p:column>
+
+                    </p:dataTable>
+
+                    <h:panelGrid columns="2" cellpadding="5">
+
+                        <f:facet name="footer">
+                            <p:separator />
+                            <p:commandButton value="GUARDAR" update=":mensaje"
+                                             id="btnNuevoAceptar" icon="#{msg['iconoGuardar']}"
+                                             oncomplete="PF('dialogoGaranteInsertar').hide()"
+                                             actionListener="#{cobranzaBean.insertarGarante}"
+                                             styleClass="centrarBotonesDialogos" />
+
+                            <p:commandButton value="CANCELAR"
+                                             oncomplete="PF('dialogoGaranteInsertar').hide()"
+                                             id="btnNuevolimpiar" icon="#{msg['iconoCancelar']}"
+                                             process="@this" styleClass="centrarBotonesDialogos" />
+                        </f:facet>
+                    </h:panelGrid>
+                </h:form>
+            </p:dialog>
+
+            <p:dialog header="MOSTRAR GARANTE" widgetVar="dialogoGaranteMostrar"
+                      resizable="false" modal="false" showEffect="clip" hideEffect="fold"
+                      id="dialogoMostrar" width="600px">
+
+                <h:form id="formMostrarGarante">
+
+                    <h:panelGrid id="panelMostrar" columns="2" cellpadding="2">
+                        <h:panelGrid columns="2" cellpadding="2" width="350">
+
+                            <h:outputText value="CEDULA" style="font-weight:bold" />
+                            <h:outputText value="#{cobranzaBean.garante.cedula}" />
+
+                            <h:outputText value="APELLIDOS:" style="font-weight:bold" />
+                            <h:outputText value="#{cobranzaBean.garante.apellido}" />
+
+                            <h:outputText value="NOMBRES:" style="font-weight:bold" />
+                            <h:outputText value="#{cobranzaBean.garante.nombre}" />
+
+                            <h:outputText value="FECHA NACIMIENTO:" style="font-weight:bold" />
+                            <h:outputText value="#{cobranzaBean.garante.fechanacimiento}" />
+
+                            <h:outputText value="FECHA REGISTRO:" style="font-weight:bold" />
+                            <h:outputText value="#{cobranzaBean.garante.fecharegistro}" />
+
+                            <h:outputText value="PROVINCIA:" style="font-weight:bold" />
+                            <h:outputText
+                                value="#{cobranzaBean.garante.ciudad.provincia.nombre}" />
+
+                            <h:outputText value="CIUDAD:" style="font-weight:bold" />
+                            <h:outputText value="#{cobranzaBean.garante.ciudad.nombre}" />
+
+                            <h:outputText value="DIRECCION:" style="font-weight:bold" />
+                            <h:outputText value="#{cobranzaBean.garante.direccion}" />
+
+                            <h:outputText value="REFERENCIA:" style="font-weight:bold" />
+                            <h:outputText value="#{cobranzaBean.garante.referencia}" />
+
+                            <h:outputText value="ACTIVO:" style="font-weight:bold" />
+                            <p:selectBooleanCheckbox disabled="true"
+                                                     value="#{cobranzaBean.garante.activo}" />
+                        </h:panelGrid>
+                        <h:panelGrid columns="1" cellpadding="2">
+
+                            <h:outputText value="TELEFONOS:" style="font-weight:bold" />
+                            <p:dataTable var="telefono"
+                                         emptyMessage="#{msg['lbl.mensajeTabla']}"
+                                         value="#{cobranzaBean.garante.telefonopersonas}">
+
+                                <p:column headerText="TELEFONOS">
+                                    #{telefono.telefono}		
+                                </p:column>
+                                <p:column headerText="REFERENCIA">
+                                    #{telefono.referencia}		
+                                </p:column>
+
+                            </p:dataTable>
+
+                            <h:outputText value="E-MAILS:" style="font-weight:bold" />
+                            <p:dataTable var="email" emptyMessage="#{msg['lbl.mensajeTabla']}"
+                                         value="#{cobranzaBean.garante.emailpersonas}">
+
+                                <p:column headerText="E-MAILS">
+                                    #{email.email}		
+                                </p:column>
+
+                            </p:dataTable>
+                        </h:panelGrid>
+
+                    </h:panelGrid>
+                </h:form>
+            </p:dialog>
+
+            <p:dialog header="ELIMINAR GARANTE" widgetVar="dialogoGaranteEliminar"
+                      showEffect="explode" hideEffect="explode"
+                      modal="false" resizable="false" width="258px"
+                      style="text-align: center;">
+                <h:form id="formEliminar">
+
+                    <h:inputHidden value="#{cobranzaBean.garante.personaid}" />
+                    <br />
+                    <p:outputLabel value="ELIMINAR GARANTE" />
+                    <br />
+                    <br />
+                    <p:commandButton value="#{msg['btn.aceptar']}" update=":mensaje"
+                                     icon="#{msg['iconoAceptar']}"
+                                     oncomplete="PF('dialogoGaranteEliminar').hide()"
+                                     actionListener="#{cobranzaBean.eliminarGarante}" />
+                    <p:commandButton value="#{msg['btn.cancelar']}" type="button"
+                                     onclick="PF('dialogoGaranteEliminar').hide()"
+                                     icon="#{msg['iconoCancelar']}" />
+                </h:form>
+            </p:dialog>
+
+            <script type="text/javascript">
+                //<![CDATA[
+                function comprobar(xhr, status, args) {
+                    if (!args.validationFailed && args.error) {
+                        PF('clienteDialogoNuevo').hide();
+                    }
+                }
+                function comprobarDialogoProducto(xhr, status, args) {
+                    if (!args.error) {
+                        PF('productoDialogoNuevo').show()
+                    }
+                }
+                //]]>
+
+                function handleSubmitRequest(args) {
+                    if (!args.validationFailed) {
+                        PF('productoDialogoNuevo').hide();
+                    }
+                }
+            </script>
+
+
+        </ui:define>
+
+    </ui:composition>
+</html>

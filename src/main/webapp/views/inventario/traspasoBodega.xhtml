@@ -1,0 +1,239 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:p="http://primefaces.org/ui">
+<ui:composition template="/templates/layout/masterLayout.xhtml">
+	<ui:define name="title">
+			TRASPASOS ENTRE BODEGAS
+	</ui:define>
+	<ui:define name="content">
+		<p:growl id="mensajes" showDetail="true" life="7000" />
+		<p:panel id="panel" header="LISTADO DE TRASPASOS">
+			<h:form id="formDataTable">
+				<p:focus context="formDataTable" />
+				<p:dataTable id="tablaTraspasos" var="traspaso"
+					value="#{traspasoBodegaBean.listaTraspasos}" paginator="true"
+					rows="10" styleClass="tablaBanco estiloFilasPares"
+					emptyMessage="#{msg['lbl.mensajeTabla']}"
+					paginatorPosition="bottom">
+					<f:facet name="header">
+						<h:form>
+							<p:commandButton value="#{msg['btn.insertar']}"
+								update=":formNuevo"
+								oncomplete="PF('traspasoDialogoNuevo').show()" id="btnNuevo"
+								icon="ui-icon-plus" styleClass="botonNuevo"
+								actionListener="#{traspasoBodegaBean.limpiarObjetos}" />
+						</h:form>
+					</f:facet>
+					<p:column headerText="#{msg['lbl.gestionar']}">
+						<p:tooltip for="btnMostrar" value="MOSTRAR" />
+						<p:commandButton id="btnMostrar" update=":formMostrar"
+							oncomplete="PF('traspasoDialogoMostrar').show()"
+							icon="ui-icon-newwin">
+							<f:setPropertyActionListener value="#{traspaso}"
+								target="#{traspasoBodegaBean.traspaso}" />
+						</p:commandButton>
+					</p:column>
+					<p:column headerText="# TRASPASO ">  
+            			#{traspaso.establecimiento}-#{traspaso.puntoEmision}-#{traspaso.secuencia}
+        			</p:column>
+					<p:column headerText="FECHA" styleClass="columnaInfo">
+						<p:outputLabel value="#{traspaso.fecha}">
+							<f:convertDateTime pattern="dd/MM/yyyy"
+								timeZone="America/Guayaquil" />
+						</p:outputLabel>
+					</p:column>
+					<p:column headerText="LOCAL ORIGEN" filterMatchMode="contains"
+						filterBy="#{traspaso.local1.nombre}" styleClass="columnaInfo">  
+            			#{traspaso.local1.nombre}  
+        			</p:column>
+					<p:column headerText="LOCAL DESTINO" filterMatchMode="contains"
+						filterBy="#{traspaso.local2.nombre}" styleClass="columnaInfo">  
+            			#{traspaso.local2.nombre}  
+        			</p:column>
+				</p:dataTable>
+			</h:form>
+		</p:panel>
+		<p:dialog header="INSERTAR TRASPASO" widgetVar="traspasoDialogoNuevo"
+			width="50%" resizable="false" modal="false" showEffect="clip"
+			hideEffect="fold" id="dialogoNuevo">
+			<h:form id="formNuevo">
+				<p:focus context="formNuevo" />
+				<h:panelGrid columns="2" cellpadding="1">
+					<p:outputLabel value="LOCAL ORIGEN:" styleClass="negrita" />
+					<p:selectOneMenu value="#{traspasoBodegaBean.localOrigen.id}"
+						styleClass="comboFormNuevo">
+						<f:selectItem id="comboBodegaOrigen"
+							itemLabel="ESCOJA EL LOCAL ORIGEN" />
+						<f:selectItems value="#{traspasoBodegaBean.listaLocalsOrigen}"
+							var="localOrigen" itemValue="#{localOrigen.id}"
+							itemLabel="#{localOrigen.nombre}" />
+					</p:selectOneMenu>
+					<h:outputText value="LOCAL DESTINO:" styleClass="negrita" />
+					<p:selectOneMenu value="#{traspasoBodegaBean.localDestino.id}"
+						styleClass="comboFormNuevo">
+						<f:selectItem itemLabel="ESCOJA EL LOCAL DESTINO"
+							id="comboBodegaDestino" />
+						<f:selectItems value="#{traspasoBodegaBean.listaLocalsDestino}"
+							var="localDestino" itemValue="#{localDestino.id}"
+							itemLabel="#{localDestino.nombre}" />
+					</p:selectOneMenu>
+					<h:outputText />
+					<p:commandButton id="btnNuevoAceptar" value="TRASLADAR"
+						oncomplete="cerrarTraspasoDialogoNuevo(xhr, status, args)"
+						actionListener="#{traspasoBodegaBean.insertarTraspaso}"
+						update=":formDataTable, :mensajes" icon="ui-icon-refresh" />
+				</h:panelGrid>
+				<p:dataTable id="tablaDetalleTraspasos" var="detalleTraspasos"
+					value="#{traspasoBodegaBean.traspaso.detalleTraspasos}"
+					paginator="true" rows="5" emptyMessage="#{msg['lbl.mensajeTabla']}"
+					paginatorPosition="bottom" editable="true" editMode="cell">
+					<f:facet name="header">
+						<p:commandButton id="btnNuevo" value="INSERTAR PRODUCTO"
+							icon="ui-icon-plus"
+							update=":formNuevo, :formDetalleTraspasoInsertar, :mensajes"
+							oncomplete="mostrarDetalleTraspasoDialogoInsertar(xhr, status, args)" />
+					</f:facet>
+					<p:column headerText="#{msg['lbl.gestionar']}" styleClass="centrar"
+						width="20%">
+						<p:commandButton id="btnEliminar" icon="#{msg['iconoEliminar']}"
+							update=":formDetalleTraspasoEliminar"
+							oncomplete="PF('detalleTraspasoDialogoEliminar').show()">
+							<f:setPropertyActionListener value="#{detalleTraspasos}"
+								target="#{traspasoBodegaBean.detalleTraspaso}" />
+						</p:commandButton>
+					</p:column>
+					<p:column headerText="PRODUCTO" width="50%">  
+            			#{detalleTraspasos.producto.nombre}  
+        			</p:column>
+					<p:column headerText="CANTIDAD" width="30%">
+						<p:cellEditor>
+							<f:facet name="output">
+								<h:outputText value="#{detalleTraspasos.cantidad}" />
+							</f:facet>
+							<f:facet name="input">
+								<p:inputText value="#{detalleTraspasos.cantidad}"
+									styleClass="w100" label="CANTIDAD" />
+							</f:facet>
+						</p:cellEditor>
+					</p:column>
+				</p:dataTable>
+			</h:form>
+		</p:dialog>
+		<p:dialog widgetVar="detalleTraspasoDialogoInsertar" severity="alert"
+			header="INSERTAR PRODUCTO A LA LISTA" showEffect="explode"
+			hideEffect="explode" modal="false" resizable="false" width="50%">
+			<h:form>
+				<h:outputText value="NOMBRE DEL PRODUCTO" />
+				<p:inputText value="#{traspasoBodegaBean.nombreProducto}"
+					onblur="this.value=this.value.toUpperCase();" required="true"
+					requiredMessage="ESCRIBA EL CODIGO DE UN PRODUCTO" />
+				<p:commandButton
+					update=":formDetalleTraspasoInsertar:tablaProductos"
+					icon="#{msg['iconoBuscar']}"
+					actionListener="#{traspasoBodegaBean.obtenerProductos}" />
+			</h:form>
+			<h:form id="formDetalleTraspasoInsertar">
+				<p:dataTable id="tablaProductos" var="producto"
+					value="#{traspasoBodegaBean.listProductos}" paginator="true"
+					rows="5" emptyMessage="#{msg['lbl.mensajeTabla']}"
+					paginatorPosition="bottom" rowKey="#{producto.id}"
+					selection="#{traspasoBodegaBean.producto}" selectionMode="single">
+					<p:ajax event="rowSelect"
+						listener="#{traspasoBodegaBean.obtenerProducto}" />
+					<p:column headerText="EAN">
+							 	#{producto.ean}
+						</p:column>
+					<p:column headerText="NOMBRE">
+							 	#{producto.nombre}
+						</p:column>
+				</p:dataTable>
+				<p:commandButton value="ACEPTAR" icon="ui-icon-check"
+					update=":formNuevo, :mensajes"
+					actionListener="#{traspasoBodegaBean.insertarDetalle}"
+					oncomplete="cerrarDetalleTraspasoDialogoInsertar(xhr, status, args)" />
+				<p:commandButton value="CANCELAR" icon="ui-icon-close"
+					oncomplete="PF('detalleTraspasoDialogoInsertar').hide()" />
+			</h:form>
+		</p:dialog>
+		<p:dialog widgetVar="detalleTraspasoDialogoEliminar" severity="alert"
+			header="ELIMINAR PRODUCTO DE LA LISTA" showEffect="explode"
+			hideEffect="explode" modal="false" resizable="false" width="300px"
+			styleClass="centrar">
+			<h:form id="formDetalleTraspasoEliminar">
+				<br />
+				<p:outputLabel value="¿ ESTA SEGURO DE ELIMINAR ESTE PRODUCTO ?" />
+				<br />
+				<br />
+				<p:commandButton value="ACEPTAR" update=":formNuevo,:mensajes"
+					icon="ui-icon-check"
+					oncomplete="PF('detalleTraspasoDialogoEliminar').hide()"
+					actionListener="#{traspasoBodegaBean.eliminarDetalleTraspaso}" />
+				<p:commandButton value="CANCELAR" type="button"
+					onclick="PF('detalleTraspasoDialogoEliminar').hide()"
+					icon="ui-icon-close" />
+			</h:form>
+		</p:dialog>
+		<p:dialog header="MOSTRAR TRASPASO" widgetVar="traspasoDialogoMostrar"
+			width="50%" resizable="false" modal="false" showEffect="clip"
+			hideEffect="fold" id="dialogoMostrar">
+			<h:form id="formMostrar">
+				<h:panelGrid id="panelMostrar" columns="2" cellpadding="5">
+					<h:outputText value="BODEGA ORIGEN: " />
+					<h:outputText value="#{traspasoBodegaBean.traspaso.local2.nombre}"
+						styleClass="negrita" />
+					<h:outputText value="BODEGA DESTINO: " />
+					<h:outputText value="#{traspasoBodegaBean.traspaso.local1.nombre}"
+						styleClass="negrita" />
+					<h:outputText value="# TRASPASO " />
+					<h:outputText
+						value="#{traspasoBodegaBean.traspaso.establecimiento}-#{traspasoBodegaBean.traspaso.puntoEmision}-#{traspasoBodegaBean.traspaso.secuencia}"
+						styleClass="negrita" />
+					<h:outputText value="FECHA: " />
+					<p:outputLabel value="#{traspasoBodegaBean.traspaso.fecha}"
+						styleClass="negrita">
+						<f:convertDateTime pattern="dd/MM/yyyy"
+							timeZone="America/Guayaquil" />
+					</p:outputLabel>
+				</h:panelGrid>
+				<p:dataTable id="tablaDetalleTraspaso" var="detalleTraspaso"
+					value="#{traspasoBodegaBean.traspaso.detalleTraspasos}"
+					paginator="true" rows="5" emptyMessage="#{msg['lbl.mensajeTabla']}"
+					paginatorPosition="bottom">
+					<f:facet name="header">
+						<h:outputText value="DETALLES" />
+					</f:facet>
+					<p:column headerText="PRODUCTO" styleClass="columnaInfo">  
+            			#{detalleTraspaso.producto.nombre}  
+        			</p:column>
+					<p:column headerText="CANTIDAD" styleClass="columnaInfo">  
+            			#{detalleTraspaso.cantidad}  
+        			</p:column>
+				</p:dataTable>
+			</h:form>
+		</p:dialog>
+		<script type="text/javascript">
+			//<![CDATA[
+			function cerrarDetalleTraspasoDialogoInsertar(xhr, status, args) {
+				if (args.cerrar) {
+					PF('detalleTraspasoDialogoInsertar').hide();
+				}
+			}
+			function mostrarDetalleTraspasoDialogoInsertar(xhr, status, args) {
+				if (!args.validationFailed) {
+					PF('detalleTraspasoDialogoInsertar').show()
+				}
+			}
+			function cerrarTraspasoDialogoNuevo(xhr, status, args) {
+				if (!args.validationFailed && args.cerrar) {
+					PF('traspasoDialogoNuevo').hide();
+				}
+			}
+			//]]>
+		</script>
+	</ui:define>
+</ui:composition>
+</html>

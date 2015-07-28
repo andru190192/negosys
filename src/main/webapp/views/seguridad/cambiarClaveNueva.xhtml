@@ -1,0 +1,77 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:p="http://primefaces.org/ui">
+
+
+<h:head>
+	<meta name="viewport"
+		content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+	<link rel="shortcut icon" type="image/png" media="all"
+		href="../../resources/images/logo.png" />
+	<link type="text/css" rel="stylesheet"
+		href="../../resources/css/layout.css" />
+	<link type="text/css" rel="stylesheet"
+		href="../../resources/css/bootstrap.css" />
+	<link type="text/css" rel="stylesheet"
+		href="../../resources/css/font-awesome.css" />
+	<title><ui:insert name="title" /></title>
+</h:head>
+
+<h:body onload="mostrarMensaje()">
+	<p:growl id="mensaje" showDetail="true" life="7000" />
+
+	<h:form id="form">
+
+		<p:panel id="panel" header="CAMBIO
+			DE CONTRASEÑA" style="margin-top: 120px;">
+
+			<p:notificationBar position="top" effect="slide" styleClass="top"
+				widgetVar="bar" style="height: 120px;">
+				<h:outputText value="PARECE QUE ES LA PRIMERA VEZ QUE INICIAS " style="font-size:36px;" />
+				<br></br>
+				<h:outputText value="POR SU SEGURIDAD RECOMENDAMOS QUE ACTUALIZE SU CONTRASEÑA" style="font-size:36px;" />
+			</p:notificationBar>
+
+			<p:commandButton value="Show" onclick="PF('bar').show()" style="display: none;"
+				id="btnMostrarMensaje" type="button" icon="ui-icon-arrow-1-s" />
+
+			<h:panelGrid columns="2" cellspacing="10" cellpadding="10">
+				<h:outputLabel for="contraseñaActual" value="CONTRASEÑA ACTUAL:" />
+				<p:password id="contraseñaActual" value="#{cambiarClaveNuevaBean.claveActual}"
+					label="Contraseña Actual">
+				</p:password>
+
+				<h:outputLabel for="contraseñaNueva" value="CONTRASEÑA NUEVA:" />
+				<p:password id="contraseñaNueva" value="#{cambiarClaveNuevaBean.claveNueva1}"
+					label="Contraseña Nueva" feedback="true" inline="true"
+					promptLabel="Nivel Bajo" weakLabel="Nivel Medio"
+					goodLabel="Nivel Alto" strongLabel="Óptimo">
+				</p:password>
+
+				<h:outputLabel for="repitaContraseña" value="REPITA CONTRASEÑA:" />
+				<p:password id="repitaContraseña" value="#{cambiarClaveNuevaBean.claveNueva2}"
+					label="Repita Contraseña" feedback="true" inline="true"
+					promptLabel="Nivel Bajo" weakLabel="Nivel Medio"
+					goodLabel="Nivel Alto" strongLabel="Óptimo">
+				</p:password>
+			</h:panelGrid>
+			<br></br>
+			<p:commandButton value="ACTUALIZAR" update=":mensaje" id="ajax"
+				styleClass="ui-priority-primary" 
+				action="#{cambiarClaveNuevaBean.cambiarClave}" />
+		</p:panel>
+	</h:form>
+	<script type="text/javascript">
+		//<![CDATA[
+		           function mostrarMensaje(){
+		        	   document.getElementById("form:btnMostrarMensaje").click();   
+		           }
+		//]]>
+	</script>
+</h:body>
+</html>

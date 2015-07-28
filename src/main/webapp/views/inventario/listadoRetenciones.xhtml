@@ -1,0 +1,163 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:p="http://primefaces.org/ui">
+<ui:composition template="/templates/layout/masterLayout.xhtml">
+	<ui:define name="title">
+		LISTADO DE RETENCIONES
+	</ui:define>
+	<ui:define name="content">
+		<p:growl id="mensaje" showDetail="true" life="7000" />
+		<p:panel id="panel" header="LISTADO
+			DE RETENCIONES">
+			<h:form id="busquedaTabla">
+				<h:panelGrid columns="3">
+					<h:outputText value="PROVEEDOR" styleClass="negrita" />
+					<p:inputText
+						value="#{listadoRetencionBean.criterioBusquedaProveedor}"
+						onblur="this.value=this.value.toUpperCase();" />
+					<h:outputText />
+					<h:outputText value="# RETENCION" styleClass="negrita" />
+					<p:inputText
+						value="#{listadoRetencionBean.criterioBusquedaNumeroRetencion}"
+						onblur="this.value=this.value.toUpperCase();" />
+					<h:outputText />
+					<h:outputText value="FECHA RETENCION" styleClass="negrita" />
+					<p:calendar
+						value="#{listadoRetencionBean.criterioBusquedaFechaRetencion}"
+						navigator="true" />
+					<h:outputText />
+					<h:outputText value="# COMPROBANTE" styleClass="negrita" />
+					<p:inputText
+						value="#{listadoRetencionBean.criterioBusquedaNumeroComprobante}"
+						onblur="this.value=this.value.toUpperCase();" />
+					<h:outputText />
+					<p:outputLabel value="FECHA COMPROBANTE" styleClass="negrita" />
+					<p:calendar
+						value="#{listadoRetencionBean.criterioBusquedaFechaIngreso}"
+						navigator="true" />
+					<p:commandButton update="busquedaTabla, :formDataTable, :mensaje"
+						icon="#{msg['iconoBuscar']}"
+						actionListener="#{listadoRetencionBean.obtener}" />
+				</h:panelGrid>
+			</h:form>
+			<h:form id="formDataTable">
+				<p:dataTable id="tablaListadoEntradas" var="retencion"
+					value="#{listadoRetencionBean.listaRetenciones}" paginator="true"
+					scrollable="true"
+					styleClass="ui-datatable-scrollable-body estiloFilasPares"
+					rows="10" rowsPerPageTemplate="5,10,15"
+					paginatorTemplate="{RowsPerPageDropdown} {FirstPageLink} {PreviousPageLink} {CurrentPageReport} {NextPageLink} {LastPageLink}"
+					paginatorPosition="bottom"
+					emptyMessage="#{msg['lbl.mensajeTabla']}">
+					<f:facet name="header">
+						<p:tooltip for="btnNuevo" value="#{msg['lbl.insertar']}" />
+						<p:commandButton id="btnNuevo"
+							action="#{listadoRetencionBean.redirecionar}" icon="ui-icon-plus" />
+					</f:facet>
+					<p:column headerText="GESTIONAR" width="10%" styleClass="centrar">
+						<p:tooltip for="btnMostrar" value="MOSTRAR" />
+						<p:commandButton id="btnMostrar" update=":formMostrar"
+							oncomplete="PF('listaRetencionDialogoMostrar').show()"
+							icon="ui-icon-newwin">
+							<f:setPropertyActionListener value="#{retencion}"
+								target="#{listadoRetencionBean.retencion}" />
+						</p:commandButton>
+						<p:tooltip for="btnXML" value="GENERAR XML" />
+						<p:commandButton id="btnXML"
+							action="#{listadoRetencionBean.generarXML}"
+							icon="ui-icon-carat-2-e-w">
+							<f:setPropertyActionListener value="#{retencion}"
+								target="#{listadoRetencionBean.retencion}" />
+						</p:commandButton>
+					</p:column>
+					<p:column headerText="# RETENCION" width="15%" styleClass="centrar">  
+            			#{retencion.establecimiento}-#{retencion.puntoEmision}-#{retencion.secuencia}  
+        			</p:column>
+					<p:column headerText="CEDULA" width="10%" styleClass="centrar">  
+            			#{retencion.proveedor.persona.cedula}  
+        			</p:column>
+					<p:column headerText="PROVEEDOR">  
+            			#{retencion.proveedor.persona.apellido} #{retencion.proveedor.persona.nombre}
+        			</p:column>
+					<p:column headerText="FECHA EMISION" width="20%">
+						<p:outputLabel value="#{retencion.fechaEmision}">
+							<f:convertDateTime pattern="dd/MM/yyyy"
+								timeZone="America/Guayaquil" />
+						</p:outputLabel>
+					</p:column>
+				</p:dataTable>
+			</h:form>
+		</p:panel>
+		<p:dialog header="MOSTRAR INGRESO"
+			widgetVar="listaRetencionDialogoMostrar" resizable="false"
+			modal="false" showEffect="clip" hideEffect="fold" id="dialogoMostrar"
+			width="50%">
+			<h:form id="formMostrar">
+				<h:panelGrid id="panelMostrar" columns="2">
+					<h:outputText value="PROVEEDOR:" styleClass="negrita" />
+					<h:outputText
+						value="#{listadoRetencionBean.retencion.proveedor.persona.cedula} - #{listadoRetencionBean.retencion.proveedor.persona.apellido} #{listadoRetencionBean.retencion.proveedor.persona.nombre}" />
+					<h:outputText value="# COMPROBANTE:" styleClass="negrita" />
+					<h:outputText
+						value="#{listadoRetencionBean.retencion.establecimiento} - #{listadoRetencionBean.retencion.puntoEmision} - #{listadoRetencionBean.retencion.secuencia}" />
+					<h:outputText value="FECHA INGRESO:" styleClass="negrita" />
+					<p:outputLabel
+						value="#{listadoRetencionBean.retencion.fechaEmision}">
+						<f:convertDateTime pattern="dd/MM/yyyy"
+							timeZone="America/Guayaquil" />
+					</p:outputLabel>
+					<h:outputText value="ACTIVO:" styleClass="negrita" />
+					<p:selectBooleanButton id="value1"
+						value="#{listadoRetencionBean.retencion.activo}" onLabel="SI"
+						offLabel="NO" styleClass="leyendaPagado" disabled="true" />
+				</h:panelGrid>
+				<p:dataTable id="tablaDetalle" var="detalleRetencion"
+					value="#{listadoRetencionBean.retencion.detallesRetenciones}"
+					styleClass="estiloFilasPares">
+					<p:column headerText="TIPO COMPROBANTE" width="20%"
+						styleClass="centrar">
+            			#{detalleRetencion.tipoComprobanteRetencion.nombre}  
+        		</p:column>
+					<p:column headerText="NUMERO" width="20%" styleClass="centrar">  
+            			#{detalleRetencion.numeroComprobante}
+        		</p:column>
+
+					<p:column headerText="AUTORIZACIÓN SRI" width="20%"
+						styleClass="centrar">  
+            			#{detalleRetencion.autorizacionSri}
+        			</p:column>
+
+					<p:column headerText="FECHA EMISION" width="10%"
+						styleClass="centrar">
+						<p:outputLabel value="#{detalleRetencion.fechaEmision}">
+							<f:convertDateTime pattern="dd/MM/yyyy"
+								timeZone="America/Guayaquil" />
+						</p:outputLabel>
+					</p:column>
+					<p:column headerText="EJERCICIO FISCAL" width="10%"
+						styleClass="centrar">
+						<p:outputLabel value="#{detalleRetencion.fechaEmision}">
+							<f:convertDateTime pattern="MM/yyyy" timeZone="America/Guayaquil" />
+						</p:outputLabel>
+					</p:column>
+					<p:column headerText="BASE IMPONIBLE RETENCION" width="15%"
+						styleClass="centrar">  
+            		#{detalleRetencion.baseImponible}
+        		</p:column>
+					<p:column headerText="IMPUESTO" width="15%" styleClass="centrar">  
+            		#{detalleRetencion.impuestoRetencion.nombre}
+        		</p:column>
+					<p:column headerText="PORCENTAJE RETENCION" width="15%"
+						styleClass="centrar">  
+            		#{detalleRetencion.porcentajeRetencion}
+        		</p:column>
+				</p:dataTable>
+			</h:form>
+		</p:dialog>
+	</ui:define>
+</ui:composition>
+</html>

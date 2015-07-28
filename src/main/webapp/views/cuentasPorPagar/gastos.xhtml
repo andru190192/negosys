@@ -1,0 +1,230 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:p="http://primefaces.org/ui">
+<ui:composition template="/templates/layout/masterLayout.xhtml">
+	<ui:define name="title">GASTOS</ui:define>
+	<ui:define name="content">
+		<p:growl id="mensaje" showDetail="true" life="7000" />
+		<p:panel id="panel" header="GASTOS DE LA EMPRESA">
+			<h:form id="formCriteriosBusqueda">
+				<h:panelGrid columns="3">
+					<p:outputLabel value="FECHA INGRESO" />
+					<p:calendar value="#{gastosBean.criterioBusquedaFecha}"
+						navigator="true" />
+					<p:outputLabel />
+					<p:outputLabel value="DESCRIPCIÓN" />
+					<p:inputText value="#{gastosBean.criterioBusquedaDescripcion}" />
+					<p:outputLabel />
+					<p:outputLabel value="PROVEEDOR" />
+					<p:inputText value="#{gastosBean.criterioBusquedaProveedor}" />
+					<p:commandButton id="btnBusqueda" icon="ui-icon-search"
+						actionListener="#{gastosBean.obtenerGastos}"
+						update=":formTablaListadoGastos, :mensaje" />
+				</h:panelGrid>
+			</h:form>
+			<h:form id="formTablaListadoGastos">
+				<p:dataTable id="tablaListadoGastos" var="gastos"
+					value="#{gastosBean.listaGastos}" paginator="true" rows="10"
+					rowsPerPageTemplate="5,10,15"
+					paginatorTemplate="{RowsPerPageDropdown} {FirstPageLink} {PreviousPageLink} {CurrentPageReport} {NextPageLink} {LastPageLink}"
+					paginatorPosition="bottom"
+					rowStyleClass="#{gastos.gastos.activo eq true ? null:'desactivo'}"
+					emptyMessage="#{msg['lbl.mensajeTabla']}">
+					<f:facet name="header">
+						<p:tooltip for="btnNuevo" value="#{msg['lbl.insertar']}" />
+						<p:commandButton id="btnNuevo" icon="ui-icon-plus"
+							actionListener="#{gastosBean.nuevoGasto}"
+							update=":formNuevoGasto"
+							oncomplete="PF('dialogoNuevoGasto').show()" />
+					</f:facet>
+					<p:column headerText="#{msg['lbl.gestionar']}" styleClass="centrar">
+						<p:tooltip for="btnEditar" value="EDITAR" />
+						<p:commandButton id="btnEditar" update=":formEditar"
+							oncomplete="PF('gastoDialogoEditar').show()"
+							icon="ui-icon-pencil" action="#{gastosBean.cargarEditar}">
+							<f:setPropertyActionListener value="#{gastos.gastos}"
+								target="#{gastosBean.gastos}" />
+						</p:commandButton>
+						<p:tooltip for="btnEliminar"
+							value="#{gastos.gastos.activo eq true ? msg['lbl.desactivar']:msg['lbl.activar']}" />
+						<p:commandButton id="btnEliminar" update=":formEliminar"
+							oncomplete="PF('gastoDialogoEliminar').show()"
+							icon="#{gastos.gastos.activo eq true ? 'ui-icon-close':'ui-icon-check'}">
+							<f:setPropertyActionListener value="#{gastos.gastos}"
+								target="#{gastosBean.gastos}" />
+						</p:commandButton>
+					</p:column>
+					<p:column headerText="FECHA" styleClass="centrar">
+						<p:outputLabel value="#{gastos.gastos.fecha}">
+							<f:convertDateTime pattern="dd/MM/yyyy"
+								timeZone="America/Guayaquil" />
+						</p:outputLabel>
+					</p:column>
+					<p:column headerText="DESCRIPCION" styleClass="centrar" width="20%">  
+            			#{gastos.gastos.descripcion}
+        			</p:column>
+					<p:column headerText="PROVEEDOR" styleClass="centrar" width="15%">  
+            			#{gastos.gastos.proveedor.nombreComercial}
+        			</p:column>
+					<p:column headerText="PRECIO UNITARIO" styleClass="centrar">  
+            			#{gastos.gastos.precioUnitarioCosto}
+        			</p:column>
+					<p:column headerText="CANTIDAD" styleClass="centrar">  
+            			#{gastos.gastos.cantidad}
+        			</p:column>
+					<p:column headerText="SUBTOTAL" styleClass="centrar">  
+            			#{gastos.subtotalFacturado}
+        			</p:column>
+					<p:column headerText="IVA" styleClass="centrar">  
+            			#{gastos.iva}
+        			</p:column>
+					<p:column headerText="TOTAL" styleClass="centrar">  
+            			#{gastos.totalFacturado}
+        			</p:column>
+					<p:column headerText="VALOR RETENCION" styleClass="centrar">  
+            			#{gastos.valorRetencion}
+        			</p:column>
+					<p:column headerText="VALOR RETENCION(IVA)" styleClass="centrar">  
+            			#{gastos.valorRetencionIva}
+        			</p:column>
+					<p:column headerText="TOTAL A PAGAR" styleClass="centrar">  
+            			#{gastos.totalPagar}
+        			</p:column>
+					<p:column headerText="FORMA DE PAGO" styleClass="centrar">  
+            			#{gastos.gastos.tipoPago.nombre}
+        			</p:column>
+				</p:dataTable>
+			</h:form>
+		</p:panel>
+		<p:dialog header="NUEVO GASTO" widgetVar="dialogoNuevoGasto"
+			resizable="false" modal="false" showEffect="clip" hideEffect="fold"
+			id="dialogoNuevoGasto" width="500">
+			<h:form id="formNuevoGasto">
+				<h:panelGrid columns="1" cellpadding="1" width="100%">
+					<h:panelGrid columns="2" cellpadding="1" width="100%">
+						<h:outputLabel value="FACTURA: " />
+						<p:selectBooleanButton id="formatoGasto"
+							value="#{gastosBean.bnFactura}" onLabel="SI" offLabel="NO"
+							onIcon="ui-icon-check" offIcon="ui-icon-close" styleClass="w60px">
+							<p:ajax update="formNuevoGasto" />
+						</p:selectBooleanButton>
+						<h:outputLabel value="PROVEEDOR"
+							rendered="#{gastosBean.bnFactura}" />
+						<p:autoComplete id="autoCompletarProveedor" styleClass="w100"
+							rendered="#{gastosBean.bnFactura}" scrollHeight="200"
+							effect="drop" placeholder="MINIMO 3 CARACTERES"
+							emptyMessage="NO HAY DATOS A MOSTRAR"
+							panelStyle="width:400px !important" minQueryLength="3"
+							maxResults="20" value="#{gastosBean.proveedor}"
+							completeMethod="#{gastosBean.obtenerProveedorPorBusqueda}">
+							<p:ajax event="itemSelect" id="prueba"
+								listener="#{gastosBean.cargarProveedor}"
+								update="autoCompletarProveedor, :mensaje" />
+						</p:autoComplete>
+						<h:outputLabel value="FECHA" />
+						<p:calendar value="#{gastosBean.fechaGasto}" navigator="true"
+							styleClass="w100" />
+						<h:outputLabel value="DESCRIPCION" />
+						<p:inputText value="#{gastosBean.gastos.descripcion}"
+							styleClass="w100" />
+						<p:outputLabel value="TIPO DE PAGO" />
+						<p:selectOneMenu styleClass="w100"
+							value="#{gastosBean.gastos.tipoPago}">
+							<f:selectItems value="#{gastosBean.listaTiposPago}"
+								var="tipoPago" itemValue="#{tipoPago}"
+								itemLabel="#{tipoPago.nombre}" />
+						</p:selectOneMenu>
+						<h:outputLabel value="PRECIO UNITARIO" />
+						<p:inputText value="#{gastosBean.gastos.precioUnitarioCosto}"
+							styleClass="w100" />
+						<h:outputLabel value="CANTIDAD" />
+						<p:inputText value="#{gastosBean.gastos.cantidad}"
+							styleClass="w100" />
+						<h:outputLabel value="IVA" />
+						<p:selectBooleanCheckbox value="#{gastosBean.gastos.iva}" />
+						<h:outputLabel value="% RETENCION"
+							rendered="#{gastosBean.bnFactura}" />
+						<p:inputText rendered="#{gastosBean.bnFactura}"
+							value="#{gastosBean.gastos.porcentajeRetencionFuente}"
+							styleClass="w100" />
+						<h:outputLabel value="% RETENCION (IVA)"
+							rendered="#{gastosBean.bnFactura}" />
+						<p:inputText value="#{gastosBean.gastos.porcentajeRetencionIva}"
+							styleClass="w100" rendered="#{gastosBean.bnFactura}" />
+					</h:panelGrid>
+					<f:facet name="footer">
+						<p:commandButton value="GUARDAR"
+							actionListener="#{gastosBean.insertar}"
+							update="formNuevoGasto, :mensaje"
+							oncomplete="comprobarGasto(xhr, status, args);"
+							icon="ui-icon-disk" />
+						<p:commandButton value="CANCELAR"
+							oncomplete="PF('dialogoNuevoGasto').hide()" icon="ui-icon-close" />
+					</f:facet>
+				</h:panelGrid>
+			</h:form>
+		</p:dialog>
+		<p:dialog widgetVar="gastoDialogoEliminar"
+			header="ACTIVAR / DESACTIVAR GASTOS" showEffect="explode"
+			hideEffect="explode" modal="false" resizable="false" width="258px"
+			styleClass="centrar">
+			<h:form id="formEliminar">
+				<h:inputHidden value="#{gastosBean.gastos.id}" />
+				<br />
+				<ui:param name="desactivar"
+					value="¿ DESEA DESACTIVAR EL GASTO: #{gastosBean.gastos.descripcion} ?" />
+				<ui:param name="activar"
+					value="¿ DESEA ACTIVAR EL GASTO: #{gastosBean.gastos.descripcion} ?" />
+				<h:outputText
+					value="#{gastosBean.gastos.activo eq true ? desactivar : activar}" />
+				<br />
+				<br />
+				<p:commandButton value="#{msg['btn.aceptar']}"
+					update=":formTablaListadoGastos,:mensaje"
+					icon="#{msg['iconoAceptar']}"
+					oncomplete="PF('gastoDialogoEliminar').hide()"
+					actionListener="#{gastosBean.eliminar}" />
+				<p:commandButton value="#{msg['btn.cancelar']}" type="button"
+					onclick="PF('gastoDialogoEliminar').hide()"
+					icon="#{msg['iconoCancelar']}" />
+			</h:form>
+		</p:dialog>
+		<p:dialog header="EDITAR GASTO" widgetVar="gastoDialogoEditar"
+			resizable="false" modal="false" showEffect="clip" hideEffect="fold"
+			id="dialogoEditar" width="340px">
+			<h:form id="formEditar">
+				<h:panelGrid rowClasses="fila" columns="2" width="100%">
+					<h:outputText value="FECHA:" />
+					<p:calendar styleClass="calendarioCobro" navigator="true"
+						value="#{gastosBean.fechaGasto}" showOn="button" />
+					<f:facet name="footer">
+						<p:commandButton value="#{msg['btn.guardar']}"
+							update=":formTablaListadoGastos ,:mensaje, formEditar"
+							oncomplete="PF('gastoDialogoEditar').hide()"
+							id="btnEditarAceptar" icon="#{msg['iconoGuardar']}"
+							actionListener="#{gastosBean.actualizar}" />
+						<p:commandButton value="#{msg['btn.cancelar']}"
+							oncomplete="PF('gastoDialogoEditar').hide()"
+							id="btnEditarlimpiar" icon="#{msg['iconoCancelar']}"
+							process="@this" />
+					</f:facet>
+				</h:panelGrid>
+			</h:form>
+		</p:dialog>
+		<script type="text/javascript">
+			//<![CDATA[
+			function comprobarGasto(xhr, status, args) {
+				if (args.errorGasto)
+					PF('dialogoNuevoGasto').show();
+				else
+					PF('dialogoNuevoGasto').hide();
+			}
+			//]]>
+		</script>
+	</ui:define>
+</ui:composition>
+</html>

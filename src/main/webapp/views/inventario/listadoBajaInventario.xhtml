@@ -1,0 +1,123 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:p="http://primefaces.org/ui">
+<ui:composition template="/templates/layout/masterLayout.xhtml">
+	<ui:define name="title">
+	LISTADO DE BAJA DE INVENTARIO
+		</ui:define>
+	<ui:define name="content">
+		<p:growl id="mensaje" showDetail="true" life="7000" />
+		<p:panel id="panel" header="LISTADO DE BAJA DE INVENTARIO">
+			<h:form id="busquedaTabla">
+				<h:panelGrid columns="3">
+					<h:outputText value="# BAJA INVENTARIO" />
+					<p:inputText
+						value="#{listadoBajaInventarioBean.criterioBusquedaNumeroBaja}"
+						onblur="this.value=this.value.toUpperCase();" />
+					<h:outputText />
+					<p:outputLabel value="FECHA INGRESO" />
+					<p:calendar
+						value="#{listadoBajaInventarioBean.criterioBusquedaFechaDocumento}"
+						navigator="true" />
+					<p:commandButton update=":formDataTable, :mensaje"
+						icon="#{msg['iconoBuscar']}"
+						actionListener="#{listadoBajaInventarioBean.obtenerBajaInvetario}" />
+				</h:panelGrid>
+			</h:form>
+			<br></br>
+			<h:form id="formDataTable">
+				<p:dataTable id="tablaListadobajaInventarios" var="bajaInventario"
+					styleClass="estiloFilasPares"
+					value="#{listadoBajaInventarioBean.listaBajaInventarios}"
+					paginator="true" rows="10" rowsPerPageTemplate="5,10,15"
+					paginatorTemplate="{RowsPerPageDropdown} {FirstPageLink} {PreviousPageLink} {CurrentPageReport} {NextPageLink} {LastPageLink}"
+					paginatorPosition="bottom"
+					emptyMessage="#{msg['lbl.mensajeTabla']}">
+					<f:facet name="header">
+						<p:tooltip for="btnNuevo" value="#{msg['lbl.insertar']}" />
+						<p:commandButton id="btnNuevo"
+							action="#{listadoBajaInventarioBean.redirecionarBajaInventario}"
+							icon="ui-icon-plus" />
+					</f:facet>
+					<p:column headerText="GESTIONAR" styleClass="centrar" width="10%">
+						<p:tooltip value="MOSTRAR" for="btnMostrar" />
+						<p:commandButton id="btnMostrar" update=":formMostrar"
+							oncomplete="PF('bajaInventarioDialogoMostrar').show()"
+							icon="ui-icon-newwin"
+							action="#{listadoBajaInventarioBean.generarListaDetalle}">
+							<f:setPropertyActionListener value="#{bajaInventario}"
+								target="#{listadoBajaInventarioBean.bajaInventario}" />
+						</p:commandButton>
+					</p:column>
+					<p:column headerText="# BAJA INVENTARIO ">  
+            			#{bajaInventario.establecimiento}-#{bajaInventario.puntoEmision}-#{bajaInventario.secuencia}
+        			</p:column>
+					<p:column headerText="FECHA">
+						<p:outputLabel value="#{bajaInventario.fecha}">
+							<f:convertDateTime pattern="dd/MM/yyyy"
+								timeZone="America/Guayaquil" />
+						</p:outputLabel>
+					</p:column>
+					<p:column headerText="BODEGUERO">  
+            			#{bajaInventario.bodeguero.empleado.persona.apellido} #{bajaInventario.bodeguero.empleado.persona.nombre}
+        			</p:column>
+				</p:dataTable>
+			</h:form>
+		</p:panel>
+		<p:dialog header="MOSTRAR BAJA DE INVENTARIO"
+			widgetVar="bajaInventarioDialogoMostrar" resizable="false"
+			modal="false" showEffect="clip" hideEffect="fold" id="dialogoMostrar"
+			width="50%">
+			<h:form id="formMostrar">
+				<h:panelGrid id="panelMostrar" columns="2" cellpadding="1">
+					<h:outputText styleClass="negrita" value="# BAJA INVENTARIO " />
+					<h:outputText
+						value="#{listadoBajaInventarioBean.bajaInventario.establecimiento}-#{listadoBajaInventarioBean.bajaInventario.puntoEmision}-#{listadoBajaInventarioBean.bajaInventario.secuencia}" />
+					<h:outputText styleClass="negrita" value="FECHA" />
+					<h:outputText
+						value="#{listadoBajaInventarioBean.bajaInventario.fecha}" />
+					<h:outputText styleClass="negrita" value="BODEGUERO" />
+					<h:outputText
+						value="#{listadoBajaInventarioBean.bajaInventario.bodeguero.empleado.persona.apellido} #{listadoBajaInventarioBean.bajaInventario.bodeguero.empleado.persona.nombre}" />
+				</h:panelGrid>
+				<p:dataTable id="tablaDetallebajaInventarios"
+					var="detallebajaInventario" styleClass="datatable-scrollable-body estiloFilasPares"
+					value="#{listadoBajaInventarioBean.listaBajaInventariosDetalle}"
+					scrollHeight="auto"
+					emptyMessage="No hay informacion disponible.">
+					<p:column headerText="COD." width="5%">
+							 	#{detallebajaInventario.codigo}
+						</p:column>
+					<p:column headerText="DESCRIPCION">
+						#{detallebajaInventario.descripcion}
+					</p:column>
+					<p:column headerText="MOTIVO DE BAJA" width="15%">
+							#{detallebajaInventario.motivoBaja.nombre}
+					</p:column>
+					<p:column headerText="CANTIDAD" width="10%">  
+            				#{detallebajaInventario.cantidad}  
+        				</p:column>
+					<p:column headerText="P. COSTO" width="10%" styleClass="centrarDerecha">  
+            				#{detallebajaInventario.precioCosto}
+        				</p:column>
+					<p:column headerText="IMPORTE" width="10%" styleClass="centrarDerecha">  
+            				#{detallebajaInventario.importe}  
+        				</p:column>
+					<p:columnGroup type="footer">
+						<p:row>
+							<p:column colspan="5" styleClass="centrarDerecha f-z15px negrita"
+								footerText="TOTAL" />
+							<p:column footerText="#{listadoBajaInventarioBean.total}"
+								styleClass="f-z15px negrita centrarDerecha" />
+						</p:row>
+					</p:columnGroup>
+				</p:dataTable>
+			</h:form>
+		</p:dialog>
+	</ui:define>
+</ui:composition>
+</html>

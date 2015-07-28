@@ -1,0 +1,56 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html manifest="../../resources/negosysLogin.mf"
+	xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core" lang="es">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<link rel='stylesheet' href='../../resources/css/estilosLogin.css' />
+<title>INICIAR SESI&Oacute;N</title>
+</head>
+<body>
+	<header class="container"> <section class="row"> <article
+		class='col-xs-12 col-sm-12 col-md-12 col-lg-12'><figure>
+	<img src="../../resources/imagenes/logo.svg" width='232' /> </figure>
+	<form action='${loginUrl}' method='post' class="login-form">
+		<div class="header" style="text-align: center;"></div>
+		<div class="content"><article
+			class="input-group margin-bottom-sm"> <span
+				class="input-group-addon"> <i class="fa fa-user fa-fw"></i>
+			</span>
+			<input type="text" id="username" name="username"
+				title="El usuario es obligatorio" required="required"
+				placeholder="Usuario" value='' class="input username form-control" />
+		</article><article class="input-group"> <span
+				class="input-group-addon"><i class="fa fa-unlock-alt fa-fw"></i></span>
+			<input type="password" id="password" name="password"
+				title="La contraseña es obligatoria" required="required"
+				placeholder="Contraseña" class="input password form-control" /></article></div>
+		<div class="footer"><input type="hidden"
+			name="${_csrf.parameterName}" value="${_csrf.token}" />
+			<button type="submit" name="submit" class="btn btn-primary btn-login">INICIAR
+			SESI&Oacute;N
+			</button></div>
+	</form>
+	</article> </section> </header>
+	<footer class="container"> <section class="row w100">
+	<article class="col-xs-12 col-sm-10 col-md-10 col-lg-10">
+	<p>
+		Teléfonos: 0995600508 - 0989676339 - 0999308011 | E-mail: <strong><a
+			href="mailto:soporte@redepronik.com.ec">soporte@redepronik.com.ec</a></strong>
+	</p>
+	<p>
+		© 2013 <strong><a href="http://www.redepronik.com.ec"
+			target="_blank">Redepronik Systems</a></strong> Todos Los Derechos Reservados
+	</p>
+	</article> <article class="col-xs-12 col-sm-2 col-md-2 col-lg-2"> <a
+		href="https://www.facebook.com/Redepronik" target="blank"><i
+		class="fa fa-facebook-square fa-2x f-z-2-5em f-z-2-5em"></i></a> <a
+		href="https://twitter.com/redepronik" target="blank"><i
+		class="fa fa-twitter-square fa-2x f-z-2-5em"></i></a> <a
+		href="https://plus.google.com/+RedepronikEc" target="blank"><i
+		class="fa fa-google-plus-square fa-2x f-z-2-5em"></i></a> </article> </section> </footer>
+</body>
+</html>

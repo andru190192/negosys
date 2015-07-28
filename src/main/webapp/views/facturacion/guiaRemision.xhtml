@@ -1,0 +1,277 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:p="http://primefaces.org/ui">
+
+<ui:composition template="/templates/layout/masterLayout.xhtml">
+
+	<ui:define name="title">NUEVA GUIA REMISION</ui:define>
+	<ui:define name="content">
+
+		<p:growl id="mensaje" showDetail="true" life="7000" />
+
+		<p:panel id="panel" header="NUEVA GUIA REMISION"
+			style="margin-bottom:10px;height:auto;">
+
+			<h:form id="formDocumento">
+				<h:panelGrid columns="2" cellpadding="1"
+					rowClasses="centrar,centrar1,centrar2,centrar3,centrar4,centrar5">
+					<p:outputLabel value="CLIENTE:" styleClass="negrita" />
+					<p:inputText readonly="true" style="width:150% !important"
+						value="#{guiaRemisionBean.cliente.cedula} - #{guiaRemisionBean.cliente.apellido} #{guiaRemisionBean.cliente.nombre}" />
+
+					<h:outputText value="CI/RUC TRANSPORTISTA:" styleClass="negrita" />
+					<p:selectOneMenu value="#{guiaRemisionBean.transportista.id}"
+						filter="true" filterMatchMode="contains">
+						<f:selectItem itemLabel="ESCOJA UN TRANSPORTISTA" />
+						<f:selectItems value="#{guiaRemisionBean.listaTransportistas}"
+							var="transportista" itemValue="#{transportista.id}"
+							itemLabel="#{transportista.cedula} - #{transportista.apellido} #{transportista.nombre}" />
+					</p:selectOneMenu>
+
+					<h:outputText value="PLACA:" styleClass="negrita" />
+					<p:inputText value="#{guiaRemisionBean.guiaRemision.placa}"
+						styleClass="txtFormNuevo" />
+
+					<h:outputText value="MOTIVO TRASLADO:" styleClass="negrita" />
+					<p:selectOneMenu
+						value="#{guiaRemisionBean.guiaRemision.motivoTraslado}"
+						filter="true" filterMatchMode="contains">
+						<f:selectItem itemLabel="ESCOJA UN MOTIVO" />
+						<f:selectItems value="#{guiaRemisionBean.listaMotivoTranslado}"
+							var="motivo" itemValue="#{motivo}" itemLabel="#{motivo.nombre}" />
+					</p:selectOneMenu>
+
+					<p:commandButton value="GUARDAR" validateClient="true"
+						update="formDocumento, :formDataTable,  :mensaje" id="btnGuardar"
+						icon="ui-icon-bookmark"
+						oncomplete="comprobarGuiaRemision(xhr, status, args)"
+						disabled="#{!guiaRemisionBean.bn}"
+						actionListener="#{guiaRemisionBean.insertar}" />
+
+					<p:commandButton value="NUEVO" id="btnlimpiar"
+						update="formDocumento, :formDataTable" icon="ui-icon-bookmark"
+						actionListener="#{guiaRemisionBean.limpiarObjetos}"
+						process="@this" />
+				</h:panelGrid>
+			</h:form>
+
+			<h:form id="formDataTable">
+
+				<p:dataTable id="tablaDetalleEgresos" var="detalleGuiaRemision"
+					style="width: 100% !important;"
+					value="#{guiaRemisionBean.listDetalleGuiaRemision}"
+					paginator="true" rows="10"
+					emptyMessage="#{msg['lbl.mensajeTabla']}"
+					paginatorPosition="bottom" scrollable="true"
+					styleClass="ui-datatable-scrollable-body">
+
+					<f:facet name="header">
+						<h:form style="margin-bottom: 8px">
+							<p:commandButton update=":formInsertarEgreso"
+								oncomplete="PF('añadirFacturaDialogo').show()" id="btnNuevo"
+								icon="ui-icon-plus" value="INSERTAR FACTURA"
+								actionListener="#{guiaRemisionBean.limpiarObjetosBusqueda}" />
+
+							<p:commandButton id="btnEliminar" update=":formEliminar"
+								oncomplete="PF('quitarFacturaDialogo').show()"
+								icon="#{msg['iconoEliminar']}" value="QUITAR FACTURA" />
+						</h:form>
+					</f:facet>
+
+					<p:column headerText="DESCRIPCION"
+						filterBy="#{detalleGuiaRemision.descripcion}"
+						style="width:50%;text-align: center;">
+						<h:outputText value="#{detalleGuiaRemision.descripcion}" />
+					</p:column>
+
+					<p:column headerText="CANTIDAD"
+						style="width: 200px;text-align: center;">
+						<h:outputText value="#{detalleGuiaRemision.cantidad} " />
+					</p:column>
+
+				</p:dataTable>
+			</h:form>
+
+			<p:dialog header="QUITAR FACTURA" widgetVar="quitarFacturaDialogo"
+				showEffect="explode" hideEffect="explode" modal="false"
+				resizable="false" width="60%" style="text-align: center;">
+				<h:form id="formEliminar">
+
+					<h:panelGrid columns="1" cellpadding="1">
+						<p:dataTable id="tablaProductos" var="factura"
+							value="#{guiaRemisionBean.listaFacturasGuiaRemision}"
+							paginator="true" rows="10"
+							emptyMessage="#{msg['lbl.mensajeTabla']}"
+							paginatorPosition="bottom" rowKey="#{factura.id}"
+							selection="#{guiaRemisionBean.listaQuitarFacturasGuiaRemision}">
+
+							<p:column selectionMode="multiple"
+								style="width:2%;text-align:center" />
+
+							<p:column headerText="CÉDULA"
+								style="text-align:center;width: 30px;">  
+                                    #{factura.cliente.persona.cedula}
+                                </p:column>
+
+							<p:column headerText="CLIENTE"
+								style="text-align:center;width: 50px;">  
+                                    #{factura.cliente.persona.apellido} #{factura.cliente.persona.nombre}
+                                </p:column>
+
+							<p:column headerText="CÓDIGO"
+								style="text-align:center;width: 50px;">  
+                                    #{factura.establecimiento}-#{factura.puntoEmision}-#{factura.secuencia}  
+                                </p:column>
+
+							<p:column headerText="FECHA"
+								style="text-align:center;width: 30px;">
+								<p:outputLabel value="#{egreso.fechaInicio}">
+									<f:convertDateTime pattern="dd/MM/yyyy"
+										timeZone="America/Guayaquil" />
+								</p:outputLabel>
+							</p:column>
+
+						</p:dataTable>
+					</h:panelGrid>
+
+					<p:commandButton value="ACEPTAR"
+						update=":formDataTable, :formDocumento, :mensaje"
+						icon="ui-icon-check"
+						actionListener="#{guiaRemisionBean.quitarDetalleGuiaRemision}"
+						oncomplete="comprobarQuitarListaFactura(xhr, status, args)" />
+					<p:commandButton value="CANCELAR" type="button"
+						onclick="PF('quitarFacturaDialogo').hide()" icon="ui-icon-close" />
+				</h:form>
+			</p:dialog>
+
+			<p:dialog header="INSERTAR FACTURA" widgetVar="añadirFacturaDialogo"
+				resizable="false" modal="false" showEffect="clip" hideEffect="fold"
+				id="dialogoNuevo" width="60%">
+
+				<h:form id="formInsertarEgreso">
+					<h:panelGrid columns="3">
+						<p:outputLabel value="LOCAL " styleClass="negrita" />
+						<p:selectOneMenu value="#{guiaRemisionBean.establecimiento}"
+							filter="true" filterMatchMode="contains">
+							<f:selectItem itemLabel="ESCOJA UN LOCAL" />
+							<f:selectItems value="#{guiaRemisionBean.listaLocales}"
+								var="local" itemValue="#{local.codigoEstablecimiento}"
+								itemLabel="#{local.nombre}" />
+						</p:selectOneMenu>
+						<p:outputLabel value="" />
+
+						<p:outputLabel value="CIUDAD " styleClass="negrita" />
+						<p:selectOneMenu value="#{guiaRemisionBean.ciudadId}"
+							filter="true" filterMatchMode="contains">
+							<f:selectItem itemLabel="ESCOJA UNA CIUDAD" />
+							<f:selectItems value="#{guiaRemisionBean.listaCiudades}"
+								var="ciudad" itemValue="#{ciudad.id}"
+								itemLabel="#{ciudad.nombre}" />
+						</p:selectOneMenu>
+						<p:outputLabel value="" />
+
+						<h:outputText value="CODIGO DOCUMENTO " styleClass="negrita" />
+						<p:inputText value="#{guiaRemisionBean.criterioBusquedaCodigo}" />
+
+						<p:commandButton update="formInsertarEgreso, :mensaje"
+							icon="#{msg['iconoBuscar']}"
+							actionListener="#{guiaRemisionBean.obtenerFacturas}" />
+					</h:panelGrid>
+
+					<h:panelGrid columns="1">
+						<p:dataTable id="tablaFacturas" var="factura"
+							value="#{guiaRemisionBean.listaFacturas}" paginator="true"
+							rows="10" emptyMessage="#{msg['lbl.mensajeTabla']}"
+							paginatorPosition="bottom" rowKey="#{factura.id}"
+							selection="#{guiaRemisionBean.listaFacturasGuiaRemision}">
+
+							<p:column selectionMode="multiple"
+								style="width:2%;text-align:center" />
+
+							<p:column headerText="CÉDULA"
+								style="text-align:center;width: 30px;">  
+                                    #{factura.cliente.persona.cedula}
+                                </p:column>
+
+							<p:column headerText="CLIENTE"
+								style="text-align:center;width: 50px;">  
+                                    #{factura.cliente.persona.apellido} #{factura.cliente.persona.nombre}
+                                </p:column>
+
+							<p:column headerText="# FACTURA"
+								style="text-align:center;width: 50px;">  
+                                    #{factura.establecimiento}-#{factura.puntoEmision}-#{factura.secuencia}  
+                                </p:column>
+
+							<p:column headerText="FECHA"
+								style="text-align:center;width: 30px;">
+								<p:outputLabel value="#{factura.fechaInicio}">
+									<f:convertDateTime pattern="dd/MM/yyyy"
+										timeZone="America/Guayaquil" />
+								</p:outputLabel>
+							</p:column>
+
+						</p:dataTable>
+					</h:panelGrid>
+
+					<p:commandButton value="INSERTAR"
+						update="formInsertarEgreso, :formDataTable, :formDocumento, :mensaje"
+						id="btnNuevoAceptar" icon="#{msg['iconoGuardar']}"
+						oncomplete="comprobarListaFactura(xhr, status, args)"
+						actionListener="#{guiaRemisionBean.cargarDetalleGuiaRemision}"
+						styleClass="centrarBotonesDialogos" />
+
+					<p:commandButton value="CANCELAR"
+						oncomplete="PF('añadirFacturaDialogo').hide()"
+						id="btnNuevolimpiar" icon="#{msg['iconoCancelar']}"
+						process="@this" styleClass="centrarBotonesDialogos" />
+				</h:form>
+
+			</p:dialog>
+
+			<p:dialog header="IMPRIMIR" widgetVar="imprimir" resizable="false"
+				modal="false" showEffect="clip" hideEffect="fold"
+				id="dialogoImprimir">
+				<h:form target="_blank">
+					<p:commandButton value="SI"
+						actionListener="#{guiaRemisionBean.imprimirGuiaRemision}"
+						ajax="false" oncomplete="PF('imprimir').hide()"
+						icon="ui-icon-check" />
+
+					<p:commandButton value="NO" oncomplete="PF('imprimir').hide()"
+						actionListener="#{guiaRemisionBean.limpiarObjetos}"
+						icon="ui-icon-close" />
+				</h:form>
+			</p:dialog>
+
+		</p:panel>
+
+		<script type="text/javascript">
+			//<![CDATA[
+			function comprobarGuiaRemision(xhr, status, args) {
+				if (!args.error) {
+					PF('imprimir').show();
+				}
+			}
+			function comprobarListaFactura(xhr, status, args) {
+				if (!args.errorListaFactura) {
+					PF('añadirFacturaDialogo').hide();
+				}
+			}
+			function comprobarQuitarListaFactura(xhr, status, args) {
+				if (!args.errorQuitarListaFactura) {
+					PF('quitarFacturaDialogo').hide();
+				}
+			}
+			//]]>
+		</script>
+
+	</ui:define>
+
+</ui:composition>
+</html>

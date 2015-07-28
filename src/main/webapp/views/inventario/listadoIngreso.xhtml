@@ -1,0 +1,150 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:p="http://primefaces.org/ui">
+<ui:composition template="/templates/layout/masterLayout.xhtml">
+	<ui:define name="title">
+		LISTADO DE INGRESO DE FACTURAS
+	</ui:define>
+	<ui:define name="content">
+		<p:growl id="mensaje" showDetail="true" life="7000" />
+		<p:panel id="panel" header="LISTADO
+			DE INGRESO DE FACTURAS">
+			<h:form id="busquedaTabla">
+				<h:panelGrid columns="3">
+					<h:outputText value="PROVEEDOR" />
+					<p:inputText
+						value="#{listadoIngresoBean.criterioBusquedaProveedor}"
+						onblur="this.value=this.value.toUpperCase();" />
+					<h:outputText />
+					<h:outputText value="# FACTURA" />
+					<p:inputText
+						value="#{listadoIngresoBean.criterioBusquedaNumeroFactura}"
+						onblur="this.value=this.value.toUpperCase();" />
+					<h:outputText />
+					<p:outputLabel value="FECHA FACTURA" />
+					<p:calendar
+						value="#{listadoIngresoBean.criterioBusquedaFechaFactura}"
+						navigator="true" />
+					<h:outputText />
+					<p:outputLabel value="FECHA INGRESO" />
+					<p:calendar
+						value="#{listadoIngresoBean.criterioBusquedaFechaIngreso}"
+						navigator="true" />
+					<p:commandButton update="busquedaTabla, :formDataTable, :mensaje"
+						icon="#{msg['iconoBuscar']}"
+						actionListener="#{listadoIngresoBean.obtener}" />
+				</h:panelGrid>
+			</h:form>
+			<h:form id="formDataTable">
+				<p:dataTable id="tablaListadoEntradas" var="ingreso"
+					value="#{listadoIngresoBean.listaIngresos}" paginator="true"
+					scrollable="true"
+					styleClass="ui-datatable-scrollable-body estiloFilasPares"
+					rows="10" rowsPerPageTemplate="5,10,15"
+					paginatorTemplate="{RowsPerPageDropdown} {FirstPageLink} {PreviousPageLink} {CurrentPageReport} {NextPageLink} {LastPageLink}"
+					paginatorPosition="bottom"
+					emptyMessage="#{msg['lbl.mensajeTabla']}">
+					<f:facet name="header">
+						<p:tooltip for="btnNuevo" value="#{msg['lbl.insertar']}" />
+						<p:commandButton id="btnNuevo"
+							action="#{listadoIngresoBean.redirecionar}" icon="ui-icon-plus" />
+					</f:facet>
+					<p:column headerText="GESTIONAR" width="5%" styleClass="centrar">
+						<p:tooltip for="btnMostrar" value="MOSTRAR" />
+						<p:commandButton id="btnMostrar" update=":formMostrar"
+							oncomplete="PF('listaIngresoDialogoMostrar').show()"
+							icon="ui-icon-newwin">
+							<f:setPropertyActionListener value="#{ingreso}"
+								target="#{listadoIngresoBean.ingreso}" />
+						</p:commandButton>
+					</p:column>
+					<p:column headerText="# FACTURA" width="10%">  
+            			#{ingreso.codigoDocumento}  
+        			</p:column>
+					<p:column headerText="PROVEEDOR">  
+            			#{ingreso.proveedor.persona.apellido} #{ingreso.proveedor.persona.nombre}
+        			</p:column>
+					<p:column headerText="FECHA FACTURA" width="10%">
+						<p:outputLabel value="#{ingreso.fechaFactura}">
+							<f:convertDateTime pattern="dd/MM/yyyy"
+								timeZone="America/Guayaquil" />
+						</p:outputLabel>
+					</p:column>
+					<p:column headerText="FECHA INGRESO" width="10%">
+						<p:outputLabel value="#{ingreso.fechaIngreso}">
+							<f:convertDateTime pattern="dd/MM/yyyy"
+								timeZone="America/Guayaquil" />
+						</p:outputLabel>
+					</p:column>
+					<p:column headerText="BODEGUERO">  
+            			#{ingreso.bodeguero.empleado.persona.apellido} #{ingreso.bodeguero.empleado.persona.nombre}
+        			</p:column>
+					<p:column headerText="PAGADO" width="5%">
+						<p:selectBooleanCheckbox disabled="true" value="#{ingreso.pagado}" />
+					</p:column>
+				</p:dataTable>
+			</h:form>
+		</p:panel>
+		<p:dialog header="MOSTRAR INGRESO"
+			widgetVar="listaIngresoDialogoMostrar" resizable="false"
+			modal="false" showEffect="clip" hideEffect="fold" id="dialogoMostrar"
+			width="50%">
+			<h:form id="formMostrar">
+				<h:panelGrid id="panelMostrar" columns="2">
+					<h:outputText value="PROVEEDOR" styleClass="negrita" />
+					<h:outputText
+						value="#{listadoIngresoBean.ingreso.proveedor.persona.cedula} - #{listadoIngresoBean.ingreso.proveedor.persona.apellido} #{listadoIngresoBean.ingreso.proveedor.persona.nombre}" />
+					<h:outputText value="# FACTURA" styleClass="negrita" />
+					<h:outputText value="#{listadoIngresoBean.ingreso.codigoDocumento}" />
+					<h:outputText value="FECHA FACTURA" styleClass="negrita" />
+					<p:outputLabel value="#{listadoIngresoBean.ingreso.fechaFactura}">
+						<f:convertDateTime pattern="dd/MM/yyyy"
+							timeZone="America/Guayaquil" />
+					</p:outputLabel>
+					<h:outputText value="FECHA INGRESO" styleClass="negrita" />
+					<p:outputLabel value="#{listadoIngresoBean.ingreso.fechaIngreso}">
+						<f:convertDateTime pattern="dd/MM/yyyy"
+							timeZone="America/Guayaquil" />
+					</p:outputLabel>
+					<h:outputText value="PAGADO" styleClass="negrita" />
+					<p:selectBooleanButton id="value1"
+						value="#{listadoIngresoBean.ingreso.pagado}" onLabel="SI"
+						offLabel="NO" styleClass="leyendaPagado" disabled="true" />
+				</h:panelGrid>
+				<p:dataTable id="tablaDetalle" var="detalleIngreso"
+					scrollable="true" scrollHeight="120"
+					value="#{listadoIngresoBean.ingreso.detalleIngresos}"
+					styleClass="estiloFilasPares">
+					<p:column headerText="COD." width="10%">  
+            			#{detalleIngreso.producto.id}  
+        		</p:column>
+					<p:column headerText="PRODUCTO" width="50%">  
+            			#{detalleIngreso.producto.nombre}  
+        		</p:column>
+					<p:column headerText="CANTIDAD" width="10%">  
+            		#{detalleIngreso.cantidad}  
+        		</p:column>
+					<p:column headerText="BODEGA" width="15%">  
+            		#{detalleIngreso.local.nombre}
+        		</p:column>
+					<p:column headerText="PRECIO" width="10%">  
+            		#{detalleIngreso.precio}  
+        		</p:column>
+					<p:columnGroup type="footer">
+						<p:row>
+							<p:column colspan="4" styleClass="centrarDerecha f-z15px negrita"
+								footerText="TOTAL" />
+							<p:column footerText="#{listadoIngresoBean.ingreso.total}"
+								styleClass="f-z15px negrita centrarDerecha" />
+						</p:row>
+					</p:columnGroup>
+				</p:dataTable>
+			</h:form>
+		</p:dialog>
+	</ui:define>
+</ui:composition>
+</html>

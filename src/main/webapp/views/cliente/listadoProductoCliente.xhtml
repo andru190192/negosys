@@ -1,0 +1,564 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:p="http://primefaces.org/ui">
+
+    <ui:composition template="/templates/layout/masterLayout.xhtml">
+
+        <ui:define name="title">
+            PRODUCTO
+        </ui:define>
+        <ui:define name="content">
+
+            <p:growl id="mensaje" showDetail="true" life="7000" />
+
+            <p:panel id="panel" header="LISTADO DE PRODUCTOS"
+                     style="margin-bottom:10px;">
+
+                <h:form id="formDataTable">
+
+                    <p:dataTable id="tablaProductos" var="producto"
+                                 value="#{productoBean.listaProductosTabla}" paginator="true"
+                                 rows="10" lazy="true"
+                                 paginatorTemplate="{RowsPerPageDropdown} {FirstPageLink} {PreviousPageLink} {CurrentPageReport} {NextPageLink} {LastPageLink}"
+                                 rowsPerPageTemplate="5,10,15" paginatorPosition="bottom"
+                                 emptyMessage="#{msg['lbl.mensajeTabla']}">
+
+                        <f:facet name="header">
+                            <h:form>
+                                <p:commandButton value="#{msg['btn.insertar']}"
+                                                 update=":formNuevo" oncomplete="productoDialogoNuevo.show()"
+                                                 id="btnNuevo" icon="ui-icon-plus"
+                                                 actionListener="#{productoBean.limpiar}" />
+                            </h:form>
+                        </f:facet>
+
+                        <p:column headerText="#{msg['lbl.gestionar']}"
+                                  style="text-align:center;width: 50px;">
+
+                            <p:commandButton id="btnMostrar" update=":formMostrar"
+                                             oncomplete="productoDialogoMostrar.show()" icon="ui-icon-newwin">
+                                <f:setPropertyActionListener value="#{producto}"
+                                                             target="#{productoBean.producto}" />
+                            </p:commandButton>
+
+                            <p:commandButton id="btnEditar" update=":formEditar"
+                                             oncomplete="productoDialogoEditar.show()" icon="ui-icon-pencil">
+                                <f:setPropertyActionListener value="#{producto}"
+                                                             target="#{productoBean.producto}" />
+                            </p:commandButton>
+
+                            <p:commandButton id="btnEliminar" update=":formEliminar"
+                                             oncomplete="productoDialogoEliminar.show()" icon="ui-icon-trash">
+                                <f:setPropertyActionListener value="#{producto}"
+                                                             target="#{productoBean.producto}" />
+                            </p:commandButton>
+
+                        </p:column>
+
+                        <p:column headerText="EAN" filterBy="#{producto.ean}"
+                                  style="text-align:center;width: 50px;">
+                            #{producto.ean}
+                        </p:column>
+
+                        <p:column headerText="CODIGO1" filterBy="#{producto.codigo1}"
+                                  style="text-align:center;width: 50px;">
+                            #{producto.codigo1}
+                        </p:column>
+
+                        <p:column headerText="GRUPO" style="text-align:center;width: 50px;">  
+                            #{producto.grupo.nombre}  
+                        </p:column>
+
+                        <p:column headerText="PRECIO COSTO" filterBy="#{producto.precio}"
+                                  style="text-align:center;width: 50px;">  
+                            #{producto.precio}  
+                        </p:column>
+
+                    </p:dataTable>
+                </h:form>
+
+            </p:panel>
+
+            <p:dialog widgetVar="productoDialogoEliminar" 
+                      header="Eliminar Producto" showEffect="clip" hideEffect="fold"
+                      modal="false" resizable="false" width="230px">
+                <h:form id="formEliminar">
+                    <h:inputHidden value="#{productoBean.producto.productoid}" />
+                    <br />
+                    <p:outputLabel value="#{msg['lbl.mensajeEleminar']}" />
+                    <br />
+                    <br />
+                    <p:commandButton value="#{msg['btn.aceptar']}"
+                                     update=":formDataTable,:mensaje" icon="ui-icon-check"
+                                     oncomplete="productoDialogoEliminar.hide()"
+                                     actionListener="#{productoBean.eliminar}" />
+                    <p:commandButton value="#{msg['btn.cancelar']}" type="button"
+                                     onclick="productoDialogoEliminar.hide()" icon="ui-icon-close" />
+                </h:form>
+            </p:dialog>
+
+            <p:dialog header="INSERTAR PRODUCTO" widgetVar="productoDialogoNuevo"
+                      resizable="false" modal="false" showEffect="clip" hideEffect="fold"
+                      id="dialogoNuevo">
+
+                <h:form id="formNuevo">
+
+                    <p:focus context="formNuevo" />
+
+                    <h:panelGrid id="panelNuevo" columns="2" cellpadding="1">
+                        <h:panelGrid columns="2" cellpadding="1">
+
+                            <h:outputText value="EAN:" />
+                            <p:inputText value="#{productoBean.producto.ean}"
+                                         onblur="this.value = this.value.toUpperCase();" required="true"
+                                         requiredMessage="INGRESE EL EAN" />
+
+                            <h:outputText value="CODIGO1:" />
+                            <p:inputText value="#{productoBean.producto.codigo1}"
+                                         onblur="this.value = this.value.toUpperCase();" required="true"
+                                         requiredMessage="INGRESE EL CÓDIGO 1" />
+
+                            <h:outputText value="CODIGO2:" />
+                            <p:inputText value="#{productoBean.producto.codigo2}"
+                                         onblur="this.value = this.value.toUpperCase();" required="true"
+                                         requiredMessage="INGRESE EL CÓDIGO 2" />
+
+                            <h:outputText value="PRECIO:" />
+                            <p:inputText id="precio" value="#{productoBean.producto.precio}"
+                                         required="true" requiredMessage="INGRESE EL PRECIO" />
+
+                            <h:outputText value="GANANCIA:" />
+                            <p:inputText value="#{productoBean.producto.ganancia}"
+                                         required="true"
+                                         requiredMessage="INGRESE EL PORCENTAJE DE GANANCIA">
+                                <p:ajax event="blur" process="precio, @this"
+                                        listener="#{productoBean.calcularPreciosProducto}"
+                                        update="tablaPreciosProducto" />
+                            </p:inputText>
+
+                            <h:outputText value="CANTIDAD MINIMA:" />
+                            <p:inputText required="true"
+                                         requiredMessage="INGRESE LA CANTIDAD MINIMA"
+                                         value="#{productoBean.producto.cantidadminima}" />
+
+                            <h:outputText value="ICE:" />
+                            <p:inputText value="#{productoBean.producto.ice}" />
+
+                            <h:outputText value="IVA:" />
+                            <p:selectBooleanCheckbox value="#{productoBean.producto.iva}" />
+                        </h:panelGrid>
+                        <h:panelGrid columns="2" cellpadding="1">
+
+                            <h:outputText value="GRUPO:" />
+                            <p:selectOneMenu id="comboGrupo" filter="true"
+                                             filterMatchMode="contains" value="#{productoBean.grupo.grupoid}"
+                                             required="true" requiredMessage="ESCOJA UN GRUPO"
+                                             style="width: 150px !important;">
+                                <f:selectItem itemLabel="ESCOJA UN GRUPO" />
+                                <f:selectItems value="#{grupoBean.listaGrupos}" var="grupo"
+                                               itemValue="#{grupo.grupoid}" itemLabel="#{grupo.nombre}" />
+                                <p:ajax listener="#{productoBean.cargarProductoCaracteristica}"
+                                        event="change" update="tablaCaracteristicas" />
+                            </p:selectOneMenu>
+
+                            <h:outputText value="CARACTERISTICAS:" />
+                            <p:dataTable id="tablaCaracteristicas" var="caracteristica"
+                                         value="#{productoBean.listaProductoCaracteristica}"
+                                         editable="true" editMode="cell" paginator="true" rows="6"
+                                         emptyMessage="#{msg['lbl.mensajeTabla']}"
+                                         paginatorPosition="bottom">
+
+                                <p:column headerText="NOMBRE">
+                                    #{caracteristica.caracteristica.nombre}		
+                                </p:column>
+
+                                <p:column headerText="VALOR">
+                                    <p:cellEditor>
+                                        <f:facet name="output">
+                                            <h:outputText value="#{caracteristica.valor}" />
+                                        </f:facet>
+                                        <f:facet name="input">
+                                            <p:inputText value="#{caracteristica.valor}"
+                                                         onblur="this.value = this.value.toUpperCase();" />
+                                        </f:facet>
+                                    </p:cellEditor>
+                                </p:column>
+                            </p:dataTable>
+
+                            <h:outputText value="PRECIOS: ((PC+%G)+%TP)" />
+                            <p:dataTable id="tablaPreciosProducto" var="tablaPrecios"
+                                         value="#{productoBean.listaPrecioProducto}">
+
+                                <p:column headerText="NOMBRE">
+                                    #{tablaPrecios.nombrePrecio}		
+                                </p:column>
+
+                                <p:column headerText="PRECIO">
+                                    #{tablaPrecios.precio}		
+                                </p:column>
+                            </p:dataTable>
+
+                            <h:outputText value="UNIDADES:" />
+                            <p:dataTable id="tablaUnidades" var="tablaProductoUnidad"
+                                         value="#{productoBean.producto.productounidads}" editable="true"
+                                         editMode="cell" paginator="true" rows="6"
+                                         emptyMessage="#{msg['lbl.mensajeTabla']}"
+                                         paginatorPosition="bottom">
+
+                                <p:column headerText="ORDEN">
+                                    #{tablaProductoUnidad.orden}		
+                                </p:column>
+
+                                <p:column headerText="UNIDAD">
+                                    <p:cellEditor>
+                                        <f:facet name="output">
+                                            <h:outputText value="#{tablaProductoUnidad.unidad.nombre}" />
+                                        </f:facet>
+                                        <f:facet name="input">
+                                            <p:selectOneMenu id="comboUnidad" filter="true"
+                                                             filterMatchMode="contains"
+                                                             value="#{productoBean.unidad.unidadid}" required="true"
+                                                             requiredMessage="ESCOJA UNA UNIDAD"
+                                                             style="width: 150px !important;">
+                                                <f:selectItem itemLabel="ESCOJA UNA UNIDAD" />
+                                                <f:selectItems value="#{unidadBean.listaUnidades}"
+                                                               var="unidad" itemValue="#{unidad.unidadid}"
+                                                               itemLabel="#{unidad.nombre}" />
+                                                <p:ajax listener="#{productoBean.cargarProductoUnidad}"
+                                                        event="change" update="tablaUnidades" />
+                                            </p:selectOneMenu>
+                                        </f:facet>
+                                    </p:cellEditor>
+                                </p:column>
+
+                                <p:column headerText="CANTIDAD">
+                                    <p:cellEditor>
+                                        <f:facet name="output">
+                                            <h:outputText value="#{tablaProductoUnidad.cantidad}" />
+                                        </f:facet>
+                                        <f:facet name="input">
+                                            <p:inputText value="#{tablaProductoUnidad.cantidad}" />
+                                        </f:facet>
+                                    </p:cellEditor>
+                                </p:column>
+
+                            </p:dataTable>
+
+                        </h:panelGrid>
+
+                        <f:facet name="footer">
+                            <p:separator />
+                            <p:commandButton value="GUARDAR"
+                                             update=":formDataTable ,:mensaje, :formNuevo"
+                                             oncomplete="comprobar(xhr, status, args)" id="btnNuevoAceptar"
+                                             icon="ui-icon-disk" actionListener="#{productoBean.insertar}" />
+
+                            <p:commandButton value="CANCELAR"
+                                             oncomplete="productoDialogoNuevo.hide()" id="btnNuevolimpiar"
+                                             icon="ui-icon-close" actionListener="#{productoBean.limpiar}"
+                                             process="@this" />
+                        </f:facet>
+
+                    </h:panelGrid>
+
+                </h:form>
+
+            </p:dialog>
+
+            <p:dialog header="MOSTRAR PRODUCTO" widgetVar="productoDialogoMostrar"
+                      resizable="false" modal="false" showEffect="clip" hideEffect="fold"
+                      id="dialogoMostrar">
+
+                <h:form id="formMostrar">
+
+                    <h:panelGrid id="panelMostrar" columns="2" cellpadding="1">
+                        <h:panelGrid columns="2" cellpadding="1">
+                            <h:outputText value="NOMBRE:" />
+                            <p:inputTextarea value="#{productoBean.producto.nombre}"
+                                             readonly="true" style="font-weight:bold;" />
+
+                            <h:outputText value="EAN:" />
+                            <h:outputText value="#{productoBean.producto.ean}"
+                                          style="font-weight:bold" />
+
+                            <h:outputText value="CODIGO1:" />
+                            <h:outputText value="#{productoBean.producto.codigo1}"
+                                          style="font-weight:bold" />
+
+                            <h:outputText value="CODIGO2:" />
+                            <h:outputText value="#{productoBean.producto.codigo2}"
+                                          style="font-weight:bold" />
+
+                            <h:outputText value="PRECIO:" />
+                            <h:outputText value="#{productoBean.producto.precio}"
+                                          style="font-weight:bold" />
+
+                            <h:outputText value="GANANCIA:" />
+                            <h:outputText value="#{productoBean.producto.ganancia}"
+                                          style="font-weight:bold" />
+
+                            <h:outputText value="CANTIDAD MINIMA:" />
+                            <h:outputText value="#{productoBean.producto.cantidadminima}"
+                                          style="font-weight:bold" />
+
+                            <h:outputText value="ICE:" />
+                            <h:outputText value="#{productoBean.producto.ice}"
+                                          style="font-weight:bold" />
+
+                            <h:outputText value="IVA:" />
+                            <p:selectBooleanCheckbox value="#{productoBean.producto.iva}"
+                                                     style="font-weight:bold" />
+
+                            <h:outputText value="GRUPO:" />
+                            <h:outputText value="#{productoBean.producto.grupo.nombre}"
+                                          style="font-weight:bold" />
+                        </h:panelGrid>
+                        <h:panelGrid columns="2" cellpadding="1">
+                            <h:outputText value="CARACTERISTICAS:" />
+                            <p:dataTable var="caracteristica"
+                                         value="#{productoBean.producto.productocaracteristicas}"
+                                         paginator="true" paginatorPosition="bottom" rows="5">
+
+                                <p:column headerText="NOMBRE">
+                                    #{caracteristica.caracteristica.nombre}		
+                                </p:column>
+
+                                <p:column headerText="VALOR">
+                                    #{caracteristica.valor}
+                                </p:column>
+                            </p:dataTable>
+
+                            <h:outputText value="PRECIOS: ((PC+%G)+%TP)" />
+                            <p:dataTable var="tablaPrecios"
+                                         value="#{productoBean.listaPrecioProducto}">
+
+                                <p:column headerText="NOMBRE">
+                                    #{tablaPrecios.nombrePrecio}		
+                                </p:column>
+
+                                <p:column headerText="PRECIO">
+                                    #{tablaPrecios.precio}		
+                                </p:column>
+                            </p:dataTable>
+
+                            <h:outputText value="BODEGAS:" />
+                            <p:dataTable var="tablaBodegaProducto"
+                                         value="#{productoBean.listaBodegaProductos}">
+
+                                <p:column headerText="NOMBRE">
+                                    #{tablaBodegaProducto.nombreBodega}		
+                                </p:column>
+
+                                <p:column headerText="CANTIDAD">
+                                    #{tablaBodegaProducto.cantidad}
+                                </p:column>
+                            </p:dataTable>
+
+                            <h:outputText value="UNIDADES:" />
+                            <p:dataTable var="tablaProductoUnidad"
+                                         value="#{productoBean.producto.productounidads}">
+
+                                <p:column headerText="ORDEN">
+                                    #{tablaProductoUnidad.orden}		
+                                </p:column>
+
+                                <p:column headerText="UNIDAD">
+                                    #{tablaProductoUnidad.unidad.nombre}		
+                                </p:column>
+
+                                <p:column headerText="CANTIDAD">
+                                    #{tablaProductoUnidad.cantidad}
+                                </p:column>
+                            </p:dataTable>
+                        </h:panelGrid>
+                    </h:panelGrid>
+                </h:form>
+            </p:dialog>
+
+            <p:dialog header="EDITAR PRODUCTO" widgetVar="productoDialogoEditar"
+                      resizable="false" modal="false" showEffect="clip" hideEffect="fold"
+                      id="dialogoEditar">
+
+                <h:form id="formEditar">
+
+                    <p:focus context="formEditar" />
+
+                    <h:panelGrid columns="2" cellpadding="1">
+                        <h:panelGrid columns="2" cellpadding="1">
+
+                            <h:outputText value="EAN:" />
+                            <p:inputText value="#{productoBean.producto.ean}"
+                                         onblur="this.value = this.value.toUpperCase();" required="true"
+                                         requiredMessage="INGRESE EL EAN" />
+
+                            <h:outputText value="CODIGO1:" />
+                            <p:inputText value="#{productoBean.producto.codigo1}"
+                                         onblur="this.value = this.value.toUpperCase();" required="true"
+                                         requiredMessage="INGRESE EL CÓDIGO 1" />
+
+                            <h:outputText value="CODIGO2:" />
+                            <p:inputText value="#{productoBean.producto.codigo2}"
+                                         onblur="this.value = this.value.toUpperCase();" required="true"
+                                         requiredMessage="INGRESE EL CÓDIGO 2" />
+
+                            <h:outputText value="PRECIO:" />
+                            <p:inputText value="#{productoBean.producto.precio}"
+                                         onblur="this.value = this.value.toUpperCase();" required="true"
+                                         requiredMessage="INGRESE EL PRECIO" />
+
+                            <h:outputText value="GANANCIA:" />
+                            <p:inputText value="#{productoBean.producto.ganancia}"
+                                         required="true"
+                                         requiredMessage="INGRESE EL PORCENTAJE DE GANANCIA" />
+
+                            <h:outputText value="CANTIDAD MINIMA:" />
+                            <p:inputText required="true"
+                                         requiredMessage="INGRESE UNA CANTIDAD MINIMA"
+                                         value="#{productoBean.producto.cantidadminima}" />
+
+                            <h:outputText value="ICE:" />
+                            <p:inputText value="#{productoBean.producto.ice}" />
+
+                            <h:outputText value="IVA:" />
+                            <p:selectBooleanCheckbox value="#{productoBean.producto.iva}" />
+
+                            <h:outputText value="GRUPO:" />
+                            <p:selectOneMenu id="comboGrupo" filter="true"
+                                             filterMatchMode="contains" value="#{productoBean.grupo.grupoid}"
+                                             required="true" requiredMessage="ESCOJA UN GRUPO"
+                                             style="width: 150px !important;">
+                                <f:selectItem itemLabel="ESCOJA UN GRUPO" />
+                                <f:selectItems value="#{grupoBean.listaGrupos}" var="grupo"
+                                               itemValue="#{grupo.grupoid}" itemLabel="#{grupo.nombre}" />
+                                <p:ajax listener="#{productoBean.cargarProductoCaracteristica}"
+                                        event="change" update="tablaCaracteristicas" />
+                            </p:selectOneMenu>
+
+                            <h:outputText value="CARACTERISTICAS:" />
+                            <p:dataTable id="tablaCaracteristicas" var="caracteristica"
+                                         value="#{productoBean.producto.productocaracteristicas}"
+                                         editable="true" editMode="cell" paginator="true"
+                                         paginatorPosition="bottom" rows="5">
+
+                                <p:column headerText="NOMBRE">
+                                    #{caracteristica.caracteristica.nombre}		
+                                </p:column>
+
+                                <p:column headerText="VALOR">
+                                    <p:cellEditor>
+                                        <f:facet name="output">
+                                            <h:outputText value="#{caracteristica.valor}" />
+                                        </f:facet>
+                                        <f:facet name="input">
+                                            <p:inputText value="#{caracteristica.valor}"
+                                                         onblur="this.value = this.value.toUpperCase();" />
+                                        </f:facet>
+                                    </p:cellEditor>
+                                </p:column>
+
+                            </p:dataTable>
+
+                            <h:outputText value="UNIDADES:" />
+                            <p:dataTable id="tablaUnidades" var="tablaProductoUnidad"
+                                         value="#{productoBean.producto.productounidads}" editable="true"
+                                         editMode="cell" paginator="true" rows="6"
+                                         emptyMessage="#{msg['lbl.mensajeTabla']}"
+                                         paginatorPosition="bottom">
+
+                                <p:ajax event="cellEdit" listener="#{productoBean.obtenerFila}" />
+
+                                <p:column>
+
+                                    <p:commandButton id="btnEliminar" update="tablaUnidades"
+                                                     action="#{productoBean.eliminarProductoUnidad}"
+                                                     icon="ui-icon-trash">
+                                        <f:setPropertyActionListener value="#{tablaProductoUnidad}"
+                                                                     target="#{productoBean.productoUnidad}" />
+                                    </p:commandButton>
+
+                                </p:column>
+
+                                <p:column headerText="ORDEN">
+                                    #{tablaProductoUnidad.orden}		
+                                </p:column>
+
+                                <p:column headerText="UNIDAD">
+                                    <p:cellEditor>
+                                        <f:facet name="output">
+                                            <h:outputText value="#{tablaProductoUnidad.unidad.nombre}" />
+                                        </f:facet>
+                                        <f:facet name="input">
+                                            <p:selectOneMenu id="comboUnidad" filter="true"
+                                                             filterMatchMode="contains"
+                                                             value="#{productoBean.unidad.unidadid}" required="true"
+                                                             requiredMessage="ESCOJA UNA UNIDAD"
+                                                             style="width: 150px !important;">
+                                                <f:selectItem itemLabel="ESCOJA UNA UNIDAD" />
+                                                <f:selectItems value="#{unidadBean.listaUnidades}"
+                                                               var="unidad" itemValue="#{unidad.unidadid}"
+                                                               itemLabel="#{unidad.nombre}" />
+                                                <p:ajax listener="#{productoBean.modificarProductoUnidad}"
+                                                        event="change" update="tablaUnidades" />
+                                            </p:selectOneMenu>
+                                        </f:facet>
+                                    </p:cellEditor>
+                                </p:column>
+
+                                <p:column headerText="CANTIDAD">
+                                    <p:cellEditor>
+                                        <f:facet name="output">
+                                            <h:outputText value="#{tablaProductoUnidad.cantidad}" />
+                                        </f:facet>
+                                        <f:facet name="input">
+                                            <p:inputText value="#{tablaProductoUnidad.cantidad}" />
+                                        </f:facet>
+                                    </p:cellEditor>
+                                </p:column>
+
+                            </p:dataTable>
+
+
+                        </h:panelGrid>
+
+                        <f:facet name="footer">
+                            <p:separator />
+                            <p:commandButton value="GUARDAR"
+                                             update=":formDataTable,:mensaje, formEditar"
+                                             oncomplete="comprobar(xhr, status, args)"
+                                             id="btnModificarAceptar"
+                                             actionListener="#{productoBean.actualizar}" icon="ui-icon-disk" />
+
+                            <p:commandButton value="CANCELAR"
+                                             oncomplete="productoDialogoEditar.hide()"
+                                             id="btnModificarlimpiar" icon="ui-icon-close" />
+                        </f:facet>
+
+                    </h:panelGrid>
+                </h:form>
+            </p:dialog>
+
+            <script type="text/javascript">
+                function handleSubmitRequest(args) {
+                    if (!args.validationFailed) {
+                        productoDialogoNuevo.hide();
+                        productoDialogoEditar.hide();
+                    }
+                }
+
+                //<![CDATA[
+                function comprobar(xhr, status, args) {
+                    if (!args.validationFailed && args.error) {
+                        productoDialogoNuevo.hide();
+                        productoDialogoEditar.hide();
+                    }
+                }
+                //]]>
+            </script>
+        </ui:define>
+    </ui:composition>
+</html>
